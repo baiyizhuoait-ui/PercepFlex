@@ -22,12 +22,14 @@ import torch.nn.functional as F
 
 class TaskResourceRouter(nn.Module):
     def __init__(self, z_channels, budgets=(0.25, 0.5, 1.0), hidden=64,
-                 temperature=1.0):
+                 temperature=1.0, shared=False):
+        """shared=True: one allocation for all tasks (Method A of Exp 2)."""
         super().__init__()
         self.budgets = torch.tensor(list(budgets), dtype=torch.float32)
-        self.n_tasks = 3  # det, da, lane
+        self.n_tasks = 1 if shared else 3  # det, da, lane
         self.n_budgets = len(budgets)
         self.temperature = temperature
+        self.shared = shared
         self.pool = nn.AdaptiveAvgPool2d(1)
         self.mlp = nn.Sequential(
             nn.Linear(z_channels, hidden),
@@ -45,7 +47,7 @@ class TaskResourceRouter(nn.Module):
         Returns dict with logits, probs, widths (B,3), assignments (B,3).
         """
         g = self.pool(z).flatten(1)                       # (B, zc)
-        logits = self.mlp(g).view(-1, self.n_tasks, self.n_budgets)  # (B,3,K)
+        logits = self.mlp(g).view(-1, self.n_tasks, self.n_budgets)  # (B,1|3,K)
         logits = logits + self.prior_bias[None]
         if budget_prior is not None:
             logits = logits + budget_prior.unsqueeze(1)   # (B,1,K) broadcast
@@ -55,12 +57,19 @@ class TaskResourceRouter(nn.Module):
             hard = not self.training
         if self.training or hard:
             one_hot = F.gumbel_softmax(logits, tau=self.temperature, hard=hard, dim=-1)
-            widths = one_hot @ self.budgets.to(logits.device)     # (B,3)
+            widths = one_hot @ self.budgets.to(logits.device)     # (B,1|3)
             assignments = one_hot.argmax(-1)
         else:
             assignments = logits.argmax(-1)
             widths = self.budgets.to(logits.device)[assignments]
             one_hot = F.one_hot(assignments, self.n_budgets).float()
+
+        if self.shared:
+            # broadcast single decision to the three tasks
+            widths = widths.repeat(1, 3)
+            assignments = assignments.repeat(1, 3)
+            one_hot = one_hot.repeat(1, 3, 1)
+
         return {
             "logits": logits,
             "probs": probs,

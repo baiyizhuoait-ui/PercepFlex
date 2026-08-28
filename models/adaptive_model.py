@@ -43,7 +43,8 @@ class AdaptiveMultiTaskModel(nn.Module):
         self.budgets = tuple(model_cfg.get("budgets", (0.25, 0.5, 1.0)))
         self.router = TaskResourceRouter(
             zc, budgets=self.budgets,
-            hidden=model_cfg.get("router", {}).get("hidden", 64))
+            hidden=model_cfg.get("router", {}).get("hidden", 64),
+            shared=model_cfg.get("router", {}).get("shared", False))
         self.det_head = DynamicDetHead(
             enc_cfg["stages"][1:], nc=det_cfg.get("nc", 1),
             anchors=det_cfg.get("anchors"))
