@@ -33,26 +33,20 @@
 ## 0.2 数据现状（BDD100K）
 
 ### 已获得
-- 图片源：`bitmind/bdd100k-real`（hf-mirror 镜像，**非官方**）：100k×5 部分 + 10k 测试集（下载中），
-  已确认 `bdd100k_seg.zip` = 10,002 张 JPG（**是图片子集，不是分割标注**）。
-- 图片下载目录：`../trac_data/bdd100k_download/`（工作区外的临时下载区，不入 git）。
+- 开发子集 10,010 张唯一图片（已解压到 `trac/data/bdd100k/images/dev/`）：
+  来源 hf-mirror 的 bitmind/bdd100k-real，其中 `10k.zip` 与 `bdd100k_seg.zip` 均为 10,002 张 JPG 且
+  99.9% 重复（9990 张相同）——即该镜像只有约 1 万张有效图片。
+- 该镜像的 `100k_part01~05.zip` 全部损坏：全新完整下载（无断点续传）仍无法解压
+  （无 EOCD 中央目录），判断为上传方分卷错误/被截断，已删除，不再依赖。
 
-### 未获得（阻塞点）
-1. **检测框标注**（bdd100k_labels_images_train/val.json）
-2. **可行驶区域标注**（segments/*.png）
-3. **车道线标注**（lanes/*.png）
+### 未获得（用户已确认自行下载后拷入工作区）
+1. **全量图片**（images/100k/{train,val}、images/10k/test）
+2. **检测框标注**（bdd100k_labels_images_train/val.json）
+3. **可行驶区域标注**（segments/*.png）
+4. **车道线标注**（lanes/*.png）
 
-原因：官方站 bdd-data.berkeley.edu 与 Google Drive 在当前网络均不可达；
-HuggingFace 官方 gated 数据集需账号+接受许可；hf-mirror 上未发现标注镜像。
-**需要用户决策**：见 README「数据」一节与用户待办清单。
-
-### 备选方案（按推荐排序）
-1. **OpenDataLab**（opendatalab.com，本网络可达，中国团队）：用户注册后提供 token，
-   用 `pip install opendatalab && odl login <token>` 下载 BDD100K 全量（含三任务标注）。推荐。
-2. **HuggingFace 官方 gated `bdd100k/bdd100k`**：用户 HF 账号接受许可后提供 HF_TOKEN，
-   经 hf-mirror（HF_ENDPOINT=https://hf-mirror.com）下载。
-3. 用户在本机用其他网络（VPN/百度网盘/朋友机器）下载后拷入 `trac/data/`。
-4. 先只用已下载图片 + 稍后补标注（可先跑通数据管线与模型冒烟，训练等标注到位）。
+原因：官方站 bdd-data.berkeley.edu 与 Google Drive 在当前网络均不可达。
+用户选择「自己下载后拷进工作区」，目标结构与下载途径见 `docs/USER_DOWNLOADS.md`。
 
 ## 0.3 Phase 1 前需要用户做的事
 - [ ] **决策标注来源**（上节 1/2/3/4 选一；若选 1 或 2，请提供 token/确认注册）

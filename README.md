@@ -95,12 +95,11 @@ data/bdd100k/
 └── labels/                 # bdd100k_labels_images_{train,val}.json（检测框）
 ```
 
-当前状态：
-- 图片：`../trac_data/bdd100k_download/`（bitmind/bdd100k-real @ hf-mirror，
-  100k×5 部分 + 10k 测试集，下载中；已验证 bdd100k_seg.zip = 1 万张 jpg **图片**，非标注）
-- 标注：**未取得**（官方站 bdd-data.berkeley.edu 与 Google Drive 均不通；待用户提供或授权）
-- 备选标注来源：OpenDataLab（opendatalab.com，可达，需注册 token）、
-  HuggingFace gated `bdd100k/bdd100k`（需账号 + 接受许可，经 hf-mirror）
+当前状态（2026-08-28）：
+- 开发子集：`data/bdd100k/images/dev/` 10,010 张唯一图片（来自 hf-mirror bitmind 镜像的有效部分；
+  该镜像的 100k 分卷已确认损坏，故仅此 1 万张可用，作 Phase 1 管线开发用）。
+- 全量图片 + 三任务标注：**由用户自行下载后拷入**（官方站/OpenDataLab，见 `docs/USER_DOWNLOADS.md`），
+  预期落到 `data/bdd100k/`（images/100k、images/10k、labels、segments、lanes）。
 
 ---
 
