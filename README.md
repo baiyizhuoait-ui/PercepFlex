@@ -63,6 +63,8 @@ trac/
 验证命令：
 ```bash
 ../gpu_env/bin/python scripts/smoke_baselines.py --device cuda   # baseline 导入/前向/参数/FLOPs
+../gpu_env/bin/python scripts/load_baseline_weights.py --device cuda  # 官方权重加载验证（B1-B3 全部通过）
+../gpu_env/bin/python scripts/verify_dataset.py   # 数据集完整性 + 三任务清单生成（data/bdd100k/splits/）
 ```
 
 ---
