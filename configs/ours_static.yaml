@@ -1,0 +1,13 @@
+# Ours: Static multi-task model (Phase 1 Step 5) — compact driving representation
+model:
+  encoder:
+    stem: 16
+    stages: [32, 64, 96, 128]   # C1..C4
+    blocks: [2, 2, 2]
+  representation:
+    z_channels: 64
+  detection:
+    nc: 1                        # matches YOLOP/TriLiteNet single-class protocol
+  segmentation:
+    hidden: 32
+input_size: [640, 640]

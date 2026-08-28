@@ -37,7 +37,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts"))
 sys.path.insert(0, os.path.join(ROOT, "baselines"))
 
 from datasets.bdd100k import BDD100KDataset  # noqa: E402
-from evaluation.metrics import evaluate_detection, evaluate_segmentation  # noqa: E402
+from evaluation.metrics import evaluate_detection, SegmentationMetric  # noqa: E402
 from evaluation.nms import non_max_suppression  # noqa: E402
 from profiling.benchmark import profile_model  # noqa: E402
 from load_baseline_weights import load_twinlitenet, load_twinlitenetplus, load_trilitenet  # noqa: E402
@@ -149,7 +149,8 @@ def main():
 
     # ---------------- eval loop ----------------
     det_preds, det_gts = [], []
-    da_preds, da_gts, lane_preds, lane_gts = [], [], [], []
+    da_metric = SegmentationMetric(2)   # incremental confusion matrices (O(1) memory)
+    lane_metric = SegmentationMetric(2)
     t_forward, t_total = 0.0, time.time()
     with torch.no_grad():
         for it, item in enumerate(loader):
@@ -171,21 +172,20 @@ def main():
                 det_gts[-1] = torch.cat([det_gts[-1][:, :2] - det_gts[-1][:, 2:] / 2,
                                          det_gts[-1][:, :2] + det_gts[-1][:, 2:] / 2], 1) if len(det_gts[-1]) else det_gts[-1]
 
-            # segmentation (crop pad, argmax over 2 channels)
+            # segmentation (crop pad, argmax over 2 channels), accumulate confusion matrix
             pad_w, pad_h = item["pad"][0].item(), item["pad"][1].item()
             nh, nw = item["content_size"][0].item(), item["content_size"][1].item()
             if da_logits is not None:
                 da_pred = da_logits[0].argmax(0)[pad_h:pad_h + nh, pad_w:pad_w + nw].cpu().numpy()
                 da_gt = item["da_mask"][0][0, pad_h:pad_h + nh, pad_w:pad_w + nw].numpy().astype(np.uint8)
-                da_preds.append(da_pred)
-                da_gts.append(da_gt)
+                da_metric.add_batch(da_pred, da_gt)
             if lane_logits is not None:
                 lane_pred = lane_logits[0].argmax(0)[pad_h:pad_h + nh, pad_w:pad_w + nw].cpu().numpy()
                 lane_gt = item["lane_mask"][0][0, pad_h:pad_h + nh, pad_w:pad_w + nw].numpy().astype(np.uint8)
-                lane_preds.append(lane_pred)
-                lane_gts.append(lane_gt)
-            if (it + 1) % 500 == 0:
-                print(f"  [{it+1}/{len(ds)}] fwd {t_forward/(it+1)*1e3:.1f}ms/img elapsed {time.time()-time.time():.0f}s")
+                lane_metric.add_batch(lane_pred, lane_gt)
+            if (it + 1) % 1000 == 0:
+                print(f"  [{it+1}/{len(ds)}] fwd {t_forward/(it+1)*1e3:.1f}ms/img "
+                      f"elapsed {time.time()-t_total:.0f}s", flush=True)
 
     print(f"[eval] {len(ds)} images, forward {t_forward/len(ds)*1e3:.1f}ms/img (CUDA-synced), "
           f"total {time.time()-t_total:.0f}s")
@@ -196,14 +196,15 @@ def main():
         m = evaluate_detection(det_preds, det_gts)
         metrics.update({"mAP50": round(m["mAP50"], 4), "mAP50_95": round(m["mAP50_95"], 4),
                         "det_n_gt": m["n_gt"], "det_n_pred": m["n_pred"]})
-    if da_preds:
-        m = evaluate_segmentation(da_preds, da_gts)
-        metrics.update({"da_pixel_acc": round(m["pixel_acc"], 4), "da_fg_iou": round(m["fg_iou"], 4),
-                        "da_mIoU": round(m["m_iou"], 4)})
-    if lane_preds:
-        m = evaluate_segmentation(lane_preds, lane_gts, lane=True)
-        metrics.update({"lane_pixel_acc": round(m["pixel_acc"], 4), "lane_fg_iou": round(m["fg_iou"], 4),
-                        "lane_mIoU": round(m["m_iou"], 4), "lane_line_acc": round(m["line_acc"], 4)})
+    if da_metric.conf.sum() > 0:
+        metrics.update({"da_pixel_acc": round(da_metric.pixel_accuracy(), 4),
+                        "da_fg_iou": round(da_metric.fg_iou(), 4),
+                        "da_mIoU": round(da_metric.m_iou(), 4)})
+    if lane_metric.conf.sum() > 0:
+        metrics.update({"lane_pixel_acc": round(lane_metric.pixel_accuracy(), 4),
+                        "lane_fg_iou": round(lane_metric.fg_iou(), 4),
+                        "lane_mIoU": round(lane_metric.m_iou(), 4),
+                        "lane_line_acc": round(lane_metric.line_accuracy(), 4)})
     if profile:
         metrics.update({"parameters": profile["parameters"], "flops": profile["flops"],
                         "model_size_mb": profile["model_size_mb"],
