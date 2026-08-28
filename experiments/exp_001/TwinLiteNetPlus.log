@@ -1,2 +1,4 @@
 /home/mycode/ai_study/gpu_env/lib/python3.12/site-packages/thop/vision/calc_func.py:53: UserWarning: This API is being deprecated
   warnings.warn("This API is being deprecated")
+[profile] params=0.033M flops=1.886G lat=5.46ms fps=183.1 mem=39.1MiB
+  [1000/10000] fwd 6.1ms/img elapsed 20s
