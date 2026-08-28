@@ -66,6 +66,24 @@ def build_yolop(device):
     return model.to(device)
 
 
+def build_ours(model_cls_name, weights, device):
+    """Build our model (StaticMultiTaskModel / AdaptiveMultiTaskModel) from config."""
+    import yaml
+    from models.static_model import StaticMultiTaskModel
+    from models.adaptive_model import AdaptiveMultiTaskModel
+    cfg_path = os.path.join(ROOT, "configs", "ours_static.yaml")
+    with open(cfg_path) as f:
+        cfg = yaml.safe_load(f)["model"]
+    cls = StaticMultiTaskModel if model_cls_name == "OursStatic" else AdaptiveMultiTaskModel
+    model = cls(cfg)
+    if weights:
+        sd = torch.load(weights, map_location="cpu", weights_only=False)
+        sd = sd.get("model_state", sd)
+        missing, unexpected = model.load_state_dict(sd, strict=False)
+        print(f"[ours] loaded {weights}: missing={len(missing)} unexpected={len(unexpected)}")
+    return model.to(device), "unit"
+
+
 def build(name, preset, device):
     if name == "YOLOP":
         return build_yolop(device), "imagenet"
@@ -75,15 +93,20 @@ def build(name, preset, device):
         return load_twinlitenetplus(preset or "nano", device), "unit"
     if name == "TriLiteNet":
         return load_trilitenet(preset or "tiny", device), "imagenet"
+    if name in ("OursStatic", "OursDynamic"):
+        return build_ours(name, preset, device)  # preset = weights path
     raise ValueError(name)
 
 
 def forward_outs(model, name, x):
     """Return (det_logits_or_None, da_logits_or_None, lane_logits_or_None)."""
     out = model(x)
-    if name == "YOLOP" or name == "TriLiteNet":
+    if name in ("YOLOP", "TriLiteNet"):
         det_tuple, da, lane = out
         det = det_tuple[0]  # (1, 25200, 6) decoded
+        return det, da, lane
+    if name in ("OursStatic", "OursDynamic"):
+        det, da, lane = out
         return det, da, lane
     # TwinLiteNet / TwinLiteNetPlus: (da, lane)
     da, lane = out
@@ -107,7 +130,7 @@ def crop_content(mask, item):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--baseline", required=True,
-                    choices=["YOLOP", "TwinLiteNet", "TwinLiteNetPlus", "TriLiteNet"])
+                    choices=["YOLOP", "TwinLiteNet", "TwinLiteNetPlus", "TriLiteNet", "OursStatic", "OursDynamic"])
     ap.add_argument("--preset", default=None, help="nano/small/medium/large (TLP) or tiny/small/base (TriLiteNet)")
     ap.add_argument("--split", default="tri_val")
     ap.add_argument("--num-images", type=int, default=0, help="0 = full split")
