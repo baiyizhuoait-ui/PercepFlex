@@ -1,0 +1,21 @@
+input_size:
+- 640
+- 640
+model:
+  detection:
+    nc: 1
+  encoder:
+    blocks:
+    - 2
+    - 3
+    - 3
+    stages:
+    - 64
+    - 128
+    - 192
+    - 256
+    stem: 32
+  representation:
+    z_channels: 128
+  segmentation:
+    hidden: 32
