@@ -32,21 +32,19 @@
 
 ## 0.2 数据现状（BDD100K）
 
-### 已获得
-- 开发子集 10,010 张唯一图片（已解压到 `trac/data/bdd100k/images/dev/`）：
-  来源 hf-mirror 的 bitmind/bdd100k-real，其中 `10k.zip` 与 `bdd100k_seg.zip` 均为 10,002 张 JPG 且
-  99.9% 重复（9990 张相同）——即该镜像只有约 1 万张有效图片。
-- 该镜像的 `100k_part01~05.zip` 全部损坏：全新完整下载（无断点续传）仍无法解压
-  （无 EOCD 中央目录），判断为上传方分卷错误/被截断，已删除，不再依赖。
+### 已获得（2026-08-28 用户提供，已整合）
+- **全量数据**：用户下载后拷入，已复制到 `trac/data/bdd100k/`：
+  images/100k（70k train + 10k val）、images/10k/test（2k，官方 10k，Phase 1 无需 test）、
+  labels/*.json（det，69,863 train + 10k val，2018 v1.0）、lanes/masks（70k+10k，100% 匹配）、
+  segments/masks（7k+1k，**与图片部分不匹配**——详见 `docs/DATASET.md`）。
+  三任务清单已生成于 `data/bdd100k/splits/`（tri_train 2,972 / tri_val 454）。
+- **全部官方权重**：TriLiteNet（nano→tiny / small / base）、TwinLiteNetPlus（nano/small/medium/large）
+  已复制到 `trac_data/weights/` 并验证可加载进仓库模型。
 
-### 未获得（用户已确认自行下载后拷入工作区）
-1. **全量图片**（images/100k/{train,val}、images/10k/test）
-2. **检测框标注**（bdd100k_labels_images_train/val.json）
-3. **可行驶区域标注**（segments/*.png）
-4. **车道线标注**（lanes/*.png）
-
-原因：官方站 bdd-data.berkeley.edu 与 Google Drive 在当前网络均不可达。
-用户选择「自己下载后拷进工作区」，目标结构与下载途径见 `docs/USER_DOWNLOADS.md`。
+### 未获得 / 已知限制
+- DA 掩码与图片集版本不匹配：仅 2,976（train）+ 454（val）张可用（`docs/DATASET.md`）。
+  论文最终数字如需完整 7k DA，需用户另下与图片版本匹配的 `bdd100k_drivable_2020.zip`。
+- images/10k/test 仅 2k/10k（Phase 1 用不到测试集，不阻塞）。
 
 ## 0.3 Phase 1 前需要用户做的事
 - [ ] **决策标注来源**（上节 1/2/3/4 选一；若选 1 或 2，请提供 token/确认注册）

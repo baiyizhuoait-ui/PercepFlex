@@ -1,8 +1,8 @@
-# 用户需要下载的东西（截至 Phase 0 结束）
+# 用户下载清单（已完成，2026-08-28）
 
-> 生成日期：2026-08-28。以下内容本机网络无法访问（官方站/Google Drive 不通），需要你用自己的网络下载后拷入工作区。
+> 状态：✅ 全部已由用户下载并提供，本机已完成整合与验证（数据→`trac/data/bdd100k/`，权重→`trac_data/weights/`）。以下为存档的原始指引。
 
-## 1. BDD100K 数据集（最重要）
+## 1. BDD100K 数据集 ✅ 已整合（见 `DATASET.md`）
 
 目标目录结构（放在 WSL 里，推荐 `/home/mycode/ai_study/trac/data/bdd100k/`；
 如果你从 Windows 拷入，可放 D 盘再告诉我路径，我用软链/拷贝接入）：
@@ -34,21 +34,21 @@ bdd100k/
 > 只有约 1 万张图片有效（我已解压为开发子集 `trac/data/bdd100k/images/dev/`，用于 Phase 1 管线开发；
 > 正式训练/评测需要你提供全量图片与标注）。
 
-## 2. TriLiteNet 官方权重（可选）
+## 2. TriLiteNet 官方权重 ✅ 已验证（nano→tiny/small/base）
 
 - 地址：https://drive.google.com/drive/folders/1wLZqemCxxzwiFeFUGY1zMaqcKoQLHFyK
 - 下载后放到：`/home/mycode/ai_study/trac_data/weights/trilitenet/`
 - 用途：可选——Phase 2 作 KD teacher、或校验我们复现的 TriLiteNet 指标范围。
   如果不提供，Phase 1 将从零训练 TriLiteNet（在统一数据/配置下对比反而更公平）。
 
-## 3. TwinLiteNetPlus 权重（small/medium/large，可选）
+## 3. TwinLiteNetPlus 权重 ✅ 已验证（nano/small/medium/large）
 
 - 地址：https://drive.google.com/drive/folders/1EqBzUw0b17aEumZmWYrGZmbx_XJqU-vz
 - 下载后放到：`/home/mycode/ai_study/trac_data/weights/twinlitenetplus/`
 - 说明：nano 档权重已从 HF 镜像获取并验证（`trac_data/weights/tlp_nano.safetensors`），
   small/medium/large 用于 Equal-Budget 对比的完整档位覆盖；缺档位则 Phase 1 从零训练补齐。
 
-## 4. 拷入后告诉我
+## 4. 后续
 
 - BDD100K 数据路径（若不在默认位置）
 - 权重文件是否已放好

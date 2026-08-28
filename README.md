@@ -73,8 +73,8 @@ trac/
 |----|------|------|------|----------|------------------------------|
 | B1 | YOLOP | Det+DA+Lane | ✓ | ✓ End-to-end.pth | ✓（gpu_env 导入正常；速度基准见 ../experiments/FINAL_REPORT.md）|
 | B2 | TwinLiteNet | DA+Lane | ✓ | ✓ pretrained/best.pth | ✓ 0.44M / 14.1G |
-| B2+ | TwinLiteNetPlus | DA+Lane | ✓ | nano ✓（HF 镜像）；small/medium/large 待获取 | ✓ nano 33K / 1.9G |
-| B3 | TriLiteNet | Det+DA+Lane | ✓ | ✗（Google Drive，网络不通，待用户/从头训练）| ✓ tiny 0.15M / 1.8G |
+| B2+ | TwinLiteNetPlus | DA+Lane | ✓ | ✓ nano/small/medium/large（用户提供，已验证可加载）| ✓ nano 33K / 1.9G |
+| B3 | TriLiteNet | Det+DA+Lane | ✓ | ✓ nano→tiny / small / base（用户提供，已验证可加载）| ✓ tiny 0.15M / 1.8G |
 | B4 | 轻量 CNN 三头 baseline | Det+DA+Lane | Phase 1 构建 | — | — |
 
 官方权重下载地址（需用户侧网络）：TriLiteNet:
@@ -95,11 +95,12 @@ data/bdd100k/
 └── labels/                 # bdd100k_labels_images_{train,val}.json（检测框）
 ```
 
-当前状态（2026-08-28）：
-- 开发子集：`data/bdd100k/images/dev/` 10,010 张唯一图片（来自 hf-mirror bitmind 镜像的有效部分；
-  该镜像的 100k 分卷已确认损坏，故仅此 1 万张可用，作 Phase 1 管线开发用）。
-- 全量图片 + 三任务标注：**由用户自行下载后拷入**（官方站/OpenDataLab，见 `docs/USER_DOWNLOADS.md`），
-  预期落到 `data/bdd100k/`（images/100k、images/10k、labels、segments、lanes）。
+当前状态（2026-08-28 整合完成）：
+- 全量数据已就位：`data/bdd100k/`（images/100k 70k+10k、images/10k/test 2k、labels/*.json、
+  lanes/masks 70k+10k、segments/masks 7k+1k——详见 `docs/DATASET.md`）。
+- ⚠️ DA 掩码版本与图片部分不匹配：可用 DA 为 2,976（train）+ 454（val）张；
+  `data/bdd100k/splits/` 已生成三任务清单（tri_train 2,972 / tri_val 454）。
+- `images/dev/`（10,010 张）保留作管线调试用，不参与官方协议训练。
 
 ---
 
