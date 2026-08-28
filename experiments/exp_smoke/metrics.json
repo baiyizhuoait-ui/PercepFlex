@@ -1,0 +1,23 @@
+{
+  "model": "TwinLiteNet",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "da_pixel_acc": 0.9729,
+  "da_fg_iou": 0.8571,
+  "da_mIoU": 0.9123,
+  "lane_pixel_acc": 0.9871,
+  "lane_fg_iou": 0.2254,
+  "lane_mIoU": 0.6062,
+  "lane_line_acc": 0.7142,
+  "parameters": 439633,
+  "flops": 14062777280.0,
+  "model_size_mb": 1.759,
+  "avg_latency_ms": 8.348,
+  "p50_latency_ms": 7.811,
+  "p95_latency_ms": 9.728,
+  "fps": 119.78,
+  "gpu_memory_mib": 402.9
+}

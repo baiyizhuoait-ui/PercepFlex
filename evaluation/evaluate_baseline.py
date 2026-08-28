@@ -1,0 +1,226 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Unified baseline evaluation (Phase 1, Step 3).
+
+Runs each baseline (official weights) on the BDD100K val split and reports the
+full metric set required by the taskbook: Parameters, FLOPs, Model Size,
+Detection mAP, DA mIoU, Lane IoU, latency (mean/P50/P95), FPS, GPU memory.
+
+Protocol (matches official light-model val pipelines):
+- input: 640x640 letterbox (pad cropped for segmentation metrics)
+- detection: single-class ('car') mAP@0.5 and mAP@0.5:0.95, NMS conf=0.001/iou=0.6
+- DA / Lane: binary metrics (pixel Acc, foreground IoU, 2-class mIoU;
+  lane also lineAccuracy=(sens+spec)/2)
+- normalization: ImageNet mean/std for YOLOP & TriLiteNet, unit for
+  TwinLiteNet / TwinLiteNetPlus (their official preprocessing)
+
+Usage:
+    gpu_env/bin/python evaluation/evaluate_baseline.py --baseline TriLiteNet --preset tiny
+    gpu_env/bin/python evaluation/evaluate_baseline.py --baseline YOLOP
+    gpu_env/bin/python evaluation/evaluate_baseline.py --baseline TwinLiteNetPlus --preset large
+"""
+import argparse
+import json
+import os
+import sys
+import time
+
+import cv2
+import numpy as np
+import torch
+from torch.utils.data import DataLoader
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, "scripts"))
+sys.path.insert(0, os.path.join(ROOT, "baselines"))
+
+from datasets.bdd100k import BDD100KDataset  # noqa: E402
+from evaluation.metrics import evaluate_detection, evaluate_segmentation  # noqa: E402
+from evaluation.nms import non_max_suppression  # noqa: E402
+from profiling.benchmark import profile_model  # noqa: E402
+from load_baseline_weights import load_twinlitenet, load_twinlitenetplus, load_trilitenet  # noqa: E402
+
+IMAGENET_MEAN = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1)
+IMAGENET_STD = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1)
+
+
+# ---------------------------------------------------------------------------
+# Model builders
+# ---------------------------------------------------------------------------
+def build_yolop(device):
+    sys.path.insert(0, os.path.join(ROOT, "..", "YOLOP"))
+    from lib.config import cfg  # noqa: E402
+    from lib.models import get_net  # noqa: E402
+
+    cfg.defrost()
+    cfg.MODEL.NAME = "YOLOP"
+    cfg.MODEL.IMAGE_SIZE = [640, 640]
+    cfg.freeze()
+    model = get_net(cfg)
+    sd = torch.load(os.path.join(ROOT, "..", "YOLOP", "weights", "End-to-end.pth"),
+                    map_location="cpu", weights_only=False)
+    sd = sd.get("state_dict", sd)
+    model.load_state_dict(sd)
+    return model.to(device)
+
+
+def build(name, preset, device):
+    if name == "YOLOP":
+        return build_yolop(device), "imagenet"
+    if name == "TwinLiteNet":
+        return load_twinlitenet(device), "unit"
+    if name == "TwinLiteNetPlus":
+        return load_twinlitenetplus(preset or "nano", device), "unit"
+    if name == "TriLiteNet":
+        return load_trilitenet(preset or "tiny", device), "imagenet"
+    raise ValueError(name)
+
+
+def forward_outs(model, name, x):
+    """Return (det_logits_or_None, da_logits_or_None, lane_logits_or_None)."""
+    out = model(x)
+    if name == "YOLOP" or name == "TriLiteNet":
+        det_tuple, da, lane = out
+        det = det_tuple[0]  # (1, 25200, 6) decoded
+        return det, da, lane
+    # TwinLiteNet / TwinLiteNetPlus: (da, lane)
+    da, lane = out
+    return None, da, lane
+
+
+def preprocess(img, norm):
+    x = img.unsqueeze(0).to("cuda" if torch.cuda.is_available() else "cpu")
+    if norm == "imagenet":
+        x = (x - IMAGENET_MEAN.to(x.device)) / IMAGENET_STD.to(x.device)
+    return x
+
+
+def crop_content(mask, item):
+    """Crop letterbox pad from a (1,H,W) mask using item meta."""
+    pad_w, pad_h = item["pad"]
+    nh, nw = item["content_size"]
+    return mask[:, pad_h:pad_h + nh, pad_w:pad_w + nw]
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--baseline", required=True,
+                    choices=["YOLOP", "TwinLiteNet", "TwinLiteNetPlus", "TriLiteNet"])
+    ap.add_argument("--preset", default=None, help="nano/small/medium/large (TLP) or tiny/small/base (TriLiteNet)")
+    ap.add_argument("--split", default="tri_val")
+    ap.add_argument("--num-images", type=int, default=0, help="0 = full split")
+    ap.add_argument("--data-root", default=os.path.join(ROOT, "data", "bdd100k"))
+    ap.add_argument("--outdir", default=None)
+    ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--conf", type=float, default=0.001)
+    ap.add_argument("--iou", type=float, default=0.6)
+    ap.add_argument("--no-profile", action="store_true")
+    args = ap.parse_args()
+
+    device = torch.device(args.device)
+    model, norm = build(args.baseline, args.preset, device)
+    model.eval()
+    name = f"{args.baseline}" + (f"-{args.preset}" if args.preset else "")
+
+    # ---------------- profiling ----------------
+    profile = None
+    if not args.no_profile:
+        try:
+            profile = profile_model(model, device="cuda" if device.type == "cuda" else "cpu")
+            print(f"[profile] params={profile['parameters']/1e6:.3f}M "
+                  f"flops={profile['flops']/1e9:.3f}G "
+                  f"lat={profile['mean_ms']:.2f}ms fps={profile['fps']:.1f} "
+                  f"mem={profile['peak_gpu_memory_mib']}MiB")
+        except Exception as e:  # noqa: BLE001
+            print(f"[profile] failed: {e}")
+
+    # ---------------- dataset ----------------
+    ds = BDD100KDataset(args.data_root, split=args.split, with_det=(name != "TwinLiteNet"
+                                                                    and not name.startswith("TwinLiteNetPlus")),
+                        with_da=True, with_lane=True)
+    if args.num_images:
+        ds.names = ds.names[:args.num_images]
+        if getattr(ds, "_det_by_name", None):
+            keep = set(ds.names)
+            ds._det_by_name = {k: v for k, v in ds._det_by_name.items() if k in keep}
+    loader = DataLoader(ds, batch_size=1, shuffle=False, num_workers=0)
+
+    # ---------------- eval loop ----------------
+    det_preds, det_gts = [], []
+    da_preds, da_gts, lane_preds, lane_gts = [], [], [], []
+    t_forward, t_total = 0.0, time.time()
+    with torch.no_grad():
+        for it, item in enumerate(loader):
+            img = item["image"][0]
+            x = preprocess(img, norm)
+            t0 = time.time()
+            det_logits, da_logits, lane_logits = forward_outs(model, args.baseline, x)
+            if device.type == "cuda":
+                torch.cuda.synchronize()
+            t_forward += time.time() - t0
+
+            if det_logits is not None:
+                dets = non_max_suppression(det_logits, conf_thres=args.conf, iou_thres=args.iou)[0]
+                if len(dets):
+                    det_preds.append((dets[:, :4].cpu(), dets[:, 4].cpu(), dets[:, 5].long().cpu()))
+                else:
+                    det_preds.append(None)
+                det_gts.append(item["det_targets"][0][:, 1:] * 640)  # xywh norm -> xyxy px
+                det_gts[-1] = torch.cat([det_gts[-1][:, :2] - det_gts[-1][:, 2:] / 2,
+                                         det_gts[-1][:, :2] + det_gts[-1][:, 2:] / 2], 1) if len(det_gts[-1]) else det_gts[-1]
+
+            # segmentation (crop pad, argmax over 2 channels)
+            pad_w, pad_h = item["pad"][0].item(), item["pad"][1].item()
+            nh, nw = item["content_size"][0].item(), item["content_size"][1].item()
+            if da_logits is not None:
+                da_pred = da_logits[0].argmax(0)[pad_h:pad_h + nh, pad_w:pad_w + nw].cpu().numpy()
+                da_gt = item["da_mask"][0][0, pad_h:pad_h + nh, pad_w:pad_w + nw].numpy().astype(np.uint8)
+                da_preds.append(da_pred)
+                da_gts.append(da_gt)
+            if lane_logits is not None:
+                lane_pred = lane_logits[0].argmax(0)[pad_h:pad_h + nh, pad_w:pad_w + nw].cpu().numpy()
+                lane_gt = item["lane_mask"][0][0, pad_h:pad_h + nh, pad_w:pad_w + nw].numpy().astype(np.uint8)
+                lane_preds.append(lane_pred)
+                lane_gts.append(lane_gt)
+            if (it + 1) % 500 == 0:
+                print(f"  [{it+1}/{len(ds)}] fwd {t_forward/(it+1)*1e3:.1f}ms/img elapsed {time.time()-time.time():.0f}s")
+
+    print(f"[eval] {len(ds)} images, forward {t_forward/len(ds)*1e3:.1f}ms/img (CUDA-synced), "
+          f"total {time.time()-t_total:.0f}s")
+
+    # ---------------- metrics ----------------
+    metrics = {"model": name, "split": args.split, "input_size": [640, 640]}
+    if det_preds:
+        m = evaluate_detection(det_preds, det_gts)
+        metrics.update({"mAP50": round(m["mAP50"], 4), "mAP50_95": round(m["mAP50_95"], 4),
+                        "det_n_gt": m["n_gt"], "det_n_pred": m["n_pred"]})
+    if da_preds:
+        m = evaluate_segmentation(da_preds, da_gts)
+        metrics.update({"da_pixel_acc": round(m["pixel_acc"], 4), "da_fg_iou": round(m["fg_iou"], 4),
+                        "da_mIoU": round(m["m_iou"], 4)})
+    if lane_preds:
+        m = evaluate_segmentation(lane_preds, lane_gts, lane=True)
+        metrics.update({"lane_pixel_acc": round(m["pixel_acc"], 4), "lane_fg_iou": round(m["fg_iou"], 4),
+                        "lane_mIoU": round(m["m_iou"], 4), "lane_line_acc": round(m["line_acc"], 4)})
+    if profile:
+        metrics.update({"parameters": profile["parameters"], "flops": profile["flops"],
+                        "model_size_mb": profile["model_size_mb"],
+                        "avg_latency_ms": round(profile["mean_ms"], 3),
+                        "p50_latency_ms": round(profile["p50_ms"], 3),
+                        "p95_latency_ms": round(profile["p95_ms"], 3),
+                        "fps": round(profile["fps"], 2),
+                        "gpu_memory_mib": profile["peak_gpu_memory_mib"]})
+
+    print(json.dumps(metrics, indent=2))
+
+    if args.outdir:
+        os.makedirs(args.outdir, exist_ok=True)
+        with open(os.path.join(args.outdir, "metrics.json"), "w") as f:
+            json.dump(metrics, f, indent=2)
+        print(f"saved -> {args.outdir}/metrics.json")
+
+
+if __name__ == "__main__":
+    main()
