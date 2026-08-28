@@ -10,13 +10,18 @@ mkdir -p "$OUT"
 
 run() {
   local name="$1"; shift
-  echo "$(date +%H:%M:%S) START $name" >> "$OUT/status.txt"
-  $PY evaluation/evaluate_baseline.py --baseline "$name" "$@" --outdir "$OUT/$name" \
-      > "$OUT/$name.log" 2>&1
-  if [ -f "$OUT/$name/metrics.json" ]; then
-    echo "$(date +%H:%M:%S) DONE  $name" >> "$OUT/status.txt"
+  local tag="$name"
+  # fold "--preset X" into the tag/outdir so presets don't overwrite each other
+  if [ "$1" = "--preset" ] && [ -n "$2" ]; then
+    tag="${name}-$2"; shift 2
+  fi
+  echo "$(date +%H:%M:%S) START $tag" >> "$OUT/status.txt"
+  $PY evaluation/evaluate_baseline.py --baseline "$name" "$@" --outdir "$OUT/$tag" \
+      > "$OUT/$tag.log" 2>&1
+  if [ -f "$OUT/$tag/metrics.json" ]; then
+    echo "$(date +%H:%M:%S) DONE  $tag" >> "$OUT/status.txt"
   else
-    echo "$(date +%H:%M:%S) FAIL  $name (see $name.log)" >> "$OUT/status.txt"
+    echo "$(date +%H:%M:%S) FAIL  $tag (see $tag.log)" >> "$OUT/status.txt"
   fi
 }
 
