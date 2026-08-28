@@ -42,7 +42,7 @@ class DetectHead(nn.Module):
             m.bias = torch.nn.Parameter(b.view(-1))
 
     def forward(self, xs):
-        z = []
+        z, raw = [], []
         for i, x in enumerate(xs):
             x = self.m[i](x)
             bs, _, ny, nx = x.shape
@@ -56,7 +56,9 @@ class DetectHead(nn.Module):
                 y[..., 2:4] = (y[..., 2:4] * 2) ** 2 * self.anchor_grid[i].to(x.device)
                 z.append(y.view(bs, -1, self.no))
             else:
-                z.append(x.view(bs, -1, self.no))
+                raw.append(x)  # (B, na, ny, nx, no) for the loss
+        if self.training:
+            return raw
         return torch.cat(z, 1)
 
     @staticmethod

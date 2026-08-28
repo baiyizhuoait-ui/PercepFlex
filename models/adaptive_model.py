@@ -73,7 +73,8 @@ class AdaptiveMultiTaskModel(nn.Module):
                      is_det=False):
         """Run `head` per unique assignment; outputs reordered to batch order.
 
-        feats: list of per-sample tensors (B, ...) or a single tensor.
+        In training the det head returns a list of per-scale raw tensors;
+        those are interleaved back into per-sample lists.
         """
         b = assignments.shape[0]
         if b == 1:
@@ -82,23 +83,29 @@ class AdaptiveMultiTaskModel(nn.Module):
                 x = [t[0:1] for t in feats]
             else:
                 x = feats[0:1]
-            out = head(x) if is_det else head(x, target_hw)
-            return out
+            return head(x) if is_det else head(x, target_hw)
 
         out = [None] * b
         for a in assignments.unique():
             idx = (assignments == a).nonzero(as_tuple=False).flatten()
             _set_head_width(head, widths[idx[0]].item())
             if is_det:
-                sub = [[t[i] for i in idx.tolist()] for t in feats]
-                # stack per-scale
                 sub = [torch.stack([t[i] for i in idx.tolist()]) for t in feats]
                 o = head(sub)
+                if isinstance(o, (list, tuple)):  # training: per-scale raw
+                    for j, i in enumerate(idx.tolist()):
+                        out[i] = [o_l[j:j + 1] for o_l in o]
+                else:                              # eval: (B, 25200, no)
+                    for j, i in enumerate(idx.tolist()):
+                        out[i] = o[j]
             else:
                 sub = torch.stack([feats[i] for i in idx.tolist()])
                 o = head(sub, target_hw)
-            for j, i in enumerate(idx.tolist()):
-                out[i] = o[j]
+                for j, i in enumerate(idx.tolist()):
+                    out[i] = o[j]
+        if isinstance(out[0], list):  # training det: concat per scale
+            return [torch.cat([out[i][s] for i in range(b)], 0)
+                    for s in range(len(out[0]))]
         return torch.stack(out)
 
     def set_width(self, w):
