@@ -243,6 +243,8 @@ def main():
 
     print(f"[eval] {len(ds)} images, forward {t_forward/len(ds)*1e3:.1f}ms/img (CUDA-synced), "
           f"total {time.time()-t_total:.0f}s")
+    metrics["eval_fwd_ms"] = round(t_forward / max(len(ds), 1) * 1e3, 3)
+    metrics["eval_fps"] = round(1000.0 / (t_forward / max(len(ds), 1) * 1e3), 2)
 
     # ---------------- metrics ----------------
     metrics = {"model": name, "split": args.split, "input_size": [640, 640]}
