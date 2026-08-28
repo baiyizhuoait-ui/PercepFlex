@@ -1,0 +1,25 @@
+model:
+  encoder: {stem: 16, stages: [32, 64, 96, 128], blocks: [2, 2, 2]}
+  representation: {z_channels: 64}
+  detection: {nc: 1}
+  segmentation: {hidden: 32}
+  budgets: [0.25, 0.5, 1.0]
+  router: {type: difficulty, hidden: 64}
+train:
+  stage: D
+  train_split: tri_train
+  batch_size: 16
+  num_workers: 2
+  epochs: 1
+  lr: 5e-4
+  weight_decay: 5e-4
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lambda_budget: 1.0
+  lambda_diff: 2.0
+  budget_target: 0.5
+  budget_mode: NONE
+  freeze_encoder: false
+  freeze_heads: false
+data:
+  root: data/bdd100k

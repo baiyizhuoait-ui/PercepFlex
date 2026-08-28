@@ -20,6 +20,7 @@ import torch.nn as nn
 from models.encoder.light_encoder import LightEncoder
 from models.representation.compact_z import CompactRepresentation
 from models.router.task_resource_router import TaskResourceRouter
+from models.router.difficulty_router import DifficultyRouter
 from models.heads.dynamic_seg_head import DynamicSegHead
 from models.heads.dynamic_det_head import DynamicDetHead
 
@@ -40,10 +41,19 @@ class AdaptiveMultiTaskModel(nn.Module):
         zc = self.representation.z_channels
         det_cfg = model_cfg.get("detection", {})
         self.budgets = tuple(model_cfg.get("budgets", (0.25, 0.5, 1.0)))
-        self.router = TaskResourceRouter(
-            zc, budgets=self.budgets,
-            hidden=model_cfg.get("router", {}).get("hidden", 64),
-            shared=model_cfg.get("router", {}).get("shared", False))
+        router_cfg = model_cfg.get("router", {})
+        if router_cfg.get("type", "task") == "difficulty":
+            feat_dims = sum(2 * c for c in enc_cfg["stages"][1:])  # per-scale mean+std
+            self.router = DifficultyRouter(
+                zc, feat_dims, budgets=self.budgets,
+                hidden=router_cfg.get("hidden", 64),
+                shared=router_cfg.get("shared", False))
+        else:
+            self.router = TaskResourceRouter(
+                zc, budgets=self.budgets,
+                hidden=router_cfg.get("hidden", 64),
+                shared=router_cfg.get("shared", False))
+        self.router_type = router_cfg.get("type", "task")
         self.det_head = DynamicDetHead(
             enc_cfg["stages"][1:], nc=det_cfg.get("nc", 1),
             anchors=det_cfg.get("anchors"))
@@ -69,8 +79,16 @@ class AdaptiveMultiTaskModel(nn.Module):
             elif hasattr(m, "width"):
                 m.width = w
 
+    def _extra_feats(self, feats, z):
+        """Multi-scale mean/std statistics (difficulty signal for the router)."""
+        parts = []
+        for t in feats:
+            parts.append(t.mean(dim=(2, 3)))
+            parts.append(t.std(dim=(2, 3)))
+        return torch.cat(parts, 1)
+
     def forward(self, x, budget_prior=None, hard=None, return_routing=False,
-                force_widths=None, soft=False):
+                force_widths=None, soft=False, ref_width=0.5, return_ref=False):
         """force_widths: (B,3) or (3,) tensor of widths to use instead of router
         output (used for static-width evaluation of the same model).
 
@@ -79,16 +97,20 @@ class AdaptiveMultiTaskModel(nn.Module):
         smooth gradients from every width (fixes the hard-STE blindness: the
         router sees how each width contributes to the loss, not just the
         sampled one). Eval always uses the discrete argmax path.
+
+        return_ref=True (training, difficulty router): also run the heads at a
+        reference width and return (ref_det, ref_da, ref_lane) so the loss can
+        supervise the router's difficulty predictions.
         """
         feats = self.encoder(x)
         z = self.representation(feats)["z"]
-        routing = self.router(z, budget_prior=budget_prior, hard=hard)
+        extra = self._extra_feats(feats, z) if self.router_type == "difficulty" else None
+        routing = self.router(z, extra_feats=extra, budget_prior=budget_prior, hard=hard)
         if force_widths is not None:
             fw = force_widths.to(x.device)
             if fw.dim() == 1:
                 fw = fw.unsqueeze(0).expand(x.shape[0], -1)
             budgets = self.router.budgets.to(x.device)
-            # map forced widths to nearest budget indices so batching/grouping works
             assigns = torch.stack([
                 (fw[:, t].unsqueeze(1) - budgets.unsqueeze(0)).abs().argmin(1)
                 for t in range(3)], 1)
@@ -96,17 +118,25 @@ class AdaptiveMultiTaskModel(nn.Module):
             routing["widths"] = fw.to(x.device)
             routing["assignments"] = assigns
 
+        ref = None
+        if return_ref and self.training:
+            self._set_width_fast(self.det_head, ref_width)
+            self._set_width_fast(self.da_head, ref_width)
+            self._set_width_fast(self.lane_head, ref_width)
+            ref = (self.det_head([f for f in feats]),
+                   self.da_head(z, x.shape[2:]), self.lane_head(z, x.shape[2:]))
+
         if soft and self.training:
             probs = routing["probs"]  # (B, 3, K)
             det = self._soft_mix(self.det_head, feats, probs[:, 0], is_det=True)
             da = self._soft_mix(self.da_head, z, probs[:, 1], target_hw=x.shape[2:])
             lane = self._soft_mix(self.lane_head, z, probs[:, 2], target_hw=x.shape[2:])
             if return_routing:
-                return det, da, lane, routing
-            return det, da, lane
+                return det, da, lane, routing, ref
+            return det, da, lane, ref
 
-        widths = routing["widths"]           # (B, 3): det, da, lane
-        assignments = routing["assignments"]  # (B, 3)
+        widths = routing["widths"]
+        assignments = routing["assignments"]
 
         det = self._run_grouped(self.det_head, feats, widths[:, 0], assignments[:, 0],
                                 n_out=1, is_det=True)
@@ -115,6 +145,10 @@ class AdaptiveMultiTaskModel(nn.Module):
         lane = self._run_grouped(self.lane_head, z, widths[:, 2], assignments[:, 2],
                                  n_out=2, target_hw=x.shape[2:])
 
+        if return_ref and self.training:
+            if return_routing:
+                return det, da, lane, routing, ref
+            return det, da, lane, ref
         if return_routing:
             return det, da, lane, routing
         return det, da, lane

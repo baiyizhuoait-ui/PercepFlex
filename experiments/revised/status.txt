@@ -1,1 +1,7 @@
 06:13:53 STAGE U (uniform-width heads)
+06:28:52 U done
+06:28:52 STAGE C (router on frozen heads, soft)
+06:42:03 C done
+06:42:03 STAGE D (joint soft, budget-aware)
+07:04:06 D done
+07:04:06 REVISED PIPELINE COMPLETE

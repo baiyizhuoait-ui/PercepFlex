@@ -35,10 +35,13 @@ class MultiTaskLoss(nn.Module):
         self.width_penalty = width_penalty
 
     def forward(self, det_preds, da_logits, lane_logits,
-                det_targets, da_mask, lane_mask, routing, img_size=640):
+                det_targets, da_mask, lane_mask, routing, img_size=640,
+                ref=None, lambda_diff=0.0):
         """
         det_preds: list of per-scale raw (train mode) or None
         routing: router output dict with 'probs' (B,3,K)
+        ref: (ref_det, ref_da, ref_lane) at a reference width — difficulty targets
+        lambda_diff: weight of the difficulty-supervision loss (DifficultyRouter)
         """
         losses = {}
         if det_preds is not None:
@@ -54,23 +57,33 @@ class MultiTaskLoss(nn.Module):
         l_task = l_det + self.lambda_da * l_da + self.lambda_lane * l_lane
         losses["task"] = l_task
 
+        # ---- difficulty supervision (DifficultyRouter) ----
+        l_diff = torch.zeros(1, device=da_logits.device).squeeze()
+        if ref is not None and routing is not None and "diff_pred" in routing and lambda_diff > 0:
+            ref_det, ref_da, ref_lane = ref
+            with torch.no_grad():
+                l_det_r = self.det_loss(ref_det, det_targets, img_size)[0].detach() \
+                    if ref_det is not None else l_det.detach()
+                tgt = torch.stack([l_det_r,
+                                   seg_ce_loss(ref_da, da_mask).detach(),
+                                   seg_ce_loss(ref_lane, lane_mask).detach()])
+                tgt = torch.log(tgt.clamp(min=1e-6))          # (3,)
+            l_diff = F.mse_loss(routing["diff_pred"], tgt.unsqueeze(0).expand_as(routing["diff_pred"]))
+        losses["diff"] = l_diff
+
         # ---- budget loss ----
         l_budget = torch.zeros(1, device=da_logits.device).squeeze()
         if routing is not None and self.lambda_budget > 0:
             probs = routing["probs"]                       # (B, 3, K)
-            budgets = routing["one_hot"].new_tensor([0.25, 0.5, 1.0] if False else None) if False else None
-            # expected width per task from soft probs
             width_vec = torch.linspace(0.25, 1.0, probs.shape[-1], device=probs.device)
             exp_width = (probs * width_vec).sum(-1)        # (B, 3)
             if self.budget_type == "expected_width":
                 if self.budget_target is not None:
-                    # push mean expected width toward target (compute envelope)
                     l_budget = (exp_width.mean() - self.budget_target).abs() * self.width_penalty
                 else:
-                    # entropy regularization: encourage decisive routing
                     l_budget = -((probs + 1e-8).log() * probs).sum(-1).mean()
         losses["budget"] = l_budget
 
-        total = l_task + self.lambda_budget * l_budget
+        total = l_task + self.lambda_budget * l_budget + lambda_diff * l_diff
         losses["total"] = total
         return total, losses

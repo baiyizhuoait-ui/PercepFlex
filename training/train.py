@@ -72,11 +72,16 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
                 from models.router.task_resource_router import TaskResourceRouter
                 prior = TaskResourceRouter.budget_prior_from_mode(
                     cfg["train"]["budget_mode"], len(model.budgets), device=device)
-            det, da, lane, routing = model(img, budget_prior=prior, hard=False,
-                                           soft=True, return_routing=True)
+            diff_mode = cfg["model"].get("router", {}).get("type") == "difficulty"
+            det, da, lane, routing, ref = model(img, budget_prior=prior, hard=False,
+                                                soft=True, return_routing=True,
+                                                return_ref=diff_mode)
+            if not diff_mode:
+                ref = None
 
         total, losses = loss_fn(det, da, lane, det_t, da_m, lane_m, routing,
-                                img_size=cfg["model"].get("input_size", [640, 640])[0])
+                                img_size=cfg["model"].get("input_size", [640, 640])[0],
+                                ref=ref, lambda_diff=float(cfg["train"].get("lambda_diff", 0.0)))
         total.backward()
         nn.utils.clip_grad_norm_(model.parameters(), 10.0)
         opt.step()
@@ -125,9 +130,13 @@ def main():
     if args.init:
         ckpt = torch.load(args.init, map_location=device, weights_only=False)
         sd = ckpt.get("model_state", ckpt)
-        missing, unexpected = model.load_state_dict(sd, strict=False)
-        print(f"[train] init from {args.init}: missing={len(missing)} unexpected={len(unexpected)}",
-              flush=True)
+        # keep only keys with matching shapes (skip e.g. a different router type)
+        cur = model.state_dict()
+        compat = {k: v for k, v in sd.items()
+                  if k in cur and cur[k].shape == v.shape}
+        missing, unexpected = model.load_state_dict(compat, strict=False)
+        print(f"[train] init from {args.init}: loaded {len(compat)}/{len(sd)} keys "
+              f"missing={len(missing)} unexpected={len(unexpected)}", flush=True)
     n_params = sum(p.numel() for p in model.parameters())
     print(f"[train] stage={stage} adaptive={adaptive} params={n_params/1e6:.3f}M", flush=True)
 
