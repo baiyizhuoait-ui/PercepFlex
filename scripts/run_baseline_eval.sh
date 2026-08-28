@@ -12,7 +12,7 @@ run() {
   local name="$1"; shift
   local tag="$name"
   # fold "--preset X" into the tag/outdir so presets don't overwrite each other
-  if [ "$1" = "--preset" ] && [ -n "$2" ]; then
+  if [ "${1:-}" = "--preset" ] && [ -n "${2:-}" ]; then
     tag="${name}-$2"; shift 2
   fi
   echo "$(date +%H:%M:%S) START $tag" >> "$OUT/status.txt"

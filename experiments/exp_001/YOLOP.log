@@ -1,0 +1,4 @@
+/home/mycode/ai_study/gpu_env/lib/python3.12/site-packages/torch/functional.py:505: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:4381.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+[profile] params=7.941M flops=31.281G lat=14.59ms fps=68.5 mem=106.2MiB
+  [1000/10000] fwd 11.4ms/img elapsed 25s

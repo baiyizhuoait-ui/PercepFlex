@@ -143,6 +143,9 @@ def main():
     ap.add_argument("--alloc-stats", action="store_true")
     ap.add_argument("--force-widths", default=None,
                     help="comma widths det,da,lane e.g. 0.25,0.25,0.25 (OursDynamic)")
+    ap.add_argument("--router-mode", default="learned",
+                    choices=["learned", "random", "fixed"],
+                    help="routing policy for OursDynamic (Exp3)")
     args = ap.parse_args()
 
     device = torch.device(args.device)
@@ -188,6 +191,13 @@ def main():
                 fw = None
                 if args.force_widths:
                     fw = torch.tensor([float(v) for v in args.force_widths.split(",")])
+                elif args.router_mode == "random":
+                    # Exp3: random per-frame task-wise allocation (uniform over budgets)
+                    budgets = torch.tensor([0.25, 0.5, 1.0])
+                    idx = torch.randint(0, 3, (1, 3))
+                    fw = budgets[idx].squeeze(0)
+                elif args.router_mode == "fixed":
+                    fw = torch.tensor([0.5, 0.5, 0.5])  # mid budget, no routing
                 det_logits, da_logits, lane_logits, routing = \
                     model(x, hard=True, return_routing=True, force_widths=fw)
                 if args.alloc_stats:
