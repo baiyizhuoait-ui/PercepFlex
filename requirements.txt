@@ -1,0 +1,32 @@
+# TRAC project dependencies — install into ../gpu_env (torch 2.11.0+cu130)
+# Baseline repos (TwinLiteNet/TwinLiteNetPlus/TriLiteNet) run on the same env.
+# NOTE: their pinned requirements (torch==1.8.0 etc.) are NOT installable on
+# Python 3.12 + Blackwell (sm_120); torch 2.11.0+cu130 is verified working
+# (see ../experiments/env_setup_summary.json for the same decision on YOLOP family).
+
+# Core
+torch==2.11.0+cu130
+torchvision==0.26.0+cu130
+numpy
+opencv-python
+
+# Training / data
+albumentations
+timm
+tqdm
+pandas
+scipy
+scikit-learn
+Pillow
+imageio
+prefetch_generator
+yacs
+
+# Profiling / analysis
+thop
+ptflops
+
+# Logging / viz
+tensorboardX
+matplotlib
+seaborn

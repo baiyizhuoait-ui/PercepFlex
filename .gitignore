@@ -1,0 +1,29 @@
+# TRAC project ignores
+
+# Data (large)
+data/
+../trac_data/
+
+# Experiments outputs (checkpoint/metrics kept under experiments/exp_XXX/ are
+# large; keep config.yaml + metrics.json tracked, ignore weights/logs)
+experiments/*/checkpoint.pt
+experiments/*/training_log.txt
+experiments/*/*.csv
+
+# Baseline repos keep their own .git; ignore their weight files
+baselines/*/pretrained/
+baselines/*/weights/
+*.pth
+*.pt
+*.onnx
+*.safetensors
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
