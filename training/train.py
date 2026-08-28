@@ -97,6 +97,7 @@ def main():
     ap.add_argument("--config", required=True)
     ap.add_argument("--num-images", type=int, default=0, help="0 = full split")
     ap.add_argument("--epochs", type=int, default=0, help="override epochs")
+    ap.add_argument("--init", default=None, help="checkpoint to initialize weights from")
     ap.add_argument("--outdir", default=None)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
@@ -114,6 +115,12 @@ def main():
 
     device = torch.device(args.device)
     model = build_model(cfg, adaptive).to(device)
+    if args.init:
+        ckpt = torch.load(args.init, map_location=device, weights_only=False)
+        sd = ckpt.get("model_state", ckpt)
+        missing, unexpected = model.load_state_dict(sd, strict=False)
+        print(f"[train] init from {args.init}: missing={len(missing)} unexpected={len(unexpected)}",
+              flush=True)
     n_params = sum(p.numel() for p in model.parameters())
     print(f"[train] stage={stage} adaptive={adaptive} params={n_params/1e6:.3f}M", flush=True)
 

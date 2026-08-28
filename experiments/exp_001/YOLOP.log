@@ -10,3 +10,33 @@
   [7000/10000] fwd 13.3ms/img elapsed 245s
   [8000/10000] fwd 13.3ms/img elapsed 282s
   [9000/10000] fwd 13.4ms/img elapsed 317s
+  [10000/10000] fwd 13.3ms/img elapsed 350s
+[eval] 10000 images, forward 13.3ms/img (CUDA-synced), total 350s
+{
+  "model": "YOLOP",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "mAP50": 0.7657,
+  "mAP50_95": 0.4406,
+  "det_n_gt": 108363,
+  "det_n_pred": 1110556,
+  "da_pixel_acc": 0.9727,
+  "da_fg_iou": 0.8556,
+  "da_mIoU": 0.9115,
+  "lane_pixel_acc": 0.9831,
+  "lane_fg_iou": 0.2247,
+  "lane_mIoU": 0.6038,
+  "lane_line_acc": 0.7896,
+  "parameters": 7940846,
+  "flops": 31281152000.0,
+  "model_size_mb": 31.763,
+  "avg_latency_ms": 11.891,
+  "p50_latency_ms": 9.908,
+  "p95_latency_ms": 25.073,
+  "fps": 84.1,
+  "gpu_memory_mib": 106.2
+}
+saved -> experiments/exp_001/YOLOP/metrics.json

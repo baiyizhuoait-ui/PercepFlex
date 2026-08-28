@@ -51,10 +51,25 @@ class AdaptiveMultiTaskModel(nn.Module):
         self.da_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
         self.lane_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
 
-    def forward(self, x, budget_prior=None, hard=None, return_routing=False):
+    def forward(self, x, budget_prior=None, hard=None, return_routing=False,
+                force_widths=None):
+        """force_widths: (B,3) or (3,) tensor of widths to use instead of router
+        output (used for static-width evaluation of the same model)."""
         feats = self.encoder(x)
         z = self.representation(feats)["z"]
         routing = self.router(z, budget_prior=budget_prior, hard=hard)
+        if force_widths is not None:
+            fw = force_widths.to(x.device)
+            if fw.dim() == 1:
+                fw = fw.unsqueeze(0).expand(x.shape[0], -1)
+            budgets = self.router.budgets.to(x.device)
+            # map forced widths to nearest budget indices so batching/grouping works
+            assigns = torch.stack([
+                (fw[:, t].unsqueeze(1) - budgets.unsqueeze(0)).abs().argmin(1)
+                for t in range(3)], 1)
+            routing = dict(routing)
+            routing["widths"] = fw.to(x.device)
+            routing["assignments"] = assigns
         widths = routing["widths"]           # (B, 3): det, da, lane
         assignments = routing["assignments"]  # (B, 3)
 

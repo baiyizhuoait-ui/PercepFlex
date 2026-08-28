@@ -141,6 +141,8 @@ def main():
     ap.add_argument("--iou", type=float, default=0.6)
     ap.add_argument("--no-profile", action="store_true")
     ap.add_argument("--alloc-stats", action="store_true")
+    ap.add_argument("--force-widths", default=None,
+                    help="comma widths det,da,lane e.g. 0.25,0.25,0.25 (OursDynamic)")
     args = ap.parse_args()
 
     device = torch.device(args.device)
@@ -183,8 +185,11 @@ def main():
             x = preprocess(img, norm)
             t0 = time.time()
             if args.baseline == "OursDynamic":
+                fw = None
+                if args.force_widths:
+                    fw = torch.tensor([float(v) for v in args.force_widths.split(",")])
                 det_logits, da_logits, lane_logits, routing = \
-                    model(x, hard=True, return_routing=True)
+                    model(x, hard=True, return_routing=True, force_widths=fw)
                 if args.alloc_stats:
                     alloc_rows.append({
                         "frame": item["name"][0],
