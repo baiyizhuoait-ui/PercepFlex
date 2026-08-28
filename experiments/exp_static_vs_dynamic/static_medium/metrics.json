@@ -5,8 +5,8 @@
     640,
     640
   ],
-  "eval_fwd_ms": 7.63,
-  "eval_fps": 131.06,
+  "eval_fwd_ms": 7.67,
+  "eval_fps": 130.37,
   "mAP50": 0.2541,
   "mAP50_95": 0.0835,
   "det_n_gt": 108363,
@@ -19,11 +19,11 @@
   "lane_mIoU": 0.5875,
   "lane_line_acc": 0.7692,
   "parameters": 235176,
-  "flops": 1176764672.0,
+  "flops": 856867072.0,
   "model_size_mb": 0.941,
-  "avg_latency_ms": 3.94,
-  "p50_latency_ms": 3.115,
-  "p95_latency_ms": 8.84,
-  "fps": 253.79,
+  "avg_latency_ms": 3.935,
+  "p50_latency_ms": 3.118,
+  "p95_latency_ms": 9.391,
+  "fps": 254.14,
   "gpu_memory_mib": 36.3
 }

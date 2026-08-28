@@ -1,16 +1,16 @@
 [ours] loaded experiments/exp_train_D/checkpoint.pt: missing=0 unexpected=0
-[profile] params=0.235M flops=0.819G lat=4.60ms fps=217.6 mem=36.3MiB
-  [1000/10000] fwd 7.9ms/img elapsed 23s
-  [2000/10000] fwd 8.5ms/img elapsed 47s
-  [3000/10000] fwd 8.6ms/img elapsed 72s
-  [4000/10000] fwd 8.6ms/img elapsed 97s
-  [5000/10000] fwd 8.5ms/img elapsed 120s
-  [6000/10000] fwd 8.5ms/img elapsed 146s
-  [7000/10000] fwd 8.4ms/img elapsed 170s
-  [8000/10000] fwd 8.4ms/img elapsed 194s
-  [9000/10000] fwd 8.4ms/img elapsed 217s
-  [10000/10000] fwd 8.3ms/img elapsed 240s
-[eval] 10000 images, forward 8.3ms/img (CUDA-synced), total 240s
+[profile] params=0.235M flops=0.819G lat=6.00ms fps=166.7 mem=36.3MiB
+  [1000/10000] fwd 7.1ms/img elapsed 21s
+  [2000/10000] fwd 7.5ms/img elapsed 43s
+  [3000/10000] fwd 7.4ms/img elapsed 65s
+  [4000/10000] fwd 7.5ms/img elapsed 88s
+  [5000/10000] fwd 7.6ms/img elapsed 110s
+  [6000/10000] fwd 7.6ms/img elapsed 133s
+  [7000/10000] fwd 7.6ms/img elapsed 155s
+  [8000/10000] fwd 7.7ms/img elapsed 178s
+  [9000/10000] fwd 7.7ms/img elapsed 201s
+  [10000/10000] fwd 7.7ms/img elapsed 223s
+[eval] 10000 images, forward 7.7ms/img (CUDA-synced), total 223s
 {
   "model": "OursDynamic-experiments/exp_train_D/checkpoint.pt",
   "split": "tri_val",
@@ -18,8 +18,8 @@
     640,
     640
   ],
-  "eval_fwd_ms": 8.312,
-  "eval_fps": 120.31,
+  "eval_fwd_ms": 7.745,
+  "eval_fps": 129.11,
   "mAP50": 0.2336,
   "mAP50_95": 0.0739,
   "det_n_gt": 108363,
@@ -34,10 +34,10 @@
   "parameters": 235176,
   "flops": 818774272.0,
   "model_size_mb": 0.941,
-  "avg_latency_ms": 4.595,
-  "p50_latency_ms": 3.112,
-  "p95_latency_ms": 9.242,
-  "fps": 217.61,
+  "avg_latency_ms": 5.997,
+  "p50_latency_ms": 3.464,
+  "p95_latency_ms": 10.634,
+  "fps": 166.74,
   "gpu_memory_mib": 36.3
 }
 allocation stats (per-task budget index distribution):

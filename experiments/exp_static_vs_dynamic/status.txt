@@ -1,10 +1,10 @@
 === Experiment 1: Static vs Dynamic (ckpt=experiments/exp_train_D/checkpoint.pt) ===
-04:14:38 START static_tiny
-04:18:55 DONE static_tiny
-04:18:55 START static_medium
-04:22:51 DONE static_medium
-04:22:51 START static_large
-04:26:39 DONE static_large
-04:26:39 START dynamic
-04:30:37 DONE dynamic
-04:30:37 ALL_DONE
+04:39:42 START static_tiny
+04:43:42 DONE static_tiny
+04:43:42 START static_medium
+04:47:39 DONE static_medium
+04:47:39 START static_large
+04:51:39 DONE static_large
+04:51:39 START dynamic
+04:55:33 DONE dynamic
+04:55:33 ALL_DONE
