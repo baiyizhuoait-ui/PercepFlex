@@ -1,0 +1,38 @@
+/home/mycode/ai_study/gpu_env/lib/python3.12/site-packages/thop/vision/calc_func.py:53: UserWarning: This API is being deprecated
+  warnings.warn("This API is being deprecated")
+[profile] params=0.033M flops=1.886G lat=5.23ms fps=191.4 mem=39.1MiB
+  [1000/10000] fwd 5.9ms/img elapsed 17s
+  [2000/10000] fwd 6.0ms/img elapsed 33s
+  [3000/10000] fwd 5.9ms/img elapsed 50s
+  [4000/10000] fwd 6.0ms/img elapsed 67s
+  [5000/10000] fwd 6.0ms/img elapsed 84s
+  [6000/10000] fwd 5.9ms/img elapsed 101s
+  [7000/10000] fwd 5.9ms/img elapsed 117s
+  [8000/10000] fwd 5.9ms/img elapsed 133s
+  [9000/10000] fwd 5.9ms/img elapsed 149s
+  [10000/10000] fwd 5.8ms/img elapsed 167s
+[eval] 10000 images, forward 5.8ms/img (CUDA-synced), total 167s
+{
+  "model": "TwinLiteNetPlus",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "da_pixel_acc": 0.9568,
+  "da_fg_iou": 0.7776,
+  "da_mIoU": 0.8634,
+  "lane_pixel_acc": 0.9873,
+  "lane_fg_iou": 0.1859,
+  "lane_mIoU": 0.5866,
+  "lane_line_acc": 0.671,
+  "parameters": 33379,
+  "flops": 1886176000.0,
+  "model_size_mb": 0.134,
+  "avg_latency_ms": 5.225,
+  "p50_latency_ms": 4.772,
+  "p95_latency_ms": 7.343,
+  "fps": 191.38,
+  "gpu_memory_mib": 39.1
+}
+saved -> experiments/exp_001/TwinLiteNetPlus-nano/metrics.json

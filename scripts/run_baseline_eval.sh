@@ -13,7 +13,7 @@ run() {
   local tag="$name"
   # fold "--preset X" into the tag/outdir so presets don't overwrite each other
   if [ "${1:-}" = "--preset" ] && [ -n "${2:-}" ]; then
-    tag="${name}-$2"; shift 2
+    tag="${name}-$2"  # keep args so python also receives --preset
   fi
   echo "$(date +%H:%M:%S) START $tag" >> "$OUT/status.txt"
   $PY evaluation/evaluate_baseline.py --baseline "$name" "$@" --outdir "$OUT/$tag" \

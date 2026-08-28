@@ -1,3 +1,30 @@
 00:26:50 START YOLOP
 00:31:33 DONE  YOLOP
 00:31:33 START TwinLiteNet
+00:35:09 DONE  TwinLiteNet
+00:35:09 START TwinLiteNetPlus-nano
+00:37:59 DONE  TwinLiteNetPlus-nano
+00:37:59 START TwinLiteNetPlus-small
+00:40:58 DONE  TwinLiteNetPlus-small
+00:40:58 START TwinLiteNetPlus-medium
+00:43:56 DONE  TwinLiteNetPlus-medium
+00:43:56 START TwinLiteNetPlus-large
+00:47:04 DONE  TwinLiteNetPlus-large
+00:47:04 START TriLiteNet-tiny
+00:50:56 DONE  TriLiteNet-tiny
+00:50:56 START TriLiteNet-small
+00:54:52 DONE  TriLiteNet-small
+00:54:52 START TriLiteNet-base
+00:58:41 DONE  TriLiteNet-base
+00:58:41 ALL_DONE
+01:10:36 START TwinLiteNetPlus-small
+01:14:31 DONE  TwinLiteNetPlus-small
+01:14:31 START TwinLiteNetPlus-medium
+01:18:00 DONE  TwinLiteNetPlus-medium
+01:18:00 START TwinLiteNetPlus-large
+01:22:46 DONE  TwinLiteNetPlus-large
+01:22:46 START TriLiteNet-small
+01:26:35 DONE  TriLiteNet-small
+01:26:35 START TriLiteNet-base
+01:30:58 DONE  TriLiteNet-base
+01:30:58 ALL_DONE

@@ -1,0 +1,27 @@
+{
+  "model": "TriLiteNet",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "mAP50": 0.4953,
+  "mAP50_95": 0.2023,
+  "det_n_gt": 108363,
+  "det_n_pred": 2811053,
+  "da_pixel_acc": 0.9618,
+  "da_fg_iou": 0.8045,
+  "da_mIoU": 0.8796,
+  "lane_pixel_acc": 0.9875,
+  "lane_fg_iou": 0.1952,
+  "lane_mIoU": 0.5914,
+  "lane_line_acc": 0.679,
+  "parameters": 151413,
+  "flops": 1826627584.0,
+  "model_size_mb": 0.606,
+  "avg_latency_ms": 4.417,
+  "p50_latency_ms": 4.279,
+  "p95_latency_ms": 5.455,
+  "fps": 226.42,
+  "gpu_memory_mib": 39.7
+}

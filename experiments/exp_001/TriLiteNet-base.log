@@ -1,0 +1,44 @@
+/home/mycode/ai_study/gpu_env/lib/python3.12/site-packages/thop/vision/calc_func.py:53: UserWarning: This API is being deprecated
+  warnings.warn("This API is being deprecated")
+/home/mycode/ai_study/gpu_env/lib/python3.12/site-packages/torch/functional.py:505: UserWarning: torch.meshgrid: in an upcoming release, it will be required to pass the indexing argument. (Triggered internally at /pytorch/aten/src/ATen/native/TensorShape.cpp:4381.)
+  return _VF.meshgrid(tensors, **kwargs)  # type: ignore[attr-defined]
+[profile] params=2.350M flops=25.383G lat=9.39ms fps=106.5 mem=114.0MiB
+  [1000/10000] fwd 11.2ms/img elapsed 25s
+  [2000/10000] fwd 11.0ms/img elapsed 50s
+  [3000/10000] fwd 11.0ms/img elapsed 75s
+  [4000/10000] fwd 11.0ms/img elapsed 99s
+  [5000/10000] fwd 11.0ms/img elapsed 124s
+  [6000/10000] fwd 11.0ms/img elapsed 149s
+  [7000/10000] fwd 11.0ms/img elapsed 174s
+  [8000/10000] fwd 11.0ms/img elapsed 198s
+  [9000/10000] fwd 10.9ms/img elapsed 224s
+  [10000/10000] fwd 10.9ms/img elapsed 249s
+[eval] 10000 images, forward 10.9ms/img (CUDA-synced), total 249s
+{
+  "model": "TriLiteNet-base",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "mAP50": 0.7235,
+  "mAP50_95": 0.397,
+  "det_n_gt": 108363,
+  "det_n_pred": 1569055,
+  "da_pixel_acc": 0.9757,
+  "da_fg_iou": 0.8697,
+  "da_mIoU": 0.9203,
+  "lane_pixel_acc": 0.9875,
+  "lane_fg_iou": 0.2371,
+  "lane_mIoU": 0.6123,
+  "lane_line_acc": 0.7301,
+  "parameters": 2350206,
+  "flops": 25382973440.0,
+  "model_size_mb": 9.401,
+  "avg_latency_ms": 9.389,
+  "p50_latency_ms": 8.572,
+  "p95_latency_ms": 13.811,
+  "fps": 106.51,
+  "gpu_memory_mib": 114.0
+}
+saved -> experiments/exp_001/TriLiteNet-base/metrics.json
