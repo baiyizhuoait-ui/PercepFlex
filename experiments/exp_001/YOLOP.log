@@ -3,3 +3,7 @@
 [profile] params=7.941M flops=31.281G lat=11.89ms fps=84.1 mem=106.2MiB
   [1000/10000] fwd 13.1ms/img elapsed 29s
   [2000/10000] fwd 13.3ms/img elapsed 61s
+  [3000/10000] fwd 13.1ms/img elapsed 93s
+  [4000/10000] fwd 13.2ms/img elapsed 124s
+  [5000/10000] fwd 13.2ms/img elapsed 162s
+  [6000/10000] fwd 13.2ms/img elapsed 207s

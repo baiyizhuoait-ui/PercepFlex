@@ -48,12 +48,13 @@ class BDD100KDataset(Dataset):
 
     def __init__(self, data_root, split="tri_val", img_size=640,
                  with_det=True, with_da=True, with_lane=True,
-                 det_categories=DET_CATEGORIES):
+                 det_categories=DET_CATEGORIES, train=False):
         self.data_root = data_root
         self.split = split
         self.img_size = img_size
         self.with_det, self.with_da, self.with_lane = with_det, with_da, with_lane
         self.det_categories = set(det_categories)
+        self.train = train
 
         split_file = os.path.join(data_root, "splits", f"{split}.txt")
         with open(split_file) as f:
@@ -91,6 +92,12 @@ class BDD100KDataset(Dataset):
             raise FileNotFoundError(name)
         orig_shape = img.shape[:2]
         img, (scale, pad_w, pad_h), (nh, nw) = letterbox(img, (self.img_size, self.img_size))
+        # training augmentation: random horizontal flip (image + masks + boxes)
+        if self.train and torch.rand(1).item() < 0.5:
+            img = img[:, ::-1]
+            hflip = True
+        else:
+            hflip = False
         img = img[:, :, ::-1].transpose(2, 0, 1)  # BGR->RGB, HWC->CHW
         img = torch.from_numpy(np.ascontiguousarray(img)).float() / 255.0
 
@@ -112,6 +119,8 @@ class BDD100KDataset(Dataset):
                     # to letterboxed coords
                     x1, x2 = x1 * scale + pad_w, x2 * scale + pad_w
                     y1, y2 = y1 * scale + pad_h, y2 * scale + pad_h
+                    if hflip:
+                        x1, x2 = self.img_size - x2, self.img_size - x1
                     cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
                     w, h = x2 - x1, y2 - y1
                     boxes.append([0, cx / self.img_size, cy / self.img_size,
@@ -122,10 +131,14 @@ class BDD100KDataset(Dataset):
         if self.with_da:
             m = self._load_mask("segments", name)
             m, _, _ = letterbox(m, (self.img_size, self.img_size), color=0)
+            if hflip:
+                m = m[:, ::-1]
             item["da_mask"] = torch.from_numpy(m.astype(np.float32)).unsqueeze(0)
         if self.with_lane:
             m = self._load_mask("lanes", name)
             m, _, _ = letterbox(m, (self.img_size, self.img_size), color=0)
+            if hflip:
+                m = m[:, ::-1]
             item["lane_mask"] = torch.from_numpy(m.astype(np.float32)).unsqueeze(0)
         return item
 
@@ -134,8 +147,22 @@ def collate(items):
     """Minimal collate: images stacked, other fields kept as lists."""
     out = {}
     for k in items[0]:
-        if k == "image":
+        if k in ("image", "da_mask", "lane_mask"):
             out[k] = torch.stack([it[k] for it in items])
+        elif k == "det_targets":
+            out[k] = [it[k] for it in items]
         else:
             out[k] = [it[k] for it in items]
+    return out
+
+
+def collate_train(items):
+    """Collate for training: detection targets -> (N,5) with image indices."""
+    out = collate(items)
+    dets = []
+    for i, t in enumerate(out["det_targets"]):
+        if len(t):
+            img_idx = torch.full((len(t), 1), i, dtype=torch.float32)
+            dets.append(torch.cat([img_idx, t], 1))
+    out["det_targets"] = torch.cat(dets, 0) if dets else torch.zeros((0, 6))
     return out
