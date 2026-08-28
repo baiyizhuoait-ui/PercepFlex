@@ -1,0 +1,29 @@
+{
+  "model": "OursDynamic-experiments/exp_train_shared_D/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 7.419,
+  "eval_fps": 134.79,
+  "mAP50": 0.2463,
+  "mAP50_95": 0.0796,
+  "det_n_gt": 108363,
+  "det_n_pred": 2703609,
+  "da_pixel_acc": 0.9403,
+  "da_fg_iou": 0.7381,
+  "da_mIoU": 0.8332,
+  "lane_pixel_acc": 0.9827,
+  "lane_fg_iou": 0.1689,
+  "lane_mIoU": 0.5758,
+  "lane_line_acc": 0.7056,
+  "parameters": 234780,
+  "flops": 818773504.0,
+  "model_size_mb": 0.939,
+  "avg_latency_ms": 5.068,
+  "p50_latency_ms": 3.274,
+  "p95_latency_ms": 10.223,
+  "fps": 197.3,
+  "gpu_memory_mib": 36.3
+}

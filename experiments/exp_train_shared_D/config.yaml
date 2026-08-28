@@ -29,11 +29,11 @@ train:
   budget_mode: NONE
   budget_target: 0.5
   epochs: 1
-  lambda_budget: 0.0
+  lambda_budget: 1.0
   lambda_da: 1.0
   lambda_lane: 1.0
-  lr: 3e-4
+  lr: 5e-4
   num_workers: 2
-  stage: B
+  stage: D
   train_split: tri_train
   weight_decay: 5e-4

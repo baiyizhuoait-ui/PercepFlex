@@ -70,9 +70,16 @@ class AdaptiveMultiTaskModel(nn.Module):
                 m.width = w
 
     def forward(self, x, budget_prior=None, hard=None, return_routing=False,
-                force_widths=None):
+                force_widths=None, soft=False):
         """force_widths: (B,3) or (3,) tensor of widths to use instead of router
-        output (used for static-width evaluation of the same model)."""
+        output (used for static-width evaluation of the same model).
+
+        soft=True (training): run each task head at ALL budgets and mix the
+        outputs by the router's soft probabilities. This gives the router
+        smooth gradients from every width (fixes the hard-STE blindness: the
+        router sees how each width contributes to the loss, not just the
+        sampled one). Eval always uses the discrete argmax path.
+        """
         feats = self.encoder(x)
         z = self.representation(feats)["z"]
         routing = self.router(z, budget_prior=budget_prior, hard=hard)
@@ -88,6 +95,16 @@ class AdaptiveMultiTaskModel(nn.Module):
             routing = dict(routing)
             routing["widths"] = fw.to(x.device)
             routing["assignments"] = assigns
+
+        if soft and self.training:
+            probs = routing["probs"]  # (B, 3, K)
+            det = self._soft_mix(self.det_head, feats, probs[:, 0], is_det=True)
+            da = self._soft_mix(self.da_head, z, probs[:, 1], target_hw=x.shape[2:])
+            lane = self._soft_mix(self.lane_head, z, probs[:, 2], target_hw=x.shape[2:])
+            if return_routing:
+                return det, da, lane, routing
+            return det, da, lane
+
         widths = routing["widths"]           # (B, 3): det, da, lane
         assignments = routing["assignments"]  # (B, 3)
 
@@ -101,6 +118,25 @@ class AdaptiveMultiTaskModel(nn.Module):
         if return_routing:
             return det, da, lane, routing
         return det, da, lane
+
+    def _soft_mix(self, head, feats, p_task, target_hw=None, is_det=False):
+        """Run head at every budget and mix outputs by per-sample soft probs.
+        p_task: (B, K)."""
+        outs = []
+        for bi, budget in enumerate(self.budgets):
+            self._set_width_fast(head, float(budget))
+            if is_det:
+                o = head([f for f in feats])
+                # training det head returns list of per-scale raw tensors
+                outs.append(o)
+            else:
+                outs.append(head(feats, target_hw))
+        if is_det:
+            nl = len(outs[0])
+            return [sum(p_task[:, bi].view(-1, 1, 1, 1, 1) * outs[bi][s]
+                        for bi in range(len(outs))) for s in range(nl)]
+        return sum(p_task[:, bi].view(-1, 1, 1, 1) * outs[bi]
+                   for bi in range(len(outs)))
 
     def _run_grouped(self, head, feats, widths, assignments, n_out, target_hw=None,
                      is_det=False):

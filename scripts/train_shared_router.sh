@@ -5,7 +5,7 @@ set -u
 cd "$(dirname "$0")/.."
 PY=../gpu_env/bin/python
 A_CKPT=experiments/exp_train_A/checkpoint.pt
-$PY training/train.py --config configs/train_stageB.yaml --init "$A_CKPT" --epochs 1 \
+$PY training/train.py --config configs/train_stageB_shared.yaml --init "$A_CKPT" --epochs 1 \
     --outdir experiments/exp_train_shared_B
 $PY training/train.py --config configs/train_stageD_shared.yaml --init experiments/exp_train_shared_B/checkpoint.pt \
     --epochs 2 --outdir experiments/exp_train_shared_D

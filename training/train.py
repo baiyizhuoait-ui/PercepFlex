@@ -59,6 +59,12 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
         if stage == "A":
             det, da, lane = model(img)
             routing = None
+        elif cfg["train"].get("uniform_width"):
+            # train heads at uniformly-sampled widths (all tasks, one width per batch)
+            bi = torch.randint(0, len(model.budgets), ()).item()
+            w = model.budgets[bi]
+            fw = torch.tensor([w, w, w]).to(device)
+            det, da, lane, routing = model(img, hard=True, return_routing=True, force_widths=fw)
         else:
             # budget prior per stage
             prior = None
@@ -66,7 +72,8 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
                 from models.router.task_resource_router import TaskResourceRouter
                 prior = TaskResourceRouter.budget_prior_from_mode(
                     cfg["train"]["budget_mode"], len(model.budgets), device=device)
-            det, da, lane, routing = model(img, budget_prior=prior, hard=True, return_routing=True)
+            det, da, lane, routing = model(img, budget_prior=prior, hard=False,
+                                           soft=True, return_routing=True)
 
         total, losses = loss_fn(det, da, lane, det_t, da_m, lane_m, routing,
                                 img_size=cfg["model"].get("input_size", [640, 640])[0])
@@ -146,12 +153,17 @@ def main():
 
     epochs = args.epochs or int(tr.get("epochs", 1))
     lr = float(tr.get("lr", 1e-3))
-    if stage == "B":
-        # freeze encoder (+ representation) — only router + heads train
+    if stage == "B" or tr.get("freeze_encoder"):
+        # freeze encoder (+ representation)
         for p in model.encoder.parameters():
             p.requires_grad = False
         for p in model.representation.parameters():
             p.requires_grad = False
+    if tr.get("freeze_heads"):
+        # freeze task heads — only the router trains
+        for h in (model.det_head, model.da_head, model.lane_head):
+            for p in h.parameters():
+                p.requires_grad = False
     opt = optim.AdamW([p for p in model.parameters() if p.requires_grad], lr=lr,
                       weight_decay=float(tr.get("weight_decay", 5e-4)))
     sched = optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs * max(len(loader), 1))

@@ -74,6 +74,14 @@ def build_ours(model_cls_name, weights, device):
     cfg_path = os.path.join(ROOT, "configs", "ours_static.yaml")
     with open(cfg_path) as f:
         cfg = yaml.safe_load(f)["model"]
+    if model_cls_name == "OursDynamic" and weights:
+        # detect shared vs task-wise router from the checkpoint
+        probe = torch.load(weights, map_location="cpu", weights_only=False)
+        probe = probe.get("model_state", probe)
+        rw = probe.get("router.mlp.2.weight")
+        if rw is not None and rw.shape[0] == 3:
+            cfg.setdefault("router", {})["shared"] = True
+            print("[ours] detected SHARED router")
     cls = StaticMultiTaskModel if model_cls_name == "OursStatic" else AdaptiveMultiTaskModel
     model = cls(cfg)
     if weights:
