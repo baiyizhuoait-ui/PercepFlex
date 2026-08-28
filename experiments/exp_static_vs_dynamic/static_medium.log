@@ -1,0 +1,47 @@
+[ours] loaded experiments/exp_train_D/checkpoint.pt: missing=0 unexpected=0
+[profile] params=0.235M flops=1.177G lat=3.94ms fps=253.8 mem=36.3MiB
+  [1000/10000] fwd 7.2ms/img elapsed 21s
+  [2000/10000] fwd 7.6ms/img elapsed 44s
+  [3000/10000] fwd 7.6ms/img elapsed 66s
+  [4000/10000] fwd 7.6ms/img elapsed 88s
+  [5000/10000] fwd 7.5ms/img elapsed 110s
+  [6000/10000] fwd 7.6ms/img elapsed 132s
+  [7000/10000] fwd 7.5ms/img elapsed 154s
+  [8000/10000] fwd 7.5ms/img elapsed 176s
+  [9000/10000] fwd 7.6ms/img elapsed 199s
+  [10000/10000] fwd 7.6ms/img elapsed 222s
+[eval] 10000 images, forward 7.6ms/img (CUDA-synced), total 222s
+{
+  "model": "OursDynamic-experiments/exp_train_D/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 7.63,
+  "eval_fps": 131.06,
+  "mAP50": 0.2541,
+  "mAP50_95": 0.0835,
+  "det_n_gt": 108363,
+  "det_n_pred": 2660305,
+  "da_pixel_acc": 0.955,
+  "da_fg_iou": 0.7873,
+  "da_mIoU": 0.8667,
+  "lane_pixel_acc": 0.981,
+  "lane_fg_iou": 0.1942,
+  "lane_mIoU": 0.5875,
+  "lane_line_acc": 0.7692,
+  "parameters": 235176,
+  "flops": 1176764672.0,
+  "model_size_mb": 0.941,
+  "avg_latency_ms": 3.94,
+  "p50_latency_ms": 3.115,
+  "p95_latency_ms": 8.84,
+  "fps": 253.79,
+  "gpu_memory_mib": 36.3
+}
+allocation stats (per-task budget index distribution):
+  det : {1: 10000}
+  da  : {1: 10000}
+  lane: {1: 10000}
+saved -> experiments/exp_static_vs_dynamic/static_medium/metrics.json

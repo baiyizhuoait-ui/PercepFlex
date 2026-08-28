@@ -25,9 +25,8 @@ from models.heads.dynamic_det_head import DynamicDetHead
 
 
 def _set_head_width(head, w):
-    for m in head.modules():
-        if hasattr(m, "width"):
-            m.width = w
+    from models.router.dynamic_conv import set_width_recursive
+    set_width_recursive(head, w)
 
 
 class AdaptiveMultiTaskModel(nn.Module):
@@ -51,6 +50,24 @@ class AdaptiveMultiTaskModel(nn.Module):
         seg_cfg = model_cfg.get("segmentation", {"hidden": 32})
         self.da_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
         self.lane_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
+        # precompute dynamic-module lists for fast width switching
+        self._head_dyn = {
+            id(self.det_head): list(self.det_head.modules()),
+            id(self.da_head): list(self.da_head.modules()),
+            id(self.lane_head): list(self.lane_head.modules()),
+        }
+        self._last_head_w = {id(self.det_head): None, id(self.da_head): None, id(self.lane_head): None}
+
+    def _set_width_fast(self, head_key, w):
+        kid = id(head_key)
+        if self._last_head_w[kid] == w:
+            return
+        self._last_head_w[kid] = w
+        for m in self._head_dyn[kid]:
+            if hasattr(m, "set_width"):
+                m.set_width(w)
+            elif hasattr(m, "width"):
+                m.width = w
 
     def forward(self, x, budget_prior=None, hard=None, return_routing=False,
                 force_widths=None):
@@ -94,7 +111,7 @@ class AdaptiveMultiTaskModel(nn.Module):
         """
         b = assignments.shape[0]
         if b == 1:
-            _set_head_width(head, widths[0].item())
+            self._set_width_fast(head, widths[0].item())
             if is_det:
                 x = [t[0:1] for t in feats]
             else:
@@ -104,7 +121,7 @@ class AdaptiveMultiTaskModel(nn.Module):
         out = [None] * b
         for a in assignments.unique():
             idx = (assignments == a).nonzero(as_tuple=False).flatten()
-            _set_head_width(head, widths[idx[0]].item())
+            self._set_width_fast(head, widths[idx[0]].item())
             if is_det:
                 sub = [torch.stack([t[i] for i in idx.tolist()]) for t in feats]
                 o = head(sub)
@@ -125,8 +142,8 @@ class AdaptiveMultiTaskModel(nn.Module):
         return torch.stack(out)
 
     def set_width(self, w):
-        for head in (self.det_head, self.da_head, self.lane_head):
-            _set_head_width(head, w)
+        for h in (self.det_head, self.da_head, self.lane_head):
+            self._set_width_fast(h, w)
 
     def set_mode(self, mode, strength=1.5):
         """Runtime mode: HIGH / MEDIUM / LOW -> budget prior bias."""
