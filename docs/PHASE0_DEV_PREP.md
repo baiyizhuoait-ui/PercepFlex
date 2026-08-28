@@ -35,16 +35,15 @@
 ### 已获得（2026-08-28 用户提供，已整合）
 - **全量数据**：用户下载后拷入，已复制到 `trac/data/bdd100k/`：
   images/100k（70k train + 10k val）、images/10k/test（2k，官方 10k，Phase 1 无需 test）、
-  labels/*.json（det，69,863 train + 10k val，2018 v1.0）、lanes/masks（70k+10k，100% 匹配）、
-  segments/masks（7k+1k，**与图片部分不匹配**——详见 `docs/DATASET.md`）。
-  三任务清单已生成于 `data/bdd100k/splits/`（tri_train 2,972 / tri_val 454）。
+  labels/*.json（det，69,863 train + 10k val）、lanes/masks（70k+10k）、
+  segments/masks（70k+10k，用户第二轮补齐，与图片 100% 匹配）。
+  三任务交集清单：`data/bdd100k/splits/`（tri_train 69,863 / tri_val 10,000）。
 - **全部官方权重**：TriLiteNet（nano→tiny / small / base）、TwinLiteNetPlus（nano/small/medium/large）
   已复制到 `trac_data/weights/` 并验证可加载进仓库模型。
 
 ### 未获得 / 已知限制
-- DA 掩码与图片集版本不匹配：仅 2,976（train）+ 454（val）张可用（`docs/DATASET.md`）。
-  论文最终数字如需完整 7k DA，需用户另下与图片版本匹配的 `bdd100k_drivable_2020.zip`。
-- images/10k/test 仅 2k/10k（Phase 1 用不到测试集，不阻塞）。
+- images/10k/test 仅 2k/10k（官方 10k；Phase 1 用不到测试集，不阻塞）。
+- 其余全部就绪：三任务标注完整、官方权重完整（见 README）。
 
 ## 0.3 Phase 1 前需要用户做的事
 - [ ] **决策标注来源**（上节 1/2/3/4 选一；若选 1 或 2，请提供 token/确认注册）

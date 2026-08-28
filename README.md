@@ -100,8 +100,8 @@ data/bdd100k/
 当前状态（2026-08-28 整合完成）：
 - 全量数据已就位：`data/bdd100k/`（images/100k 70k+10k、images/10k/test 2k、labels/*.json、
   lanes/masks 70k+10k、segments/masks 7k+1k——详见 `docs/DATASET.md`）。
-- ⚠️ DA 掩码版本与图片部分不匹配：可用 DA 为 2,976（train）+ 454（val）张；
-  `data/bdd100k/splits/` 已生成三任务清单（tri_train 2,972 / tri_val 454）。
+- 三任务标注全部完整且与图片 100% 对应（Det 69,863/10,000、DA 70,000/10,000、Lane 70,000/10,000）；
+  `data/bdd100k/splits/` 已生成三任务交集清单（tri_train 69,863 / tri_val 10,000）。
 - `images/dev/`（10,010 张）保留作管线调试用，不参与官方协议训练。
 
 ---

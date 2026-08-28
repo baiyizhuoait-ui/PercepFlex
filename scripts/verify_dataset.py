@@ -44,7 +44,7 @@ def main():
           f"val={len(lane_va)} (match {len(lane_va & img_va)})")
     print(f"seg(DA)  train={len(seg_tr)} (match img_train {len(seg_tr & img_tr)}, "
           f"img_val {len(seg_tr & img_va)})")
-    print(f"         val={len(seg_va)} (match {len(seg_va & (img_tr | img_va))})  <- val masks mostly mismatched")
+    print(f"         val={len(seg_va)} (match img_val {len(seg_va & img_va)})")
 
     # detection labels
     det_tr, det_va = set(), set()
