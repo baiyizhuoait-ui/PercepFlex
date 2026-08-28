@@ -12,10 +12,12 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-def seg_ce_loss(logits, mask):
-    """logits: (B,2,H,W); mask: (B,1,H,W) binary float."""
+def seg_ce_loss(logits, mask, fg_weight=10.0):
+    """logits: (B,2,H,W); mask: (B,1,H,W) binary float.
+    fg_weight > 1 counters the extreme background dominance (lane fg ~1%)."""
     mask = mask.long().squeeze(1)
-    return F.cross_entropy(logits, mask, reduction="mean")
+    w = torch.tensor([1.0, fg_weight], device=logits.device)
+    return F.cross_entropy(logits, mask, weight=w, reduction="mean")
 
 
 class MultiTaskLoss(nn.Module):

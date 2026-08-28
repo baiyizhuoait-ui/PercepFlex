@@ -88,17 +88,28 @@ class YOLOLoss(nn.Module):
             if t.shape[1]:
                 gxy = t[:, :, 2:4]
                 gwh = t[:, :, 4:6]
-                j = torch.ones(t.shape[0], t.shape[1], dtype=torch.bool, device=device)  # keep all (no grid-edge filtering for MVP)
+                # anchors in GRID units (YOLOv5 convention: loss works in grid space)
+                a_grid = self.anchors[i].to(device) / self.strides[i].to(device)  # (na, 2)
+                j = torch.zeros(t.shape[0], t.shape[1], dtype=torch.bool, device=device)
+                for ai in range(self.na):
+                    ratio = gwh[ai] / a_grid[ai]  # (nt, 2)
+                    j[ai] = (ratio < 2.0).all(-1) & (ratio > 0.5).all(-1)
                 t = t[j]
-                b, c = t[:, :2].long().T
-                gxy, gwh = t[:, 2:4], t[:, 4:6]
-                gij = gxy.long()
-                gi, gj = gij.T
-                a = t[:, 6].long()
-                indices.append((b, a, gj.clamp_(0, ny - 1), gi.clamp_(0, nx - 1)))
-                tbox.append(torch.cat((gxy - gxy.floor(), gwh), 1))
-                anch.append(self.anchors[i].to(device)[a])
-                tcls.append(c)
+                if t.shape[0]:
+                    b, c = t[:, :2].long().T
+                    gxy, gwh = t[:, 2:4], t[:, 4:6]
+                    gij = gxy.long()
+                    gi, gj = gij.T
+                    a = t[:, 6].long()
+                    indices.append((b, a, gj.clamp_(0, ny - 1), gi.clamp_(0, nx - 1)))
+                    tbox.append(torch.cat((gxy - gxy.floor(), gwh), 1))
+                    anch.append(a_grid[a])
+                    tcls.append(c)
+                else:
+                    indices.append((torch.zeros(0, device=device, dtype=torch.long),) * 4)
+                    tbox.append(torch.zeros(0, 4, device=device))
+                    anch.append(torch.zeros(0, 2, device=device))
+                    tcls.append(torch.zeros(0, device=device))
             else:
                 indices.append((torch.zeros(0, device=device, dtype=torch.long),) * 4)
                 tbox.append(torch.zeros(0, 4, device=device))
