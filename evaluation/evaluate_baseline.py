@@ -140,6 +140,7 @@ def main():
     ap.add_argument("--conf", type=float, default=0.001)
     ap.add_argument("--iou", type=float, default=0.6)
     ap.add_argument("--no-profile", action="store_true")
+    ap.add_argument("--alloc-stats", action="store_true")
     args = ap.parse_args()
 
     device = torch.device(args.device)
@@ -174,13 +175,28 @@ def main():
     det_preds, det_gts = [], []
     da_metric = SegmentationMetric(2)   # incremental confusion matrices (O(1) memory)
     lane_metric = SegmentationMetric(2)
+    alloc_rows = []                     # per-frame router assignments (dynamic models)
     t_forward, t_total = 0.0, time.time()
     with torch.no_grad():
         for it, item in enumerate(loader):
             img = item["image"][0]
             x = preprocess(img, norm)
             t0 = time.time()
-            det_logits, da_logits, lane_logits = forward_outs(model, args.baseline, x)
+            if args.baseline == "OursDynamic":
+                det_logits, da_logits, lane_logits, routing = \
+                    model(x, hard=True, return_routing=True)
+                if args.alloc_stats:
+                    alloc_rows.append({
+                        "frame": item["name"][0],
+                        "det": int(routing["assignments"][0, 0].item()),
+                        "da": int(routing["assignments"][0, 1].item()),
+                        "lane": int(routing["assignments"][0, 2].item()),
+                        "w_det": float(routing["widths"][0, 0].item()),
+                        "w_da": float(routing["widths"][0, 1].item()),
+                        "w_lane": float(routing["widths"][0, 2].item()),
+                    })
+            else:
+                det_logits, da_logits, lane_logits = forward_outs(model, args.baseline, x)
             if device.type == "cuda":
                 torch.cuda.synchronize()
             t_forward += time.time() - t0
@@ -243,6 +259,18 @@ def main():
         os.makedirs(args.outdir, exist_ok=True)
         with open(os.path.join(args.outdir, "metrics.json"), "w") as f:
             json.dump(metrics, f, indent=2)
+        if alloc_rows:
+            import csv
+            with open(os.path.join(args.outdir, "allocation_statistics.csv"), "w", newline="") as f:
+                w = csv.DictWriter(f, fieldnames=list(alloc_rows[0].keys()))
+                w.writeheader()
+                w.writerows(alloc_rows)
+            from collections import Counter
+            det_c, da_c, lane_c = (Counter(r[k] for r in alloc_rows) for k in ("det", "da", "lane"))
+            print("allocation stats (per-task budget index distribution):")
+            print("  det :", dict(sorted(det_c.items())))
+            print("  da  :", dict(sorted(da_c.items())))
+            print("  lane:", dict(sorted(lane_c.items())))
         print(f"saved -> {args.outdir}/metrics.json")
 
 
