@@ -44,7 +44,7 @@ def build_model(cfg, adaptive):
 
 
 def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
-                    log_path, max_steps=None):
+                    log_path, max_steps=None, kd=None):
     model.train()
     t0 = time.time()
     running = {}
@@ -83,6 +83,15 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
         total, losses = loss_fn(det, da, lane, det_t, da_m, lane_m, routing,
                                 img_size=cfg["model"].get("input_size", [640, 640])[0],
                                 ref=ref, lambda_diff=float(cfg["train"].get("lambda_diff", 0.0)))
+        if kd is not None:
+            z_student = None
+            if hasattr(model, "representation"):
+                feats_m = model.encoder(img)
+                z_student = model.representation(feats_m)["z"]
+            kd_losses = kd(img, z_student, da, lane)
+            for k, v in kd_losses.items():
+                total = total + v
+                losses[k] = v
         total.backward()
         nn.utils.clip_grad_norm_(model.parameters(), 10.0)
         opt.step()
@@ -134,6 +143,28 @@ def main():
 
     device = torch.device(args.device)
     model = build_model(cfg, adaptive).to(device)
+
+    # ---- KD teacher (optional) ----
+    kd_cfg = cfg["train"].get("kd")
+    kd = None
+    if kd_cfg:
+        from distillation.kd import CrossArchKD
+        tname = kd_cfg["teacher"]
+        if tname == "YOLOP":
+            from evaluation.evaluate_baseline import build_yolop
+            teacher = build_yolop(device)
+            norm = "imagenet"
+        else:
+            from load_baseline_weights import load_baseline
+            preset = kd_cfg.get("preset")
+            teacher = load_baseline(tname, preset, device)
+            norm = "imagenet" if tname == "TriLiteNet" else "unit"
+        kd = CrossArchKD(tname, teacher, 64,
+                         lambda_feat=float(kd_cfg.get("lambda_feat", 0.1)),
+                         lambda_out=float(kd_cfg.get("lambda_out", 1.0)),
+                         T=float(kd_cfg.get("T", 4.0)), norm=norm).to(device)
+        print(f"[train] KD teacher={tname} lambda_feat={kd_cfg.get('lambda_feat',0.1)} "
+              f"lambda_out={kd_cfg.get('lambda_out',1.0)}", flush=True)
     if cfg["train"].get("static_width"):
         w = float(cfg["train"]["static_width"])
         model.set_width(w)
@@ -192,7 +223,7 @@ def main():
 
     for ep in range(1, epochs + 1):
         avg = train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, ep,
-                              log_path, max_steps=tr.get("max_steps"))
+                              log_path, max_steps=tr.get("max_steps"), kd=kd)
         sched.step()
         ckpt = os.path.join(outdir, "checkpoint.pt")
         torch.save({"epoch": ep, "model_state": model.state_dict(),
