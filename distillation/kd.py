@@ -91,13 +91,18 @@ class TeacherAdapter(nn.Module):
 
 
 def kl_div_logits(student_logits, teacher_logits, T=4.0):
-    """KL(teacher_softmax(T) || student_logits), scaled by T^2."""
+    """Robust output KD: sigmoid-MSE on probability maps.
+
+    Teachers differ: YOLOP emits sigmoid probabilities, TriLiteNet/TLP emit
+    logits. Normalizing both to probabilities and using MSE is scale-stable
+    across teachers and avoids the KL blow-up on confident teachers.
+    """
     if student_logits.shape != teacher_logits.shape:
         teacher_logits = F.interpolate(teacher_logits, size=student_logits.shape[2:],
                                        mode="bilinear", align_corners=False)
-    p = F.log_softmax(student_logits / T, dim=1)
-    q = F.softmax(teacher_logits / T, dim=1)
-    return F.kl_div(p, q, reduction="batchmean") * T * T
+    p_stu = torch.sigmoid(student_logits)
+    p_tea = torch.sigmoid(teacher_logits)
+    return F.mse_loss(p_stu, p_tea)
 
 
 class CrossArchKD(nn.Module):

@@ -1,1 +1,2 @@
 04:14:58 train KD student (teacher=YOLOP)
+05:06:57 eval kd_yolop

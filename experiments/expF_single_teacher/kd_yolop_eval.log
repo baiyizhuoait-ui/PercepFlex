@@ -1,0 +1,9 @@
+[ours] using config /home/mycode/ai_study/trac/experiments/expF_single_teacher/kd_yolop/config.yaml
+[ours] loaded experiments/expF_single_teacher/kd_yolop/checkpoint.pt: 256 keys missing=0 unexpected=0
+[profile] failed: name '_profile_ours' is not defined
+  [1000/10000] fwd 8.2ms/img elapsed 46s
+  [2000/10000] fwd 8.7ms/img elapsed 98s
+  [3000/10000] fwd 8.2ms/img elapsed 136s
+  [4000/10000] fwd 8.3ms/img elapsed 184s
+  [5000/10000] fwd 8.4ms/img elapsed 235s
+  [6000/10000] fwd 8.2ms/img elapsed 273s

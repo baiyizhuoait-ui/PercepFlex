@@ -92,6 +92,7 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
             for k, v in kd_losses.items():
                 total = total + v
                 losses[k] = v
+            losses["total"] = total
         total.backward()
         nn.utils.clip_grad_norm_(model.parameters(), 10.0)
         opt.step()
@@ -105,7 +106,8 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
                     f"loss {avg['total']:.4f} det {avg.get('det',0):.4f} "
                     f"da {avg.get('da',0):.4f} lane {avg.get('lane',0):.4f} "
                     f"budget {avg.get('budget',0):.4f} "
-                    f"{(time.time()-t0)/(it+1)*1e3:.0f}ms/step")
+                    + ' '.join(f"{k} {avg.get(k,0):.3f}" for k in ('feat','out_da','out_lane') if k in avg)
+                    + f" {(time.time()-t0)/(it+1)*1e3:.0f}ms/step")
             print(line, flush=True)
             with open(log_path, "a") as f:
                 f.write(line + "\n")

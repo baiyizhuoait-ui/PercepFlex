@@ -18,7 +18,7 @@ train:
     teacher: YOLOP
     preset: 
     lambda_feat: 0.1
-    lambda_out: 1.0
-    T: 2
+    lambda_out: 0.2
+    T: 3
 data:
   root: data/bdd100k
