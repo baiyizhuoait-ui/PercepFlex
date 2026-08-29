@@ -1,0 +1,36 @@
+[ours] loaded experiments/expA_equal_budget/static_eb_s0/checkpoint.pt: 256 keys missing=0 unexpected=0
+[ours] width set to 0.45
+[profile] failed: name '_profile_ours' is not defined
+  [1000/10000] fwd 7.3ms/img elapsed 26s
+  [2000/10000] fwd 7.2ms/img elapsed 52s
+  [3000/10000] fwd 7.3ms/img elapsed 80s
+  [4000/10000] fwd 7.5ms/img elapsed 108s
+  [5000/10000] fwd 7.5ms/img elapsed 135s
+  [6000/10000] fwd 7.5ms/img elapsed 163s
+  [7000/10000] fwd 7.5ms/img elapsed 190s
+  [8000/10000] fwd 7.5ms/img elapsed 217s
+  [9000/10000] fwd 7.5ms/img elapsed 241s
+  [10000/10000] fwd 7.5ms/img elapsed 269s
+[eval] 10000 images, forward 7.5ms/img (CUDA-synced), total 269s
+{
+  "model": "OursStatic-experiments/expA_equal_budget/static_eb_s0/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 7.457,
+  "eval_fps": 134.1,
+  "mAP50": 0.2523,
+  "mAP50_95": 0.0842,
+  "det_n_gt": 108363,
+  "det_n_pred": 2767676,
+  "da_pixel_acc": 0.9405,
+  "da_fg_iou": 0.7387,
+  "da_mIoU": 0.8336,
+  "lane_pixel_acc": 0.9717,
+  "lane_fg_iou": 0.174,
+  "lane_mIoU": 0.5727,
+  "lane_line_acc": 0.8475
+}
+saved -> experiments/expA_equal_budget/static_eb_s0_eval/metrics.json

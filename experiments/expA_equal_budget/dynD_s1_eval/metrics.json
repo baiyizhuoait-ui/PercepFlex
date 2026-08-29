@@ -1,0 +1,21 @@
+{
+  "model": "OursDynamic-experiments/expA_equal_budget/dynD_s1/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 7.709,
+  "eval_fps": 129.72,
+  "mAP50": 0.0682,
+  "mAP50_95": 0.0122,
+  "det_n_gt": 108363,
+  "det_n_pred": 2653081,
+  "da_pixel_acc": 0.9262,
+  "da_fg_iou": 0.6507,
+  "da_mIoU": 0.7826,
+  "lane_pixel_acc": 0.9872,
+  "lane_fg_iou": 0.1024,
+  "lane_mIoU": 0.5448,
+  "lane_line_acc": 0.5854
+}

@@ -1,0 +1,21 @@
+{
+  "model": "OursStatic-experiments/expA_equal_budget/static_eb_s2/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 6.358,
+  "eval_fps": 157.28,
+  "mAP50": 0.2564,
+  "mAP50_95": 0.0835,
+  "det_n_gt": 108363,
+  "det_n_pred": 2699362,
+  "da_pixel_acc": 0.9426,
+  "da_fg_iou": 0.7456,
+  "da_mIoU": 0.8383,
+  "lane_pixel_acc": 0.9732,
+  "lane_fg_iou": 0.1793,
+  "lane_mIoU": 0.5762,
+  "lane_line_acc": 0.8412
+}

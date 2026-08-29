@@ -1,0 +1,40 @@
+[ours] loaded experiments/expA_equal_budget/dynD_s2/checkpoint.pt: 261 keys missing=0 unexpected=0
+[profile] failed: name '_profile_ours' is not defined
+  [1000/10000] fwd 7.2ms/img elapsed 21s
+  [2000/10000] fwd 7.2ms/img elapsed 43s
+  [3000/10000] fwd 7.3ms/img elapsed 65s
+  [4000/10000] fwd 7.3ms/img elapsed 87s
+  [5000/10000] fwd 7.3ms/img elapsed 109s
+  [6000/10000] fwd 7.2ms/img elapsed 130s
+  [7000/10000] fwd 7.2ms/img elapsed 151s
+  [8000/10000] fwd 7.2ms/img elapsed 173s
+  [9000/10000] fwd 7.2ms/img elapsed 194s
+  [10000/10000] fwd 7.1ms/img elapsed 215s
+[eval] 10000 images, forward 7.1ms/img (CUDA-synced), total 215s
+[alloc-flops] failed: 2
+{
+  "model": "OursDynamic-experiments/expA_equal_budget/dynD_s2/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 7.139,
+  "eval_fps": 140.09,
+  "mAP50": 0.0419,
+  "mAP50_95": 0.0072,
+  "det_n_gt": 108363,
+  "det_n_pred": 2771406,
+  "da_pixel_acc": 0.8998,
+  "da_fg_iou": 0.4662,
+  "da_mIoU": 0.6782,
+  "lane_pixel_acc": 0.9834,
+  "lane_fg_iou": 0.1193,
+  "lane_mIoU": 0.5513,
+  "lane_line_acc": 0.6307
+}
+allocation stats (per-task budget index distribution):
+  det : {0: 6091, 1: 844, 2: 3065}
+  da  : {0: 6559, 1: 846, 2: 2595}
+  lane: {0: 5708, 1: 1694, 2: 2598}
+saved -> experiments/expA_equal_budget/dynD_s2_eval/metrics.json

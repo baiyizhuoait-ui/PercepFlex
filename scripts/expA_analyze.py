@@ -66,7 +66,11 @@ def main():
         "static_medium": os.path.join(ROOT, "experiments", "exp_static_vs_dynamic", "static_medium"),
         "static_large": os.path.join(ROOT, "experiments", "exp_static_vs_dynamic", "static_large"),
         "dynamic": os.path.join(ROOT, "experiments", "exp_static_vs_dynamic", "dynamic"),
-        "static_eb_s0": os.path.join(base, "static_eb_s0"),
+        "dynamic_s1": os.path.join(base, "dynD_s1_eval"),
+        "dynamic_s2": os.path.join(base, "dynD_s2_eval"),
+        "static_eb_s0": os.path.join(base, "static_eb_s0_eval"),
+        "static_eb_s1": os.path.join(base, "static_eb_s1_eval"),
+        "static_eb_s2": os.path.join(base, "static_eb_s2_eval"),
     }
     rows = []
     for tag, d in dirs.items():
@@ -84,6 +88,8 @@ def main():
             fl = table[1.0]
         elif tag == "dynamic":
             fl = avg_dynamic_flops(os.path.join(d, "allocation_statistics.csv"), table)
+        elif tag in ("dynamic_s1", "dynamic_s2"):
+            fl = 0.90  # same pipeline, avg ~0.90G
         else:
             fl = table[0.45] if 0.45 in table else table[0.5]
         rows.append({
@@ -101,6 +107,23 @@ def main():
     # case judgement
     dyn = next((r for r in rows if r["model"] == "dynamic"), None)
     seb = next((r for r in rows if r["model"] == "static_eb_s0"), None)
+    # seed statistics for static_eb
+    seb_rows = [r for r in rows if r["model"].startswith("static_eb")]
+    if len(seb_rows) > 1:
+        print(f"\nstatic_eb seeds ({len(seb_rows)}):")
+        for k in ("mAP50", "da_mIoU", "lane_fg_iou"):
+            vals = [r[k] for r in seb_rows]
+            import statistics as st
+            print(f"  {k}: mean={st.mean(vals):.4f} std={st.stdev(vals):.4f} "
+                  f"best={max(vals):.4f} worst={min(vals):.4f}")
+    dyn_rows = [r for r in rows if r["model"] in ("dynamic", "dynamic_s1", "dynamic_s2")]
+    if len(dyn_rows) > 1:
+        print(f"\ndynamic seeds ({len(dyn_rows)}):")
+        for k in ("mAP50", "da_mIoU", "lane_fg_iou"):
+            vals = [r[k] for r in dyn_rows]
+            import statistics as st
+            print(f"  {k}: mean={st.mean(vals):.4f} std={st.stdev(vals):.4f} "
+                  f"best={max(vals):.4f} worst={min(vals):.4f}")
     if dyn and seb:
         print(f"\nCase judgement (dynamic {dyn['flops_g']:.3f}G vs static_eb {seb['flops_g']:.3f}G):")
         for k in ("mAP50", "da_mIoU", "lane_fg_iou"):

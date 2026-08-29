@@ -1,0 +1,10 @@
+00:33:42 dynA_s2 done
+00:33:42 s2 B
+00:50:00 s2 C
+01:11:39 s2 D
+01:33:30 s2 pipeline done
+01:33:30 eval dynamic s1
+01:37:57 eval dynamic s2
+01:41:46 eval static s1 lane fix
+01:45:32 === ExpA analysis ===
+01:45:33 EXP-A COMPLETE
