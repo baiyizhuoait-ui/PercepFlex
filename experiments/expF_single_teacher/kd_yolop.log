@@ -1,183 +1,150 @@
-[train] KD teacher=YOLOP lambda_feat=0.1 lambda_out=1.0
+[train] KD teacher=YOLOP lambda_feat=0.1 lambda_out=0.2
 [train] stage=A adaptive=False params=0.230M
-/home/mycode/ai_study/trac/training/train.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+/home/mycode/ai_study/trac/training/train.py:101: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
 Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
   running[k] = running.get(k, 0.0) + float(v)
-[stage A] ep 1 step 50/4366 loss 1.3199 det 0.2038 da 0.6144 lane 0.5017 budget 0.0000 377ms/step
-[stage A] ep 1 step 100/4366 loss 1.2694 det 0.1930 da 0.5916 lane 0.4848 budget 0.0000 363ms/step
-[stage A] ep 1 step 150/4366 loss 1.2441 det 0.1838 da 0.5811 lane 0.4792 budget 0.0000 358ms/step
-[stage A] ep 1 step 200/4366 loss 1.2268 det 0.1769 da 0.5735 lane 0.4764 budget 0.0000 356ms/step
-[stage A] ep 1 step 250/4366 loss 1.2153 det 0.1718 da 0.5687 lane 0.4748 budget 0.0000 355ms/step
-[stage A] ep 1 step 300/4366 loss 1.2069 det 0.1678 da 0.5655 lane 0.4736 budget 0.0000 354ms/step
-[stage A] ep 1 step 350/4366 loss 1.1990 det 0.1645 da 0.5620 lane 0.4725 budget 0.0000 353ms/step
-[stage A] ep 1 step 400/4366 loss 1.1930 det 0.1618 da 0.5594 lane 0.4718 budget 0.0000 352ms/step
-[stage A] ep 1 step 450/4366 loss 1.1878 det 0.1597 da 0.5571 lane 0.4711 budget 0.0000 352ms/step
-[stage A] ep 1 step 500/4366 loss 1.1831 det 0.1578 da 0.5547 lane 0.4705 budget 0.0000 352ms/step
-[stage A] ep 1 step 550/4366 loss 1.1791 det 0.1562 da 0.5527 lane 0.4701 budget 0.0000 352ms/step
-[stage A] ep 1 step 600/4366 loss 1.1756 det 0.1549 da 0.5510 lane 0.4697 budget 0.0000 351ms/step
-[stage A] ep 1 step 650/4366 loss 1.1726 det 0.1537 da 0.5495 lane 0.4694 budget 0.0000 351ms/step
-[stage A] ep 1 step 700/4366 loss 1.1697 det 0.1527 da 0.5479 lane 0.4691 budget 0.0000 351ms/step
-[stage A] ep 1 step 750/4366 loss 1.1673 det 0.1518 da 0.5467 lane 0.4689 budget 0.0000 351ms/step
-[stage A] ep 1 step 800/4366 loss 1.1648 det 0.1509 da 0.5452 lane 0.4686 budget 0.0000 351ms/step
-[stage A] ep 1 step 850/4366 loss 1.1627 det 0.1502 da 0.5440 lane 0.4684 budget 0.0000 351ms/step
-[stage A] ep 1 step 900/4366 loss 1.1604 det 0.1495 da 0.5427 lane 0.4682 budget 0.0000 351ms/step
-[stage A] ep 1 step 950/4366 loss 1.1586 det 0.1489 da 0.5417 lane 0.4680 budget 0.0000 351ms/step
-[stage A] ep 1 step 1000/4366 loss 1.1567 det 0.1483 da 0.5405 lane 0.4679 budget 0.0000 351ms/step
-[stage A] ep 1 step 1050/4366 loss 1.1550 det 0.1478 da 0.5396 lane 0.4677 budget 0.0000 350ms/step
-[stage A] ep 1 step 1100/4366 loss 1.1533 det 0.1472 da 0.5385 lane 0.4675 budget 0.0000 350ms/step
-[stage A] ep 1 step 1150/4366 loss 1.1519 det 0.1468 da 0.5377 lane 0.4674 budget 0.0000 350ms/step
-[stage A] ep 1 step 1200/4366 loss 1.1503 det 0.1463 da 0.5367 lane 0.4673 budget 0.0000 350ms/step
-[stage A] ep 1 step 1250/4366 loss 1.1488 det 0.1459 da 0.5358 lane 0.4672 budget 0.0000 350ms/step
-[stage A] ep 1 step 1300/4366 loss 1.1474 det 0.1455 da 0.5349 lane 0.4670 budget 0.0000 350ms/step
-[stage A] ep 1 step 1350/4366 loss 1.1461 det 0.1451 da 0.5341 lane 0.4669 budget 0.0000 350ms/step
-[stage A] ep 1 step 1400/4366 loss 1.1450 det 0.1448 da 0.5334 lane 0.4668 budget 0.0000 350ms/step
-[stage A] ep 1 step 1450/4366 loss 1.1438 det 0.1445 da 0.5327 lane 0.4667 budget 0.0000 350ms/step
-[stage A] ep 1 step 1500/4366 loss 1.1426 det 0.1441 da 0.5320 lane 0.4666 budget 0.0000 350ms/step
-[stage A] ep 1 step 1550/4366 loss 1.1414 det 0.1438 da 0.5312 lane 0.4664 budget 0.0000 350ms/step
-[stage A] ep 1 step 1600/4366 loss 1.1403 det 0.1435 da 0.5306 lane 0.4663 budget 0.0000 350ms/step
-[stage A] ep 1 step 1650/4366 loss 1.1395 det 0.1432 da 0.5301 lane 0.4662 budget 0.0000 350ms/step
-[stage A] ep 1 step 1700/4366 loss 1.1384 det 0.1429 da 0.5294 lane 0.4661 budget 0.0000 350ms/step
-[stage A] ep 1 step 1750/4366 loss 1.1376 det 0.1427 da 0.5289 lane 0.4660 budget 0.0000 350ms/step
-[stage A] ep 1 step 1800/4366 loss 1.1367 det 0.1424 da 0.5283 lane 0.4659 budget 0.0000 350ms/step
-[stage A] ep 1 step 1850/4366 loss 1.1359 det 0.1422 da 0.5278 lane 0.4659 budget 0.0000 350ms/step
-[stage A] ep 1 step 1900/4366 loss 1.1350 det 0.1419 da 0.5272 lane 0.4658 budget 0.0000 350ms/step
-[stage A] ep 1 step 1950/4366 loss 1.1342 det 0.1417 da 0.5267 lane 0.4658 budget 0.0000 350ms/step
-[stage A] ep 1 step 2000/4366 loss 1.1334 det 0.1415 da 0.5262 lane 0.4657 budget 0.0000 350ms/step
-[stage A] ep 1 step 2050/4366 loss 1.1326 det 0.1413 da 0.5257 lane 0.4656 budget 0.0000 350ms/step
-[stage A] ep 1 step 2100/4366 loss 1.1319 det 0.1411 da 0.5253 lane 0.4655 budget 0.0000 350ms/step
-[stage A] ep 1 step 2150/4366 loss 1.1313 det 0.1409 da 0.5249 lane 0.4655 budget 0.0000 350ms/step
-[stage A] ep 1 step 2200/4366 loss 1.1306 det 0.1407 da 0.5245 lane 0.4654 budget 0.0000 350ms/step
-[stage A] ep 1 step 2250/4366 loss 1.1300 det 0.1405 da 0.5241 lane 0.4654 budget 0.0000 350ms/step
-[stage A] ep 1 step 2300/4366 loss 1.1294 det 0.1404 da 0.5238 lane 0.4653 budget 0.0000 350ms/step
-[stage A] ep 1 step 2350/4366 loss 1.1288 det 0.1402 da 0.5234 lane 0.4653 budget 0.0000 350ms/step
-[stage A] ep 1 step 2400/4366 loss 1.1282 det 0.1400 da 0.5230 lane 0.4652 budget 0.0000 350ms/step
-[stage A] ep 1 step 2450/4366 loss 1.1277 det 0.1398 da 0.5227 lane 0.4652 budget 0.0000 350ms/step
-[stage A] ep 1 step 2500/4366 loss 1.1271 det 0.1397 da 0.5223 lane 0.4651 budget 0.0000 350ms/step
-[stage A] ep 1 step 2550/4366 loss 1.1265 det 0.1395 da 0.5220 lane 0.4651 budget 0.0000 350ms/step
-[stage A] ep 1 step 2600/4366 loss 1.1260 det 0.1394 da 0.5216 lane 0.4650 budget 0.0000 350ms/step
-[stage A] ep 1 step 2650/4366 loss 1.1254 det 0.1392 da 0.5213 lane 0.4650 budget 0.0000 350ms/step
-[stage A] ep 1 step 2700/4366 loss 1.1249 det 0.1390 da 0.5209 lane 0.4649 budget 0.0000 350ms/step
-[stage A] ep 1 step 2750/4366 loss 1.1243 det 0.1389 da 0.5206 lane 0.4649 budget 0.0000 350ms/step
-[stage A] ep 1 step 2800/4366 loss 1.1238 det 0.1388 da 0.5203 lane 0.4648 budget 0.0000 350ms/step
-[stage A] ep 1 step 2850/4366 loss 1.1234 det 0.1386 da 0.5200 lane 0.4648 budget 0.0000 350ms/step
-[stage A] ep 1 step 2900/4366 loss 1.1229 det 0.1385 da 0.5197 lane 0.4648 budget 0.0000 350ms/step
-[stage A] ep 1 step 2950/4366 loss 1.1225 det 0.1383 da 0.5194 lane 0.4647 budget 0.0000 350ms/step
-[stage A] ep 1 step 3000/4366 loss 1.1221 det 0.1382 da 0.5192 lane 0.4647 budget 0.0000 350ms/step
-[stage A] ep 1 step 3050/4366 loss 1.1217 det 0.1381 da 0.5189 lane 0.4646 budget 0.0000 350ms/step
-[stage A] ep 1 step 3100/4366 loss 1.1213 det 0.1380 da 0.5187 lane 0.4646 budget 0.0000 350ms/step
-[stage A] ep 1 step 3150/4366 loss 1.1208 det 0.1379 da 0.5184 lane 0.4646 budget 0.0000 350ms/step
-[stage A] ep 1 step 3200/4366 loss 1.1205 det 0.1378 da 0.5182 lane 0.4645 budget 0.0000 350ms/step
-[stage A] ep 1 step 3250/4366 loss 1.1201 det 0.1376 da 0.5179 lane 0.4645 budget 0.0000 350ms/step
-[stage A] ep 1 step 3300/4366 loss 1.1197 det 0.1375 da 0.5177 lane 0.4645 budget 0.0000 350ms/step
-[stage A] ep 1 step 3350/4366 loss 1.1193 det 0.1374 da 0.5175 lane 0.4644 budget 0.0000 350ms/step
-[stage A] ep 1 step 3400/4366 loss 1.1189 det 0.1373 da 0.5173 lane 0.4644 budget 0.0000 350ms/step
-[stage A] ep 1 step 3450/4366 loss 1.1186 det 0.1372 da 0.5171 lane 0.4643 budget 0.0000 350ms/step
-[stage A] ep 1 step 3500/4366 loss 1.1183 det 0.1371 da 0.5169 lane 0.4643 budget 0.0000 350ms/step
-[stage A] ep 1 step 3550/4366 loss 1.1179 det 0.1370 da 0.5167 lane 0.4643 budget 0.0000 350ms/step
-[stage A] ep 1 step 3600/4366 loss 1.1176 det 0.1369 da 0.5164 lane 0.4642 budget 0.0000 350ms/step
-[stage A] ep 1 step 3650/4366 loss 1.1173 det 0.1368 da 0.5162 lane 0.4642 budget 0.0000 350ms/step
-[stage A] ep 1 step 3700/4366 loss 1.1170 det 0.1367 da 0.5160 lane 0.4642 budget 0.0000 350ms/step
-[stage A] ep 1 step 3750/4366 loss 1.1166 det 0.1366 da 0.5159 lane 0.4641 budget 0.0000 350ms/step
-[stage A] ep 1 step 3800/4366 loss 1.1163 det 0.1366 da 0.5156 lane 0.4641 budget 0.0000 350ms/step
-[stage A] ep 1 step 3850/4366 loss 1.1160 det 0.1365 da 0.5154 lane 0.4641 budget 0.0000 350ms/step
-[stage A] ep 1 step 3900/4366 loss 1.1157 det 0.1364 da 0.5152 lane 0.4641 budget 0.0000 350ms/step
-[stage A] ep 1 step 3950/4366 loss 1.1154 det 0.1363 da 0.5150 lane 0.4640 budget 0.0000 350ms/step
-[stage A] ep 1 step 4000/4366 loss 1.1150 det 0.1362 da 0.5149 lane 0.4640 budget 0.0000 350ms/step
-[stage A] ep 1 step 4050/4366 loss 1.1147 det 0.1361 da 0.5146 lane 0.4640 budget 0.0000 350ms/step
-[stage A] ep 1 step 4100/4366 loss 1.1145 det 0.1360 da 0.5145 lane 0.4640 budget 0.0000 350ms/step
-[stage A] ep 1 step 4150/4366 loss 1.1142 det 0.1360 da 0.5143 lane 0.4639 budget 0.0000 350ms/step
-[stage A] ep 1 step 4200/4366 loss 1.1139 det 0.1359 da 0.5142 lane 0.4639 budget 0.0000 350ms/step
-[stage A] ep 1 step 4250/4366 loss 1.1137 det 0.1358 da 0.5140 lane 0.4639 budget 0.0000 350ms/step
-[stage A] ep 1 step 4300/4366 loss 1.1134 det 0.1357 da 0.5138 lane 0.4639 budget 0.0000 350ms/step
-[stage A] ep 1 step 4350/4366 loss 1.1131 det 0.1356 da 0.5136 lane 0.4638 budget 0.0000 350ms/step
-[stage A] ep 1 DONE avg_loss=1.1130 saved experiments/expF_single_teacher/kd_yolop/checkpoint.pt
-[stage A] ep 2 step 50/4366 loss 1.0884 det 0.1280 da 0.4987 lane 0.4617 budget 0.0000 361ms/step
-[stage A] ep 2 step 100/4366 loss 1.0896 det 0.1281 da 0.4998 lane 0.4618 budget 0.0000 355ms/step
-[stage A] ep 2 step 150/4366 loss 1.0894 det 0.1284 da 0.4995 lane 0.4615 budget 0.0000 353ms/step
-[stage A] ep 2 step 200/4366 loss 1.0894 det 0.1283 da 0.4993 lane 0.4617 budget 0.0000 352ms/step
-[stage A] ep 2 step 250/4366 loss 1.0894 det 0.1286 da 0.4990 lane 0.4618 budget 0.0000 352ms/step
-[stage A] ep 2 step 300/4366 loss 1.0891 det 0.1285 da 0.4990 lane 0.4617 budget 0.0000 352ms/step
-[stage A] ep 2 step 350/4366 loss 1.0890 det 0.1286 da 0.4987 lane 0.4617 budget 0.0000 351ms/step
-[stage A] ep 2 step 400/4366 loss 1.0888 det 0.1286 da 0.4986 lane 0.4617 budget 0.0000 351ms/step
-[stage A] ep 2 step 450/4366 loss 1.0886 det 0.1285 da 0.4985 lane 0.4616 budget 0.0000 351ms/step
-[stage A] ep 2 step 500/4366 loss 1.0888 det 0.1286 da 0.4986 lane 0.4616 budget 0.0000 351ms/step
-[stage A] ep 2 step 550/4366 loss 1.0886 det 0.1285 da 0.4985 lane 0.4616 budget 0.0000 351ms/step
-[stage A] ep 2 step 600/4366 loss 1.0885 det 0.1285 da 0.4983 lane 0.4616 budget 0.0000 351ms/step
-[stage A] ep 2 step 650/4366 loss 1.0883 det 0.1285 da 0.4983 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 700/4366 loss 1.0882 det 0.1284 da 0.4983 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 750/4366 loss 1.0879 det 0.1284 da 0.4980 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 800/4366 loss 1.0879 det 0.1284 da 0.4980 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 850/4366 loss 1.0878 det 0.1284 da 0.4980 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 900/4366 loss 1.0878 det 0.1283 da 0.4980 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 950/4366 loss 1.0878 det 0.1282 da 0.4980 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 1000/4366 loss 1.0877 det 0.1283 da 0.4980 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 1050/4366 loss 1.0877 det 0.1282 da 0.4980 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 1100/4366 loss 1.0878 det 0.1283 da 0.4980 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 1150/4366 loss 1.0875 det 0.1283 da 0.4978 lane 0.4615 budget 0.0000 351ms/step
-[stage A] ep 2 step 1200/4366 loss 1.0874 det 0.1283 da 0.4977 lane 0.4614 budget 0.0000 350ms/step
-[stage A] ep 2 step 1250/4366 loss 1.0874 det 0.1283 da 0.4977 lane 0.4614 budget 0.0000 350ms/step
-[stage A] ep 2 step 1300/4366 loss 1.0874 det 0.1283 da 0.4977 lane 0.4614 budget 0.0000 350ms/step
-[stage A] ep 2 step 1350/4366 loss 1.0874 det 0.1282 da 0.4978 lane 0.4614 budget 0.0000 350ms/step
-[stage A] ep 2 step 1400/4366 loss 1.0873 det 0.1282 da 0.4977 lane 0.4614 budget 0.0000 350ms/step
-[stage A] ep 2 step 1450/4366 loss 1.0872 det 0.1282 da 0.4976 lane 0.4614 budget 0.0000 350ms/step
-[stage A] ep 2 step 1500/4366 loss 1.0872 det 0.1282 da 0.4977 lane 0.4614 budget 0.0000 350ms/step
-[stage A] ep 2 step 1550/4366 loss 1.0871 det 0.1281 da 0.4976 lane 0.4614 budget 0.0000 350ms/step
-[stage A] ep 2 step 1600/4366 loss 1.0871 det 0.1281 da 0.4976 lane 0.4614 budget 0.0000 350ms/step
-[stage A] ep 2 step 1650/4366 loss 1.0870 det 0.1280 da 0.4976 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 1700/4366 loss 1.0869 det 0.1280 da 0.4975 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 1750/4366 loss 1.0869 det 0.1280 da 0.4976 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 1800/4366 loss 1.0868 det 0.1280 da 0.4975 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 1850/4366 loss 1.0868 det 0.1279 da 0.4976 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 1900/4366 loss 1.0868 det 0.1279 da 0.4976 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 1950/4366 loss 1.0868 det 0.1279 da 0.4976 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2000/4366 loss 1.0868 det 0.1279 da 0.4976 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2050/4366 loss 1.0867 det 0.1279 da 0.4976 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2100/4366 loss 1.0867 det 0.1279 da 0.4975 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2150/4366 loss 1.0866 det 0.1279 da 0.4974 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2200/4366 loss 1.0865 det 0.1278 da 0.4974 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2250/4366 loss 1.0865 det 0.1278 da 0.4974 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2300/4366 loss 1.0864 det 0.1278 da 0.4973 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2350/4366 loss 1.0864 det 0.1278 da 0.4974 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2400/4366 loss 1.0864 det 0.1278 da 0.4974 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2450/4366 loss 1.0864 det 0.1278 da 0.4973 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2500/4366 loss 1.0863 det 0.1278 da 0.4972 lane 0.4613 budget 0.0000 350ms/step
-[stage A] ep 2 step 2550/4366 loss 1.0862 det 0.1278 da 0.4972 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 2600/4366 loss 1.0862 det 0.1278 da 0.4972 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 2650/4366 loss 1.0862 det 0.1278 da 0.4972 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 2700/4366 loss 1.0861 det 0.1278 da 0.4971 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 2750/4366 loss 1.0860 det 0.1277 da 0.4971 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 2800/4366 loss 1.0860 det 0.1277 da 0.4970 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 2850/4366 loss 1.0859 det 0.1277 da 0.4970 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 2900/4366 loss 1.0859 det 0.1277 da 0.4969 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 2950/4366 loss 1.0858 det 0.1277 da 0.4969 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3000/4366 loss 1.0857 det 0.1277 da 0.4969 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3050/4366 loss 1.0857 det 0.1276 da 0.4968 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3100/4366 loss 1.0857 det 0.1276 da 0.4968 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3150/4366 loss 1.0856 det 0.1276 da 0.4968 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3200/4366 loss 1.0856 det 0.1276 da 0.4968 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3250/4366 loss 1.0855 det 0.1276 da 0.4968 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3300/4366 loss 1.0855 det 0.1276 da 0.4967 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3350/4366 loss 1.0855 det 0.1276 da 0.4967 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3400/4366 loss 1.0854 det 0.1276 da 0.4966 lane 0.4612 budget 0.0000 350ms/step
-[stage A] ep 2 step 3450/4366 loss 1.0853 det 0.1276 da 0.4966 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3500/4366 loss 1.0853 det 0.1275 da 0.4965 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3550/4366 loss 1.0852 det 0.1275 da 0.4965 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3600/4366 loss 1.0852 det 0.1275 da 0.4965 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3650/4366 loss 1.0851 det 0.1275 da 0.4964 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3700/4366 loss 1.0850 det 0.1274 da 0.4964 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3750/4366 loss 1.0850 det 0.1274 da 0.4964 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3800/4366 loss 1.0849 det 0.1274 da 0.4963 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3850/4366 loss 1.0849 det 0.1274 da 0.4963 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3900/4366 loss 1.0848 det 0.1274 da 0.4963 lane 0.4612 budget 0.0000 349ms/step
-[stage A] ep 2 step 3950/4366 loss 1.0848 det 0.1273 da 0.4963 lane 0.4611 budget 0.0000 349ms/step
-[stage A] ep 2 step 4000/4366 loss 1.0847 det 0.1273 da 0.4963 lane 0.4611 budget 0.0000 349ms/step
-[stage A] ep 2 step 4050/4366 loss 1.0847 det 0.1273 da 0.4963 lane 0.4611 budget 0.0000 349ms/step
-[stage A] ep 2 step 4100/4366 loss 1.0847 det 0.1273 da 0.4962 lane 0.4611 budget 0.0000 349ms/step
-[stage A] ep 2 step 4150/4366 loss 1.0847 det 0.1273 da 0.4962 lane 0.4611 budget 0.0000 349ms/step
-[stage A] ep 2 step 4200/4366 loss 1.0846 det 0.1273 da 0.4962 lane 0.4611 budget 0.0000 349ms/step
-[stage A] ep 2 step 4250/4366 loss 1.0846 det 0.1273 da 0.4962 lane 0.4611 budget 0.0000 349ms/step
-[stage A] ep 2 step 4300/4366 loss 1.0845 det 0.1272 da 0.4961 lane 0.4611 budget 0.0000 349ms/step
-[stage A] ep 2 step 4350/4366 loss 1.0845 det 0.1272 da 0.4962 lane 0.4611 budget 0.0000 349ms/step
-[stage A] ep 2 DONE avg_loss=1.0845 saved experiments/expF_single_teacher/kd_yolop/checkpoint.pt
-[stage A] ep 3 step 50/4366 loss 1.0791 det 0.1251 da 0.4933 lane 0.4607 budget 0.0000 358ms/step
-[stage A] ep 3 step 100/4366 loss 1.0795 det 0.1254 da 0.4933 lane 0.4607 budget 0.0000 354ms/step
+[stage A] ep 1 step 50/4366 loss 1.1052 det 0.2009 da 0.3418 lane 0.4085 budget 0.0000 feat 0.139 out_da 0.012 out_lane 0.003 371ms/step
+[stage A] ep 1 step 100/4366 loss 0.9290 det 0.1890 da 0.2859 lane 0.3055 budget 0.0000 feat 0.129 out_da 0.015 out_lane 0.005 358ms/step
+[stage A] ep 1 step 150/4366 loss 0.8362 det 0.1798 da 0.2564 lane 0.2543 budget 0.0000 feat 0.123 out_da 0.016 out_lane 0.007 354ms/step
+[stage A] ep 1 step 200/4366 loss 0.7803 det 0.1732 da 0.2396 lane 0.2234 budget 0.0000 feat 0.118 out_da 0.017 out_lane 0.008 353ms/step
+[stage A] ep 1 step 250/4366 loss 0.7412 det 0.1685 da 0.2265 lane 0.2034 budget 0.0000 feat 0.115 out_da 0.018 out_lane 0.010 351ms/step
+[stage A] ep 1 step 300/4366 loss 0.7143 det 0.1648 da 0.2192 lane 0.1889 budget 0.0000 feat 0.112 out_da 0.018 out_lane 0.011 351ms/step
+[stage A] ep 1 step 350/4366 loss 0.6916 det 0.1617 da 0.2120 lane 0.1776 budget 0.0000 feat 0.110 out_da 0.018 out_lane 0.011 350ms/step
+[stage A] ep 1 step 400/4366 loss 0.6738 det 0.1592 da 0.2065 lane 0.1690 budget 0.0000 feat 0.109 out_da 0.018 out_lane 0.012 349ms/step
+[stage A] ep 1 step 450/4366 loss 0.6585 det 0.1572 da 0.2018 lane 0.1618 budget 0.0000 feat 0.107 out_da 0.018 out_lane 0.012 349ms/step
+[stage A] ep 1 step 500/4366 loss 0.6449 det 0.1555 da 0.1973 lane 0.1559 budget 0.0000 feat 0.106 out_da 0.017 out_lane 0.013 349ms/step
+[stage A] ep 1 step 550/4366 loss 0.6331 det 0.1539 da 0.1933 lane 0.1510 budget 0.0000 feat 0.105 out_da 0.017 out_lane 0.013 349ms/step
+[stage A] ep 1 step 600/4366 loss 0.6225 det 0.1527 da 0.1897 lane 0.1467 budget 0.0000 feat 0.104 out_da 0.016 out_lane 0.013 348ms/step
+[stage A] ep 1 step 650/4366 loss 0.6136 det 0.1515 da 0.1869 lane 0.1432 budget 0.0000 feat 0.103 out_da 0.016 out_lane 0.013 348ms/step
+[stage A] ep 1 step 700/4366 loss 0.6057 det 0.1505 da 0.1846 lane 0.1399 budget 0.0000 feat 0.103 out_da 0.015 out_lane 0.013 348ms/step
+[stage A] ep 1 step 750/4366 loss 0.5982 det 0.1495 da 0.1820 lane 0.1372 budget 0.0000 feat 0.102 out_da 0.015 out_lane 0.013 348ms/step
+[stage A] ep 1 step 800/4366 loss 0.5910 det 0.1486 da 0.1795 lane 0.1346 budget 0.0000 feat 0.101 out_da 0.014 out_lane 0.013 348ms/step
+[stage A] ep 1 step 850/4366 loss 0.5847 det 0.1478 da 0.1773 lane 0.1324 budget 0.0000 feat 0.101 out_da 0.014 out_lane 0.013 348ms/step
+[stage A] ep 1 step 900/4366 loss 0.5787 det 0.1470 da 0.1751 lane 0.1302 budget 0.0000 feat 0.100 out_da 0.013 out_lane 0.012 348ms/step
+[stage A] ep 1 step 950/4366 loss 0.5732 det 0.1465 da 0.1731 lane 0.1284 budget 0.0000 feat 0.100 out_da 0.013 out_lane 0.012 348ms/step
+[stage A] ep 1 step 1000/4366 loss 0.5681 det 0.1458 da 0.1713 lane 0.1266 budget 0.0000 feat 0.100 out_da 0.013 out_lane 0.012 348ms/step
+[stage A] ep 1 step 1050/4366 loss 0.5633 det 0.1452 da 0.1697 lane 0.1249 budget 0.0000 feat 0.099 out_da 0.012 out_lane 0.012 347ms/step
+[stage A] ep 1 step 1100/4366 loss 0.5587 det 0.1446 da 0.1680 lane 0.1234 budget 0.0000 feat 0.099 out_da 0.012 out_lane 0.012 347ms/step
+[stage A] ep 1 step 1150/4366 loss 0.5546 det 0.1442 da 0.1664 lane 0.1221 budget 0.0000 feat 0.099 out_da 0.012 out_lane 0.012 347ms/step
+[stage A] ep 1 step 1200/4366 loss 0.5506 det 0.1436 da 0.1648 lane 0.1209 budget 0.0000 feat 0.098 out_da 0.012 out_lane 0.011 347ms/step
+[stage A] ep 1 step 1250/4366 loss 0.5467 det 0.1431 da 0.1633 lane 0.1196 budget 0.0000 feat 0.098 out_da 0.012 out_lane 0.011 347ms/step
+[stage A] ep 1 step 1300/4366 loss 0.5429 det 0.1427 da 0.1618 lane 0.1183 budget 0.0000 feat 0.098 out_da 0.011 out_lane 0.011 347ms/step
+[stage A] ep 1 step 1350/4366 loss 0.5394 det 0.1423 da 0.1604 lane 0.1172 budget 0.0000 feat 0.097 out_da 0.011 out_lane 0.011 347ms/step
+[stage A] ep 1 step 1400/4366 loss 0.5360 det 0.1419 da 0.1591 lane 0.1161 budget 0.0000 feat 0.097 out_da 0.011 out_lane 0.011 347ms/step
+[stage A] ep 1 step 1450/4366 loss 0.5331 det 0.1416 da 0.1581 lane 0.1151 budget 0.0000 feat 0.097 out_da 0.011 out_lane 0.011 347ms/step
+[stage A] ep 1 step 1500/4366 loss 0.5302 det 0.1411 da 0.1570 lane 0.1141 budget 0.0000 feat 0.097 out_da 0.011 out_lane 0.010 347ms/step
+[stage A] ep 1 step 1550/4366 loss 0.5271 det 0.1408 da 0.1558 lane 0.1131 budget 0.0000 feat 0.096 out_da 0.011 out_lane 0.010 347ms/step
+[stage A] ep 1 step 1600/4366 loss 0.5245 det 0.1404 da 0.1548 lane 0.1121 budget 0.0000 feat 0.096 out_da 0.011 out_lane 0.010 347ms/step
+[stage A] ep 1 step 1650/4366 loss 0.5219 det 0.1401 da 0.1539 lane 0.1113 budget 0.0000 feat 0.096 out_da 0.011 out_lane 0.010 347ms/step
+[stage A] ep 1 step 1700/4366 loss 0.5191 det 0.1398 da 0.1526 lane 0.1105 budget 0.0000 feat 0.096 out_da 0.010 out_lane 0.010 347ms/step
+[stage A] ep 1 step 1750/4366 loss 0.5167 det 0.1395 da 0.1517 lane 0.1097 budget 0.0000 feat 0.096 out_da 0.010 out_lane 0.010 347ms/step
+[stage A] ep 1 step 1800/4366 loss 0.5144 det 0.1392 da 0.1507 lane 0.1089 budget 0.0000 feat 0.095 out_da 0.010 out_lane 0.010 347ms/step
+[stage A] ep 1 step 1850/4366 loss 0.5122 det 0.1389 da 0.1498 lane 0.1083 budget 0.0000 feat 0.095 out_da 0.010 out_lane 0.010 347ms/step
+[stage A] ep 1 step 1900/4366 loss 0.5100 det 0.1387 da 0.1488 lane 0.1076 budget 0.0000 feat 0.095 out_da 0.010 out_lane 0.010 347ms/step
+[stage A] ep 1 step 1950/4366 loss 0.5078 det 0.1384 da 0.1479 lane 0.1070 budget 0.0000 feat 0.095 out_da 0.010 out_lane 0.010 347ms/step
+[stage A] ep 1 step 2000/4366 loss 0.5056 det 0.1381 da 0.1469 lane 0.1063 budget 0.0000 feat 0.095 out_da 0.010 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2050/4366 loss 0.5035 det 0.1379 da 0.1459 lane 0.1057 budget 0.0000 feat 0.095 out_da 0.010 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2100/4366 loss 0.5017 det 0.1377 da 0.1452 lane 0.1051 budget 0.0000 feat 0.095 out_da 0.010 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2150/4366 loss 0.4999 det 0.1374 da 0.1445 lane 0.1045 budget 0.0000 feat 0.094 out_da 0.010 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2200/4366 loss 0.4980 det 0.1372 da 0.1437 lane 0.1039 budget 0.0000 feat 0.094 out_da 0.010 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2250/4366 loss 0.4964 det 0.1370 da 0.1430 lane 0.1034 budget 0.0000 feat 0.094 out_da 0.010 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2300/4366 loss 0.4947 det 0.1368 da 0.1423 lane 0.1029 budget 0.0000 feat 0.094 out_da 0.010 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2350/4366 loss 0.4931 det 0.1366 da 0.1415 lane 0.1025 budget 0.0000 feat 0.094 out_da 0.010 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2400/4366 loss 0.4915 det 0.1364 da 0.1408 lane 0.1021 budget 0.0000 feat 0.094 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2450/4366 loss 0.4900 det 0.1362 da 0.1402 lane 0.1015 budget 0.0000 feat 0.094 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2500/4366 loss 0.4884 det 0.1360 da 0.1395 lane 0.1010 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2550/4366 loss 0.4869 det 0.1358 da 0.1389 lane 0.1006 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2600/4366 loss 0.4854 det 0.1357 da 0.1381 lane 0.1002 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2650/4366 loss 0.4840 det 0.1355 da 0.1375 lane 0.0998 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2700/4366 loss 0.4825 det 0.1353 da 0.1368 lane 0.0993 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2750/4366 loss 0.4812 det 0.1351 da 0.1363 lane 0.0989 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2800/4366 loss 0.4799 det 0.1350 da 0.1357 lane 0.0986 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2850/4366 loss 0.4787 det 0.1348 da 0.1351 lane 0.0982 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2900/4366 loss 0.4775 det 0.1346 da 0.1346 lane 0.0979 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 2950/4366 loss 0.4763 det 0.1345 da 0.1341 lane 0.0975 budget 0.0000 feat 0.093 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 3000/4366 loss 0.4751 det 0.1343 da 0.1336 lane 0.0972 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 3050/4366 loss 0.4740 det 0.1342 da 0.1331 lane 0.0968 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.009 347ms/step
+[stage A] ep 1 step 3100/4366 loss 0.4729 det 0.1340 da 0.1326 lane 0.0965 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 347ms/step
+[stage A] ep 1 step 3150/4366 loss 0.4718 det 0.1339 da 0.1321 lane 0.0962 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 347ms/step
+[stage A] ep 1 step 3200/4366 loss 0.4708 det 0.1338 da 0.1316 lane 0.0959 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 347ms/step
+[stage A] ep 1 step 3250/4366 loss 0.4698 det 0.1336 da 0.1312 lane 0.0956 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 347ms/step
+[stage A] ep 1 step 3300/4366 loss 0.4687 det 0.1335 da 0.1307 lane 0.0953 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3350/4366 loss 0.4677 det 0.1334 da 0.1303 lane 0.0950 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3400/4366 loss 0.4667 det 0.1332 da 0.1298 lane 0.0947 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3450/4366 loss 0.4657 det 0.1331 da 0.1294 lane 0.0944 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3500/4366 loss 0.4648 det 0.1329 da 0.1290 lane 0.0941 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3550/4366 loss 0.4638 det 0.1328 da 0.1285 lane 0.0939 budget 0.0000 feat 0.092 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3600/4366 loss 0.4629 det 0.1327 da 0.1281 lane 0.0936 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3650/4366 loss 0.4620 det 0.1326 da 0.1277 lane 0.0933 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3700/4366 loss 0.4610 det 0.1324 da 0.1273 lane 0.0931 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3750/4366 loss 0.4601 det 0.1323 da 0.1269 lane 0.0928 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3800/4366 loss 0.4592 det 0.1322 da 0.1264 lane 0.0926 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3850/4366 loss 0.4583 det 0.1321 da 0.1260 lane 0.0923 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3900/4366 loss 0.4575 det 0.1320 da 0.1256 lane 0.0921 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 3950/4366 loss 0.4566 det 0.1318 da 0.1252 lane 0.0919 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 4000/4366 loss 0.4559 det 0.1317 da 0.1249 lane 0.0916 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 4050/4366 loss 0.4551 det 0.1316 da 0.1245 lane 0.0914 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 4100/4366 loss 0.4543 det 0.1315 da 0.1241 lane 0.0912 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 4150/4366 loss 0.4535 det 0.1314 da 0.1238 lane 0.0910 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 4200/4366 loss 0.4528 det 0.1313 da 0.1234 lane 0.0908 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 4250/4366 loss 0.4521 det 0.1312 da 0.1232 lane 0.0906 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 4300/4366 loss 0.4512 det 0.1311 da 0.1227 lane 0.0904 budget 0.0000 feat 0.091 out_da 0.009 out_lane 0.008 348ms/step
+[stage A] ep 1 step 4350/4366 loss 0.4505 det 0.1309 da 0.1224 lane 0.0902 budget 0.0000 feat 0.091 out_da 0.008 out_lane 0.008 348ms/step
+[stage A] ep 1 DONE avg_loss=0.4502 saved experiments/expF_single_teacher/kd_yolop/checkpoint.pt
+[stage A] ep 2 step 50/4366 loss 0.3865 det 0.1216 da 0.0937 lane 0.0718 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 358ms/step
+[stage A] ep 2 step 100/4366 loss 0.3843 det 0.1214 da 0.0914 lane 0.0721 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 354ms/step
+[stage A] ep 2 step 150/4366 loss 0.3842 det 0.1216 da 0.0918 lane 0.0715 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 353ms/step
+[stage A] ep 2 step 200/4366 loss 0.3837 det 0.1214 da 0.0910 lane 0.0721 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 352ms/step
+[stage A] ep 2 step 250/4366 loss 0.3844 det 0.1214 da 0.0915 lane 0.0721 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 300/4366 loss 0.3857 det 0.1213 da 0.0929 lane 0.0721 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 350/4366 loss 0.3852 det 0.1212 da 0.0924 lane 0.0722 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 400/4366 loss 0.3847 det 0.1211 da 0.0923 lane 0.0720 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 450/4366 loss 0.3847 det 0.1210 da 0.0927 lane 0.0717 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 500/4366 loss 0.3849 det 0.1210 da 0.0929 lane 0.0717 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 550/4366 loss 0.3843 det 0.1209 da 0.0925 lane 0.0717 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 600/4366 loss 0.3837 det 0.1208 da 0.0920 lane 0.0717 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 650/4366 loss 0.3833 det 0.1207 da 0.0919 lane 0.0715 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 700/4366 loss 0.3828 det 0.1207 da 0.0916 lane 0.0714 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 750/4366 loss 0.3826 det 0.1206 da 0.0914 lane 0.0714 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 800/4366 loss 0.3825 det 0.1206 da 0.0915 lane 0.0713 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 850/4366 loss 0.3820 det 0.1206 da 0.0911 lane 0.0711 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 900/4366 loss 0.3817 det 0.1205 da 0.0910 lane 0.0711 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 950/4366 loss 0.3814 det 0.1204 da 0.0908 lane 0.0711 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1000/4366 loss 0.3813 det 0.1204 da 0.0907 lane 0.0711 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1050/4366 loss 0.3812 det 0.1203 da 0.0907 lane 0.0712 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1100/4366 loss 0.3811 det 0.1203 da 0.0906 lane 0.0712 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1150/4366 loss 0.3808 det 0.1203 da 0.0904 lane 0.0711 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1200/4366 loss 0.3806 det 0.1203 da 0.0904 lane 0.0710 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1250/4366 loss 0.3803 det 0.1202 da 0.0902 lane 0.0710 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1300/4366 loss 0.3803 det 0.1202 da 0.0902 lane 0.0710 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1350/4366 loss 0.3800 det 0.1201 da 0.0901 lane 0.0709 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1400/4366 loss 0.3797 det 0.1200 da 0.0899 lane 0.0709 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1450/4366 loss 0.3794 det 0.1200 da 0.0898 lane 0.0708 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1500/4366 loss 0.3794 det 0.1199 da 0.0898 lane 0.0708 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1550/4366 loss 0.3791 det 0.1198 da 0.0897 lane 0.0707 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1600/4366 loss 0.3788 det 0.1198 da 0.0895 lane 0.0706 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1650/4366 loss 0.3784 det 0.1197 da 0.0894 lane 0.0705 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1700/4366 loss 0.3781 det 0.1197 da 0.0892 lane 0.0705 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 1750/4366 loss 0.3780 det 0.1197 da 0.0892 lane 0.0704 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 1800/4366 loss 0.3778 det 0.1196 da 0.0891 lane 0.0704 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 351ms/step
+[stage A] ep 2 step 1850/4366 loss 0.3777 det 0.1195 da 0.0891 lane 0.0704 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1900/4366 loss 0.3778 det 0.1195 da 0.0893 lane 0.0704 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 1950/4366 loss 0.3775 det 0.1194 da 0.0891 lane 0.0703 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2000/4366 loss 0.3774 det 0.1194 da 0.0891 lane 0.0703 budget 0.0000 feat 0.085 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2050/4366 loss 0.3772 det 0.1193 da 0.0891 lane 0.0702 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2100/4366 loss 0.3771 det 0.1193 da 0.0890 lane 0.0702 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2150/4366 loss 0.3769 det 0.1192 da 0.0889 lane 0.0702 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2200/4366 loss 0.3768 det 0.1192 da 0.0888 lane 0.0702 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2250/4366 loss 0.3766 det 0.1192 da 0.0887 lane 0.0702 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2300/4366 loss 0.3765 det 0.1191 da 0.0887 lane 0.0702 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2350/4366 loss 0.3765 det 0.1191 da 0.0888 lane 0.0701 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2400/4366 loss 0.3764 det 0.1191 da 0.0888 lane 0.0701 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2450/4366 loss 0.3762 det 0.1191 da 0.0887 lane 0.0700 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2500/4366 loss 0.3760 det 0.1190 da 0.0885 lane 0.0700 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2550/4366 loss 0.3758 det 0.1190 da 0.0884 lane 0.0699 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2600/4366 loss 0.3756 det 0.1189 da 0.0883 lane 0.0699 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2650/4366 loss 0.3753 det 0.1189 da 0.0882 lane 0.0698 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2700/4366 loss 0.3752 det 0.1189 da 0.0880 lane 0.0698 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2750/4366 loss 0.3748 det 0.1189 da 0.0879 lane 0.0697 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2800/4366 loss 0.3747 det 0.1188 da 0.0877 lane 0.0697 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step
+[stage A] ep 2 step 2850/4366 loss 0.3745 det 0.1188 da 0.0876 lane 0.0697 budget 0.0000 feat 0.084 out_da 0.007 out_lane 0.007 350ms/step

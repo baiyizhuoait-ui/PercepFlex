@@ -22,9 +22,9 @@ train:
   batch_size: 16
   epochs: 6
   kd:
-    T: 2
+    T: 3
     lambda_feat: 0.1
-    lambda_out: 1.0
+    lambda_out: 0.2
     preset: null
     teacher: YOLOP
   lambda_budget: 0.0
