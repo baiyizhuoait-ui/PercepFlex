@@ -156,6 +156,8 @@ def main():
     ap.add_argument("--alloc-stats", action="store_true")
     ap.add_argument("--force-widths", default=None,
                     help="comma widths det,da,lane e.g. 0.25,0.25,0.25 (OursDynamic)")
+    ap.add_argument("--static-width", type=float, default=None,
+                    help="set model width for OursStatic/OursDynamic before eval (e.g. 0.45)")
     ap.add_argument("--router-mode", default="learned",
                     choices=["learned", "random", "fixed"],
                     help="routing policy for OursDynamic (Exp3)")
@@ -164,6 +166,9 @@ def main():
     device = torch.device(args.device)
     model, norm = build(args.baseline, args.preset, device)
     model.eval()
+    if args.static_width and args.baseline in ("OursStatic", "OursDynamic"):
+        model.set_width(args.static_width)
+        print(f"[ours] width set to {args.static_width}")
     name = f"{args.baseline}" + (f"-{args.preset}" if args.preset else "")
 
     # ---------------- profiling ----------------

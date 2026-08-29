@@ -1,0 +1,5 @@
+15:37:36 static_eb seed=0
+15:37:36   static_eb_s0 already exists (training)
+15:37:36 dynamic seed=0
+15:37:36   dynamic s0 = exp_train_D (existing)
+15:37:36 static_eb seed=1

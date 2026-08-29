@@ -1,0 +1,24 @@
+[train] static model at fixed width 0.45
+[train] stage=A adaptive=False params=0.230M
+/home/mycode/ai_study/trac/training/train.py:91: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running[k] = running.get(k, 0.0) + float(v)
+[stage A] ep 1 step 50/4366 loss 1.1336 det 0.1847 da 0.4073 lane 0.5415 budget 0.0000 145ms/step
+[stage A] ep 1 step 100/4366 loss 0.9547 det 0.1741 da 0.3427 lane 0.4379 budget 0.0000 128ms/step
+[stage A] ep 1 step 150/4366 loss 0.8350 det 0.1671 da 0.3045 lane 0.3634 budget 0.0000 123ms/step
+[stage A] ep 1 step 200/4366 loss 0.7540 det 0.1628 da 0.2778 lane 0.3134 budget 0.0000 120ms/step
+[stage A] ep 1 step 250/4366 loss 0.6967 det 0.1592 da 0.2596 lane 0.2778 budget 0.0000 119ms/step
+[stage A] ep 1 step 300/4366 loss 0.6547 det 0.1567 da 0.2460 lane 0.2520 budget 0.0000 118ms/step
+[stage A] ep 1 step 350/4366 loss 0.6228 det 0.1546 da 0.2352 lane 0.2330 budget 0.0000 117ms/step
+[stage A] ep 1 step 400/4366 loss 0.5972 det 0.1530 da 0.2264 lane 0.2178 budget 0.0000 117ms/step
+[stage A] ep 1 step 450/4366 loss 0.5766 det 0.1516 da 0.2196 lane 0.2054 budget 0.0000 116ms/step
+[stage A] ep 1 step 500/4366 loss 0.5590 det 0.1503 da 0.2132 lane 0.1955 budget 0.0000 116ms/step
+[stage A] ep 1 step 550/4366 loss 0.5438 det 0.1494 da 0.2076 lane 0.1868 budget 0.0000 116ms/step
+[stage A] ep 1 step 600/4366 loss 0.5312 det 0.1485 da 0.2030 lane 0.1797 budget 0.0000 116ms/step
+[stage A] ep 1 step 650/4366 loss 0.5198 det 0.1477 da 0.1989 lane 0.1733 budget 0.0000 116ms/step
+[stage A] ep 1 step 700/4366 loss 0.5098 det 0.1469 da 0.1949 lane 0.1680 budget 0.0000 115ms/step
+[stage A] ep 1 step 750/4366 loss 0.5011 det 0.1463 da 0.1916 lane 0.1632 budget 0.0000 115ms/step
+[stage A] ep 1 step 800/4366 loss 0.4935 det 0.1456 da 0.1887 lane 0.1591 budget 0.0000 115ms/step
+[stage A] ep 1 step 850/4366 loss 0.4863 det 0.1451 da 0.1857 lane 0.1556 budget 0.0000 115ms/step
+[stage A] ep 1 step 900/4366 loss 0.4796 det 0.1445 da 0.1829 lane 0.1521 budget 0.0000 115ms/step
+[stage A] ep 1 step 950/4366 loss 0.4733 det 0.1440 da 0.1802 lane 0.1491 budget 0.0000 115ms/step
