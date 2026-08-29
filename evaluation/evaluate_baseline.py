@@ -82,13 +82,18 @@ def build_ours(model_cls_name, weights, device):
         if rw is not None and rw.shape[0] == 3:
             cfg.setdefault("router", {})["shared"] = True
             print("[ours] detected SHARED router")
+        if "router.diff_head.weight" in probe:
+            cfg.setdefault("router", {})["type"] = "difficulty"
+            print("[ours] detected DIFFICULTY router")
     cls = StaticMultiTaskModel if model_cls_name == "OursStatic" else AdaptiveMultiTaskModel
     model = cls(cfg)
     if weights:
         sd = torch.load(weights, map_location="cpu", weights_only=False)
         sd = sd.get("model_state", sd)
-        missing, unexpected = model.load_state_dict(sd, strict=False)
-        print(f"[ours] loaded {weights}: missing={len(missing)} unexpected={len(unexpected)}")
+        cur = model.state_dict()
+        compat = {k: v for k, v in sd.items() if k in cur and cur[k].shape == v.shape}
+        missing, unexpected = model.load_state_dict(compat, strict=False)
+        print(f"[ours] loaded {weights}: {len(compat)} keys missing={len(missing)} unexpected={len(unexpected)}")
     return model.to(device), "unit"
 
 
