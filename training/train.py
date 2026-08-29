@@ -56,6 +56,7 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
         lane_m = batch["lane_mask"].to(device)
         opt.zero_grad()
 
+        ref = None
         if stage == "A":
             det, da, lane = model(img)
             routing = None
@@ -109,6 +110,7 @@ def main():
     ap.add_argument("--config", required=True)
     ap.add_argument("--num-images", type=int, default=0, help="0 = full split")
     ap.add_argument("--epochs", type=int, default=0, help="override epochs")
+    ap.add_argument("--seed", type=int, default=0, help="random seed")
     ap.add_argument("--init", default=None, help="checkpoint to initialize weights from")
     ap.add_argument("--outdir", default=None)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -116,6 +118,11 @@ def main():
 
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
+    torch.manual_seed(args.seed)
+    import numpy as _np
+    _np.random.seed(args.seed)
+    import random as _rnd
+    _rnd.seed(args.seed)
     stage = cfg["train"]["stage"]
     adaptive = stage in ("B", "C", "D")
     outdir = args.outdir or cfg["train"].get("outdir",
@@ -160,9 +167,11 @@ def main():
         if getattr(ds, "_det_by_name", None):
             keep = set(ds.names)
             ds._det_by_name = {k: v for k, v in ds._det_by_name.items() if k in keep}
+    g = torch.Generator()
+    g.manual_seed(args.seed)
     loader = DataLoader(ds, batch_size=tr.get("batch_size", 8), shuffle=True,
                         num_workers=tr.get("num_workers", 2), collate_fn=collate_train,
-                        drop_last=True)
+                        drop_last=True, generator=g)
 
     epochs = args.epochs or int(tr.get("epochs", 1))
     lr = float(tr.get("lr", 1e-3))
