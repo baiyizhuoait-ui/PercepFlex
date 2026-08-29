@@ -1,0 +1,19 @@
+[train] KD teacher=YOLOP lambda_feat=0.1 lambda_out=1.0
+[train] stage=A adaptive=False params=0.230M
+/home/mycode/ai_study/trac/training/train.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running[k] = running.get(k, 0.0) + float(v)
+[stage A] ep 1 step 50/4366 loss 1.3199 det 0.2038 da 0.6144 lane 0.5017 budget 0.0000 377ms/step
+[stage A] ep 1 step 100/4366 loss 1.2694 det 0.1930 da 0.5916 lane 0.4848 budget 0.0000 363ms/step
+[stage A] ep 1 step 150/4366 loss 1.2441 det 0.1838 da 0.5811 lane 0.4792 budget 0.0000 358ms/step
+[stage A] ep 1 step 200/4366 loss 1.2268 det 0.1769 da 0.5735 lane 0.4764 budget 0.0000 356ms/step
+[stage A] ep 1 step 250/4366 loss 1.2153 det 0.1718 da 0.5687 lane 0.4748 budget 0.0000 355ms/step
+[stage A] ep 1 step 300/4366 loss 1.2069 det 0.1678 da 0.5655 lane 0.4736 budget 0.0000 354ms/step
+[stage A] ep 1 step 350/4366 loss 1.1990 det 0.1645 da 0.5620 lane 0.4725 budget 0.0000 353ms/step
+[stage A] ep 1 step 400/4366 loss 1.1930 det 0.1618 da 0.5594 lane 0.4718 budget 0.0000 352ms/step
+[stage A] ep 1 step 450/4366 loss 1.1878 det 0.1597 da 0.5571 lane 0.4711 budget 0.0000 352ms/step
+[stage A] ep 1 step 500/4366 loss 1.1831 det 0.1578 da 0.5547 lane 0.4705 budget 0.0000 352ms/step
+[stage A] ep 1 step 550/4366 loss 1.1791 det 0.1562 da 0.5527 lane 0.4701 budget 0.0000 352ms/step
+[stage A] ep 1 step 600/4366 loss 1.1756 det 0.1549 da 0.5510 lane 0.4697 budget 0.0000 351ms/step
+[stage A] ep 1 step 650/4366 loss 1.1726 det 0.1537 da 0.5495 lane 0.4694 budget 0.0000 351ms/step
+[stage A] ep 1 step 700/4366 loss 1.1697 det 0.1527 da 0.5479 lane 0.4691 budget 0.0000 351ms/step
