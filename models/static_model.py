@@ -47,6 +47,5 @@ class StaticMultiTaskModel(nn.Module):
 
     def set_width(self, w):
         """Set dynamic width for all dynamic layers (w=1.0 == static)."""
-        for m in self.modules():
-            if hasattr(m, "width"):
-                m.width = w
+        from models.router.dynamic_conv import set_width_recursive
+        set_width_recursive(self, w)

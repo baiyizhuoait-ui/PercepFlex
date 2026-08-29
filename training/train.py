@@ -127,6 +127,10 @@ def main():
 
     device = torch.device(args.device)
     model = build_model(cfg, adaptive).to(device)
+    if cfg["train"].get("static_width"):
+        w = float(cfg["train"]["static_width"])
+        model.set_width(w)
+        print(f"[train] static model at fixed width {w}", flush=True)
     if args.init:
         ckpt = torch.load(args.init, map_location=device, weights_only=False)
         sd = ckpt.get("model_state", ckpt)

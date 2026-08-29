@@ -170,7 +170,10 @@ def main():
     profile = None
     if not args.no_profile:
         try:
-            profile = profile_model(model, device="cuda" if device.type == "cuda" else "cpu")
+            if args.baseline in ("OursStatic", "OursDynamic"):
+                profile = _profile_ours(model, (1, 3, 640, 640), device, 3)
+            else:
+                profile = profile_model(model, device="cuda" if device.type == "cuda" else "cpu")
             print(f"[profile] params={profile['parameters']/1e6:.3f}M "
                   f"flops={profile['flops']/1e9:.3f}G "
                   f"lat={profile['mean_ms']:.2f}ms fps={profile['fps']:.1f} "
@@ -274,6 +277,32 @@ def main():
                         "lane_fg_iou": round(lane_metric.fg_iou(), 4),
                         "lane_mIoU": round(lane_metric.m_iou(), 4),
                         "lane_line_acc": round(lane_metric.line_accuracy(), 4)})
+    if alloc_rows:
+        try:
+            from profiling.flops_real import count_flops
+            from models.static_model import StaticMultiTaskModel
+            import yaml as _yaml
+            with open(os.path.join(ROOT, "configs", "ours_static.yaml")) as f:
+                scfg = _yaml.safe_load(f)["model"]
+            sm = StaticMultiTaskModel(scfg).to(device).eval()
+            x = torch.randn(1, 3, 640, 640).to(device)
+            enc = count_flops(sm.encoder, x)
+            heads = {}
+            for w in (0.25, 0.5, 1.0):
+                sm.set_width(w)
+                heads[w] = (count_flops(sm, x) - enc) / 3.0
+            wmap = {"0": 0.25, "1": 0.5, "2": 1.0}
+            import numpy as _np
+            avg = float(enc)
+            for t in ("det", "da", "lane"):
+                wsum = sum(wmap[r[t]] for r in alloc_rows) / len(alloc_rows)
+                avg += float(_np.interp(wsum, [0.25, 0.5, 1.0],
+                                        [heads[0.25], heads[0.5], heads[1.0]]))
+            metrics["flops"] = avg
+            metrics["avg_alloc_width"] = round(sum(
+                (wmap[r["det"]] + wmap[r["da"]] + wmap[r["lane"]]) / 3 for r in alloc_rows) / len(alloc_rows), 4)
+        except Exception as e:
+            print(f"[alloc-flops] failed: {e}")
     if profile:
         metrics.update({"parameters": profile["parameters"], "flops": profile["flops"],
                         "model_size_mb": profile["model_size_mb"],

@@ -87,6 +87,8 @@ class DynamicBatchNorm2d(nn.Module):
 def set_width_recursive(module, w):
     """Set width on a module tree, caching sliced weights where supported."""
     for m in module.modules():
+        if m is module:
+            continue  # named_modules includes the root; its own set_width recurses
         if hasattr(m, "set_width"):
             m.set_width(w)
         elif hasattr(m, "width"):
