@@ -1,0 +1,39 @@
+[train] stage=A adaptive=False params=0.424M
+/home/mycode/ai_study/trac/training/train.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running[k] = running.get(k, 0.0) + float(v)
+[stage A] ep 1 step 50/4366 loss 0.9306 det 0.1877 da 0.3484 lane 0.3944 budget 0.0000 165ms/step
+[stage A] ep 1 step 100/4366 loss 0.7560 det 0.1780 da 0.2875 lane 0.2905 budget 0.0000 152ms/step
+[stage A] ep 1 step 150/4366 loss 0.6679 det 0.1707 da 0.2562 lane 0.2410 budget 0.0000 148ms/step
+[stage A] ep 1 step 200/4366 loss 0.6160 det 0.1655 da 0.2389 lane 0.2116 budget 0.0000 146ms/step
+[stage A] ep 1 step 250/4366 loss 0.5786 det 0.1616 da 0.2246 lane 0.1924 budget 0.0000 145ms/step
+[stage A] ep 1 step 300/4366 loss 0.5518 det 0.1584 da 0.2151 lane 0.1782 budget 0.0000 144ms/step
+[stage A] ep 1 step 350/4366 loss 0.5307 det 0.1559 da 0.2074 lane 0.1674 budget 0.0000 144ms/step
+[stage A] ep 1 step 400/4366 loss 0.5144 det 0.1538 da 0.2013 lane 0.1592 budget 0.0000 143ms/step
+[stage A] ep 1 step 450/4366 loss 0.4998 det 0.1520 da 0.1956 lane 0.1522 budget 0.0000 143ms/step
+[stage A] ep 1 step 500/4366 loss 0.4876 det 0.1505 da 0.1908 lane 0.1464 budget 0.0000 142ms/step
+[stage A] ep 1 step 550/4366 loss 0.4771 det 0.1491 da 0.1865 lane 0.1415 budget 0.0000 142ms/step
+[stage A] ep 1 step 600/4366 loss 0.4681 det 0.1479 da 0.1827 lane 0.1374 budget 0.0000 142ms/step
+[stage A] ep 1 step 650/4366 loss 0.4602 det 0.1469 da 0.1794 lane 0.1340 budget 0.0000 142ms/step
+[stage A] ep 1 step 700/4366 loss 0.4536 det 0.1459 da 0.1769 lane 0.1308 budget 0.0000 142ms/step
+[stage A] ep 1 step 750/4366 loss 0.4474 det 0.1450 da 0.1741 lane 0.1283 budget 0.0000 142ms/step
+[stage A] ep 1 step 800/4366 loss 0.4413 det 0.1442 da 0.1714 lane 0.1257 budget 0.0000 142ms/step
+[stage A] ep 1 step 850/4366 loss 0.4361 det 0.1435 da 0.1690 lane 0.1236 budget 0.0000 142ms/step
+[stage A] ep 1 step 900/4366 loss 0.4310 det 0.1428 da 0.1667 lane 0.1215 budget 0.0000 141ms/step
+[stage A] ep 1 step 950/4366 loss 0.4266 det 0.1423 da 0.1645 lane 0.1198 budget 0.0000 141ms/step
+[stage A] ep 1 step 1000/4366 loss 0.4224 det 0.1416 da 0.1626 lane 0.1182 budget 0.0000 141ms/step
+[stage A] ep 1 step 1050/4366 loss 0.4186 det 0.1411 da 0.1609 lane 0.1166 budget 0.0000 141ms/step
+[stage A] ep 1 step 1100/4366 loss 0.4149 det 0.1406 da 0.1592 lane 0.1152 budget 0.0000 141ms/step
+[stage A] ep 1 step 1150/4366 loss 0.4119 det 0.1401 da 0.1577 lane 0.1140 budget 0.0000 141ms/step
+[stage A] ep 1 step 1200/4366 loss 0.4086 det 0.1397 da 0.1561 lane 0.1129 budget 0.0000 141ms/step
+[stage A] ep 1 step 1250/4366 loss 0.4054 det 0.1392 da 0.1545 lane 0.1117 budget 0.0000 141ms/step
+[stage A] ep 1 step 1300/4366 loss 0.4023 det 0.1388 da 0.1530 lane 0.1105 budget 0.0000 141ms/step
+[stage A] ep 1 step 1350/4366 loss 0.3994 det 0.1385 da 0.1515 lane 0.1094 budget 0.0000 141ms/step
+[stage A] ep 1 step 1400/4366 loss 0.3967 det 0.1381 da 0.1501 lane 0.1085 budget 0.0000 141ms/step
+[stage A] ep 1 step 1450/4366 loss 0.3945 det 0.1378 da 0.1492 lane 0.1076 budget 0.0000 141ms/step
+[stage A] ep 1 step 1500/4366 loss 0.3923 det 0.1374 da 0.1481 lane 0.1067 budget 0.0000 141ms/step
+[stage A] ep 1 step 1550/4366 loss 0.3899 det 0.1371 da 0.1470 lane 0.1058 budget 0.0000 141ms/step
+[stage A] ep 1 step 1600/4366 loss 0.3879 det 0.1368 da 0.1462 lane 0.1050 budget 0.0000 141ms/step
+[stage A] ep 1 step 1650/4366 loss 0.3858 det 0.1365 da 0.1451 lane 0.1042 budget 0.0000 141ms/step
+[stage A] ep 1 step 1700/4366 loss 0.3835 det 0.1362 da 0.1439 lane 0.1035 budget 0.0000 141ms/step
+[stage A] ep 1 step 1750/4366 loss 0.3816 det 0.1359 da 0.1430 lane 0.1027 budget 0.0000 141ms/step
