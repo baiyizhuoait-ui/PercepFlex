@@ -72,8 +72,16 @@ def build_ours(model_cls_name, weights, device):
     from models.static_model import StaticMultiTaskModel
     from models.adaptive_model import AdaptiveMultiTaskModel
     cfg_path = os.path.join(ROOT, "configs", "ours_static.yaml")
+    # prefer the config.yaml saved next to the checkpoint (matches its architecture)
+    if weights:
+        wdir = os.path.dirname(os.path.abspath(weights))
+        cand = os.path.join(wdir, "config.yaml")
+        if os.path.exists(cand):
+            cfg_path = cand
+            print(f"[ours] using config {cfg_path}")
     with open(cfg_path) as f:
-        cfg = yaml.safe_load(f)["model"]
+        cfg = yaml.safe_load(f)
+    cfg = cfg["model"] if "model" in cfg else cfg
     if model_cls_name == "OursDynamic" and weights:
         # detect shared vs task-wise router from the checkpoint
         probe = torch.load(weights, map_location="cpu", weights_only=False)

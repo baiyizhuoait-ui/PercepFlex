@@ -1,1 +1,10 @@
 01:48:29 train ours_0.5M
+02:29:55 eval ours_0.5M
+02:39:15   ours_0.5M done
+02:39:15 train ours_1.0M
+03:19:46 eval ours_1.0M
+03:23:05   ours_1.0M done
+03:23:05 train ours_2.0M
+04:03:12 eval ours_2.0M
+04:06:42   ours_2.0M done
+04:06:42 EXP-D DONE

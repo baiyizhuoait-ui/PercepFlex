@@ -12,6 +12,7 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
 
 CAPS = [
     ("ours_0.23M", "experiments/expA_equal_budget/static_eb_s0_eval"),  # baseline compact
@@ -21,15 +22,30 @@ CAPS = [
 ]
 
 
-def load_metrics(tag, path):
+def load_metrics(tag, path, cfg_path=None):
     p = os.path.join(ROOT, path, "metrics.json")
     if not os.path.exists(p):
         return None
     m = json.load(open(p))
+    params = flops = 0.0
+    try:
+        import torch
+        import yaml
+        from models.static_model import StaticMultiTaskModel
+        from profiling.flops_real import count_flops
+        if cfg_path:
+            with open(cfg_path) as f:
+                cfg = yaml.safe_load(f)
+            cfg = cfg["model"] if "model" in cfg else cfg
+            sm = StaticMultiTaskModel(cfg)
+            params = sum(pp.numel() for pp in sm.parameters())
+            flops = count_flops(sm, torch.randn(1, 3, 640, 640))
+    except Exception:
+        pass
     return {
         "model": tag,
-        "params": m.get("parameters", 0) / 1e6,
-        "flops_g": m.get("flops", 0) / 1e9,
+        "params": params / 1e6,
+        "flops_g": flops / 1e9,
         "mAP50": m.get("mAP50", 0),
         "da_mIoU": m.get("da_mIoU", 0),
         "lane_fg_iou": m.get("lane_fg_iou", 0),
@@ -39,7 +55,10 @@ def load_metrics(tag, path):
 def main():
     rows = []
     for tag, path in CAPS:
-        r = load_metrics(tag, path)
+        cpath = None
+        if tag != "ours_0.23M":
+            cpath = os.path.join(ROOT, path.replace("_eval", ""), "config.yaml")
+        r = load_metrics(tag, path, cpath)
         if r:
             rows.append(r)
     if not rows:

@@ -1,0 +1,35 @@
+[ours] loaded experiments/expD_compact_z/ours_0.5M/checkpoint.pt: 64 keys missing=192 unexpected=0
+[profile] failed: name '_profile_ours' is not defined
+  [1000/10000] fwd 5.3ms/img elapsed 56s
+  [2000/10000] fwd 5.1ms/img elapsed 110s
+  [3000/10000] fwd 4.9ms/img elapsed 165s
+  [4000/10000] fwd 4.8ms/img elapsed 219s
+  [5000/10000] fwd 4.9ms/img elapsed 274s
+  [6000/10000] fwd 4.9ms/img elapsed 328s
+  [7000/10000] fwd 4.9ms/img elapsed 383s
+  [8000/10000] fwd 4.9ms/img elapsed 438s
+  [9000/10000] fwd 4.9ms/img elapsed 492s
+  [10000/10000] fwd 4.9ms/img elapsed 547s
+[eval] 10000 images, forward 4.9ms/img (CUDA-synced), total 547s
+{
+  "model": "OursStatic-experiments/expD_compact_z/ours_0.5M/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 4.872,
+  "eval_fps": 205.25,
+  "mAP50": 0.0,
+  "mAP50_95": 0.0,
+  "det_n_gt": 108363,
+  "det_n_pred": 3000000,
+  "da_pixel_acc": 0.8297,
+  "da_fg_iou": 0.0,
+  "da_mIoU": 0.4148,
+  "lane_pixel_acc": 0.9917,
+  "lane_fg_iou": 0.0,
+  "lane_mIoU": 0.4959,
+  "lane_line_acc": 0.5
+}
+saved -> experiments/expD_compact_z/ours_0.5M_eval/metrics.json
