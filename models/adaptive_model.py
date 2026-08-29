@@ -104,8 +104,11 @@ class AdaptiveMultiTaskModel(nn.Module):
         """
         feats = self.encoder(x)
         z = self.representation(feats)["z"]
-        extra = self._extra_feats(feats, z) if self.router_type == "difficulty" else None
-        routing = self.router(z, extra_feats=extra, budget_prior=budget_prior, hard=hard)
+        if self.router_type == "difficulty":
+            routing = self.router(z, extra_feats=self._extra_feats(feats, z),
+                                  budget_prior=budget_prior, hard=hard)
+        else:
+            routing = self.router(z, budget_prior=budget_prior, hard=hard)
         if force_widths is not None:
             fw = force_widths.to(x.device)
             if fw.dim() == 1:
