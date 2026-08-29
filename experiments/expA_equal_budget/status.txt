@@ -3,3 +3,10 @@
 15:37:36 dynamic seed=0
 15:37:36   dynamic s0 = exp_train_D (existing)
 15:37:36 static_eb seed=1
+16:28:48   static_eb_s1 FAIL
+16:28:48 static_eb seed=2
+16:34:42 static_eb seed=0
+16:34:42   static_eb_s0 already exists (training)
+16:34:42 dynamic seed=0
+16:34:42   dynamic s0 = exp_train_D (existing)
+16:34:42 static_eb seed=1
