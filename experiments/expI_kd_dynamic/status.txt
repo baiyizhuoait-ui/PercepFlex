@@ -14,3 +14,5 @@
 16:07:32 D eval (dynamic+KD)
 16:12:08 EXP-I DONE
 16:15:26 fair D: full-70k dynamic from KD init
+17:15:19 fair D eval
+17:19:49 FAIR-D DONE

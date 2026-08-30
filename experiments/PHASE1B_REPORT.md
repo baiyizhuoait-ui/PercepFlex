@@ -12,7 +12,7 @@
 | **Ours Static (0.235M)** | 0.235M | 1.57G | 0.268 | 0.842 | 0.180 | 152 | 6.6ms |
 | **Ours Static+KD** | 0.235M | 1.57G | **0.280** | **0.850** | **0.193** | 161 | 6.2ms |
 | **Ours Dynamic** | 0.235M | ~0.90G | 0.243 | 0.837 | 0.167 | 136 | 7.4ms |
-| **Ours Dynamic+KD** | 0.235M | ~0.90G | *训练中(全量)* | | | | |
+| **Ours Dynamic+KD** | 0.235M | ~0.90G | 0.046 | 0.441 | 0.109 | 139 | 7.2ms | |
 
 ## 各实验结论
 
@@ -33,8 +33,10 @@
 
 ### Experiment I：KD 后重测 Dynamic
 - **C-A：KD 有效（+0.012/+0.007/+0.013）✓**
-- **B-A：Dynamic 无效（-0.026）**（与 ExpA 一致）
-- **D-C / D-A：KD-Dynamic 全量训练中**（10k 版因训练量不足 mAP 0.038，已启动全量公平版）
+- **B-A：Dynamic 无效（-0.026/-0.005/-0.014）**（与 ExpA 一致）
+- **D-C：KD-Dynamic 全量公平版仍差（-0.234 mAP, -0.409 DA）**——诊断确认：
+  **router 对 DA 塌缩到 tiny（57%），窄宽度 DA 头过度预测前景（cls1 0.37 vs 正常 0.15-0.25）**
+  → 动态训练管线（A→B→C→D）系统性降低模型质量（ExpA s1/s2、ExpI D 三处复现）
 
 ## 决策树结论（§26）
 
@@ -45,18 +47,23 @@ Cross-Arch KD: 有效（H4 ✓，C > A）→ 进入 KD
 KD 后 Dynamic: 验证中（待全量 fair-D）
 ```
 
-**当前路线：Route B（通用弹性模型）为主，KD 提供 accuracy 增强：**
-- Compact Representation（H2 ✓，信息效率高）
-- Cross-Architecture KD（H4 ✓，显著提升 compact student）
-- Dynamic Capacity（多档位 flexibility + Pareto 覆盖，不做 accuracy 卖点）
-- 若 fair-D 显示 KD 改善 Dynamic，则 KD+Dynamic 组合成立（D > B）
+**确定路线：Route B（通用弹性模型）——Compact Model + KD + Runtime Elasticity：**
+- **Compact Representation（H2 ✓）**：0.23M 保留三任务 79-99% 信息，信息效率高
+- **Cross-Architecture KD（H4 ✓）**：显著提升 compact student（mAP/DA/Lane 全面 +0.012/+0.007/+0.013），
+  是 accuracy 的核心引擎（论文卖点之一）
+- **Dynamic Capacity = Runtime Elasticity（不承诺等预算 accuracy 增益）**：
+  同一模型可在任意固定宽度运行（Pareto 覆盖真实存在，Exp1 强制宽度曲线已验证），
+  但**学到的 router 不增加价值且训练不稳定**——如实报告，作为 negative result/ablation
+- **KD+Dynamic 组合（D）失败**：router 塌缩问题在 KD 表示下依然存在
+
+论文结论（候选）："紧凑表示 + 跨架构蒸馏可让 0.235M 模型在轻量 baseline 水平运行，
+并支持多计算档位的弹性部署；学习式逐任务路由在当前极小区间内不提供额外 accuracy 收益
+（oracle 上界 +0.0125 DA），其价值限于部署灵活性。"
 
 ## 关键工程成果
 - 真实切片感知 FLOPs 计数（修正 thop 高估，Dynamic 平均 0.90G 而非 1.06G）
 - 离线 KD（teacher 目标预计算 + 缓存训练）——时间从 15h → 2h
 - 统一评测/训练协议、3-seed 统计、失败模式记录
 
-## 待完成
-- [ ] fair-D（全量 KD-Dynamic）结果填入
-- [ ] Figure 2/4/5/6 生成
-- [ ] 服务器运行手册（全量最终数字）
+## 服务器运行手册
+见 `docs/RUNBOOK_SERVER.md`（全量 70k 最终数字可在服务器上跑，本地已提供全部脚本/协议）。

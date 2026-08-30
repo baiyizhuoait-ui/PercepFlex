@@ -1,0 +1,21 @@
+{
+  "model": "OursDynamic-experiments/expI_kd_dynamic/fairD_D/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 7.164,
+  "eval_fps": 139.59,
+  "mAP50": 0.0458,
+  "mAP50_95": 0.0077,
+  "det_n_gt": 108363,
+  "det_n_pred": 2767790,
+  "da_pixel_acc": 0.6373,
+  "da_fg_iou": 0.3176,
+  "da_mIoU": 0.4406,
+  "lane_pixel_acc": 0.9864,
+  "lane_fg_iou": 0.1094,
+  "lane_mIoU": 0.5479,
+  "lane_line_acc": 0.5974
+}
