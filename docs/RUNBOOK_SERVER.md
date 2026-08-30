@@ -118,13 +118,46 @@ python3 scripts/verify_dataset.py
 # 期望：images train=70000 val=10000；三任务交集 tri_train=69863 / tri_val=10000
 ```
 
-#### 方式 B：服务器直接从 BDD100K 下载
+#### 方式 B：OpenDataLab 国内镜像直接下载（免传文件，推荐服务器用）
+> OpenDataLab（上海AI实验室）有 BDD100K 官方镜像，国内高速直连。
+> 数据页 https://opendatalab.com/OpenDataLab/BDD100K ；需先注册账号 https://opendatalab.org.cn/register
+> （浏览器注册，与服务器无关）。
+
 ```bash
+# 1) 装工具 + 登录（登录用 OpenDataLab 账号，不是服务器密码）
+python3 -m pip install --user opendatalab
+odl login
+
+# 2) 确认数据集确切名字与文件清单（若名字不同，用 odl search BDD100K 找）
+odl search BDD100K
+odl ls OpenDataLab/BDD100K          # 看总文件/大小
+odl ls OpenDataLab/BDD100K/images   # 看 images 子目录（100k/10k）
+
+# 3) 只下本项目需要的子集（Detection+可行驶区+Lane）
+cd /home/cmu/Desktop/trac/data
+odl get OpenDataLab/BDD100K/images/100k      # train.zip + val.zip
+odl get OpenDataLab/BDD100K/labels           # bdd100k_labels_images_{train,val}.json
+odl get OpenDataLab/BDD100K/segments         # 可行驶区分割掩码（若叫 seg_masks 以此为准）
+odl get OpenDataLab/BDD100K/lanes            # 车道线掩码（若叫 lane_masks 以此为准）
+
+# 4) 解压 + 整理成项目结构 data/bdd100k/{images,labels,segments,lanes}
+cd /home/cmu/Desktop/trac/data
+unzip -o bdd100k_images_100k_train.zip -d bdd100k/images/100k/train/
+unzip -o bdd100k_images_100k_val.zip   -d bdd100k/images/100k/val/
+unzip -o bdd100k_labels_images_train.zip -d bdd100k/labels/
+unzip -o bdd100k_labels_images_val.zip   -d bdd100k/labels/
+unzip -o seg_masks_train.zip -d bdd100k/segments/masks/train/   # 名字以 odl ls 为准
+unzip -o seg_masks_val.zip   -d bdd100k/segments/masks/val/
+unzip -o lane_masks_train.zip -d bdd100k/lanes/masks/train/
+unzip -o lane_masks_val.zip   -d bdd100k/lanes/masks/val/
+
+# 5) 校验
 cd /home/cmu/Desktop/trac
-# 用 BDD100K 官方 tools/脚本或 wget 按需下载 images/100k、labels、segments/masks、lanes/masks、splits
-# 之后目录结构同上，再用 verify_dataset.py 校验
+python3 scripts/verify_dataset.py
+# 期望：images train=70000 val=10000；三任务交集 tri_train=69863 / tri_val=10000
 ```
-> 本仓库的 `splits/{tri_train,tri_val}.txt` 是项目自定义的三任务交集划分（随仓库走，勿覆盖）。
+> `splits/{tri_train,tri_val}.txt` 是项目自定义三任务交集划分，已随仓库走，勿覆盖。
+> OpenDataLab 下载的是官方原始压缩包，解压后的目录名可能与上述不同，**以 `odl ls` 看到的实际文件名为准**，解压到对应目录即可。
 
 ---
 
