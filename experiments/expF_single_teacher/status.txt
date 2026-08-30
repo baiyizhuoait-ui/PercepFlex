@@ -10,3 +10,23 @@
 08:15:30   kd_twinlite TRAIN FAIL
 08:15:30 train KD student (teacher=TriLiteNet)
 08:15:31 train KD student (teacher=TwinLiteNetPlus)
+13:37:02 offline-KD train (teacher=YOLOP)
+13:43:58 eval kd_yolop_off
+13:48:51   kd_yolop_off done
+13:48:51 offline-KD train (teacher=TwinLiteNetPlus)
+13:55:21 eval kd_twinlite_off
+13:59:37   kd_twinlite_off done
+13:59:37 offline-KD train (teacher=TriLiteNet)
+14:06:25 eval kd_trilite_off
+14:09:31 offline-KD train x10 (teacher=YOLOP)
+14:13:45   kd_trilite_off done
+14:13:45 EXP-F/G-OFF DONE
+14:26:30 eval kd_yolop_off10
+14:30:46   kd_yolop_off10 done
+14:30:46 offline-KD train x10 (teacher=TwinLiteNetPlus)
+14:46:10 eval kd_twinlite_off10
+14:49:59   kd_twinlite_off10 done
+14:49:59 offline-KD train x10 (teacher=TriLiteNet)
+15:05:50 eval kd_trilite_off10
+15:10:10   kd_trilite_off10 done
+15:10:10 EXP-F/G-OFF10 DONE

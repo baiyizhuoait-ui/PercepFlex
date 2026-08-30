@@ -1,0 +1,21 @@
+{
+  "model": "OursStatic-experiments/expF_single_teacher/kd_twinlite_off10/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 6.229,
+  "eval_fps": 160.53,
+  "mAP50": 0.1434,
+  "mAP50_95": 0.0414,
+  "det_n_gt": 108363,
+  "det_n_pred": 2870336,
+  "da_pixel_acc": 0.9348,
+  "da_fg_iou": 0.7175,
+  "da_mIoU": 0.8197,
+  "lane_pixel_acc": 0.9758,
+  "lane_fg_iou": 0.1615,
+  "lane_mIoU": 0.5686,
+  "lane_line_acc": 0.7718
+}

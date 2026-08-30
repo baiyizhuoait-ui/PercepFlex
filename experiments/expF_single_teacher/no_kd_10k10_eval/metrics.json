@@ -1,0 +1,21 @@
+{
+  "model": "OursStatic-experiments/expF_single_teacher/no_kd_10k10/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 6.217,
+  "eval_fps": 160.84,
+  "mAP50": 0.1425,
+  "mAP50_95": 0.0396,
+  "det_n_gt": 108363,
+  "det_n_pred": 2916683,
+  "da_pixel_acc": 0.9245,
+  "da_fg_iou": 0.6884,
+  "da_mIoU": 0.7989,
+  "lane_pixel_acc": 0.9711,
+  "lane_fg_iou": 0.1538,
+  "lane_mIoU": 0.5624,
+  "lane_line_acc": 0.8041
+}

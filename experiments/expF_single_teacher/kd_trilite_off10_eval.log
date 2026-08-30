@@ -1,0 +1,36 @@
+[ours] using config /home/mycode/ai_study/trac/experiments/expF_single_teacher/kd_trilite_off10/config.yaml
+[ours] loaded experiments/expF_single_teacher/kd_trilite_off10/checkpoint.pt: 256 keys missing=0 unexpected=0
+[profile] failed: name '_profile_ours' is not defined
+  [1000/10000] fwd 5.7ms/img elapsed 21s
+  [2000/10000] fwd 5.9ms/img elapsed 47s
+  [3000/10000] fwd 5.9ms/img elapsed 71s
+  [4000/10000] fwd 6.1ms/img elapsed 97s
+  [5000/10000] fwd 6.1ms/img elapsed 121s
+  [6000/10000] fwd 6.0ms/img elapsed 146s
+  [7000/10000] fwd 6.0ms/img elapsed 171s
+  [8000/10000] fwd 6.0ms/img elapsed 196s
+  [9000/10000] fwd 6.0ms/img elapsed 221s
+  [10000/10000] fwd 6.0ms/img elapsed 246s
+[eval] 10000 images, forward 6.0ms/img (CUDA-synced), total 246s
+{
+  "model": "OursStatic-experiments/expF_single_teacher/kd_trilite_off10/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 6.048,
+  "eval_fps": 165.36,
+  "mAP50": 0.1443,
+  "mAP50_95": 0.0416,
+  "det_n_gt": 108363,
+  "det_n_pred": 2881535,
+  "da_pixel_acc": 0.935,
+  "da_fg_iou": 0.7191,
+  "da_mIoU": 0.8206,
+  "lane_pixel_acc": 0.975,
+  "lane_fg_iou": 0.1589,
+  "lane_mIoU": 0.5669,
+  "lane_line_acc": 0.7749
+}
+saved -> experiments/expF_single_teacher/kd_trilite_off10_eval/metrics.json

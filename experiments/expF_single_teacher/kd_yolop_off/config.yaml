@@ -1,0 +1,36 @@
+data:
+  root: data/bdd100k
+model:
+  detection:
+    nc: 1
+  encoder:
+    blocks:
+    - 2
+    - 2
+    - 2
+    stages:
+    - 32
+    - 64
+    - 96
+    - 128
+    stem: 16
+  representation:
+    z_channels: 64
+  segmentation:
+    hidden: 32
+train:
+  batch_size: 16
+  epochs: 4
+  kd:
+    lambda_feat: 0.1
+    lambda_out: 1.0
+    offline_cache: experiments/expF_single_teacher/kd_cache
+    teacher: YOLOP
+  lambda_budget: 0.0
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lr: 1e-3
+  num_workers: 2
+  stage: A
+  train_split: tri_train
+  weight_decay: 5e-4

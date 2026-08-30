@@ -1,0 +1,58 @@
+[train] OFFLINE KD teacher=TriLiteNet cache=/home/mycode/ai_study/trac/experiments/expF_single_teacher/kd_cache (10000 imgs)
+[train] stage=A adaptive=False params=0.230M
+/home/mycode/ai_study/trac/training/train.py:136: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running[k] = running.get(k, 0.0) + float(v)
+[stage A] ep 1 step 50/625 loss 1.3307 det 0.2009 da 0.3224 lane 0.4087 budget 0.0000 feat 0.133 out_da 0.113 out_lane 0.153 215ms/step
+[stage A] ep 1 step 100/625 loss 1.0908 det 0.1882 da 0.2698 lane 0.3066 budget 0.0000 feat 0.123 out_da 0.089 out_lane 0.115 194ms/step
+[stage A] ep 1 step 150/625 loss 0.9615 det 0.1807 da 0.2435 lane 0.2535 budget 0.0000 feat 0.116 out_da 0.076 out_lane 0.092 185ms/step
+[stage A] ep 1 step 200/625 loss 0.8817 det 0.1743 da 0.2286 lane 0.2221 budget 0.0000 feat 0.111 out_da 0.068 out_lane 0.077 180ms/step
+[stage A] ep 1 step 250/625 loss 0.8262 det 0.1692 da 0.2189 lane 0.2009 budget 0.0000 feat 0.108 out_da 0.063 out_lane 0.066 177ms/step
+[stage A] ep 1 step 300/625 loss 0.7841 det 0.1653 da 0.2105 lane 0.1854 budget 0.0000 feat 0.105 out_da 0.060 out_lane 0.058 176ms/step
+[stage A] ep 1 step 350/625 loss 0.7519 det 0.1621 da 0.2036 lane 0.1743 budget 0.0000 feat 0.103 out_da 0.057 out_lane 0.052 175ms/step
+[stage A] ep 1 step 400/625 loss 0.7263 det 0.1597 da 0.1981 lane 0.1655 budget 0.0000 feat 0.101 out_da 0.054 out_lane 0.048 174ms/step
+[stage A] ep 1 step 450/625 loss 0.7065 det 0.1576 da 0.1944 lane 0.1585 budget 0.0000 feat 0.099 out_da 0.053 out_lane 0.044 173ms/step
+[stage A] ep 1 step 500/625 loss 0.6895 det 0.1558 da 0.1906 lane 0.1530 budget 0.0000 feat 0.098 out_da 0.051 out_lane 0.041 172ms/step
+[stage A] ep 1 step 550/625 loss 0.6748 det 0.1543 da 0.1872 lane 0.1482 budget 0.0000 feat 0.097 out_da 0.050 out_lane 0.039 171ms/step
+[stage A] ep 1 step 600/625 loss 0.6623 det 0.1529 da 0.1845 lane 0.1441 budget 0.0000 feat 0.096 out_da 0.049 out_lane 0.036 171ms/step
+[stage A] ep 1 DONE avg_loss=0.6564 saved experiments/expF_single_teacher/kd_trilite_off/checkpoint.pt
+[stage A] ep 2 step 50/625 loss 0.5105 det 0.1376 da 0.1458 lane 0.0967 budget 0.0000 feat 0.084 out_da 0.034 out_lane 0.012 160ms/step
+[stage A] ep 2 step 100/625 loss 0.5089 det 0.1376 da 0.1450 lane 0.0963 budget 0.0000 feat 0.084 out_da 0.034 out_lane 0.012 156ms/step
+[stage A] ep 2 step 150/625 loss 0.5042 det 0.1371 da 0.1428 lane 0.0950 budget 0.0000 feat 0.083 out_da 0.034 out_lane 0.012 155ms/step
+[stage A] ep 2 step 200/625 loss 0.5025 det 0.1367 da 0.1424 lane 0.0943 budget 0.0000 feat 0.083 out_da 0.034 out_lane 0.012 154ms/step
+[stage A] ep 2 step 250/625 loss 0.5018 det 0.1365 da 0.1423 lane 0.0942 budget 0.0000 feat 0.083 out_da 0.034 out_lane 0.012 154ms/step
+[stage A] ep 2 step 300/625 loss 0.5001 det 0.1362 da 0.1418 lane 0.0938 budget 0.0000 feat 0.083 out_da 0.034 out_lane 0.012 154ms/step
+[stage A] ep 2 step 350/625 loss 0.4978 det 0.1359 da 0.1406 lane 0.0935 budget 0.0000 feat 0.083 out_da 0.034 out_lane 0.012 154ms/step
+[stage A] ep 2 step 400/625 loss 0.4966 det 0.1358 da 0.1399 lane 0.0933 budget 0.0000 feat 0.083 out_da 0.034 out_lane 0.012 155ms/step
+[stage A] ep 2 step 450/625 loss 0.4947 det 0.1355 da 0.1387 lane 0.0932 budget 0.0000 feat 0.082 out_da 0.033 out_lane 0.012 155ms/step
+[stage A] ep 2 step 500/625 loss 0.4936 det 0.1354 da 0.1382 lane 0.0930 budget 0.0000 feat 0.082 out_da 0.033 out_lane 0.012 155ms/step
+[stage A] ep 2 step 550/625 loss 0.4919 det 0.1352 da 0.1372 lane 0.0928 budget 0.0000 feat 0.082 out_da 0.033 out_lane 0.011 155ms/step
+[stage A] ep 2 step 600/625 loss 0.4902 det 0.1351 da 0.1362 lane 0.0926 budget 0.0000 feat 0.082 out_da 0.033 out_lane 0.011 155ms/step
+[stage A] ep 2 DONE avg_loss=0.4895 saved experiments/expF_single_teacher/kd_trilite_off/checkpoint.pt
+[stage A] ep 3 step 50/625 loss 0.4708 det 0.1335 da 0.1255 lane 0.0900 budget 0.0000 feat 0.080 out_da 0.031 out_lane 0.011 157ms/step
+[stage A] ep 3 step 100/625 loss 0.4630 det 0.1318 da 0.1213 lane 0.0887 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 153ms/step
+[stage A] ep 3 step 150/625 loss 0.4644 det 0.1316 da 0.1231 lane 0.0882 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 151ms/step
+[stage A] ep 3 step 200/625 loss 0.4643 det 0.1315 da 0.1239 lane 0.0877 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 151ms/step
+[stage A] ep 3 step 250/625 loss 0.4639 det 0.1313 da 0.1234 lane 0.0881 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 150ms/step
+[stage A] ep 3 step 300/625 loss 0.4625 det 0.1312 da 0.1228 lane 0.0876 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 150ms/step
+[stage A] ep 3 step 350/625 loss 0.4616 det 0.1313 da 0.1221 lane 0.0874 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 150ms/step
+[stage A] ep 3 step 400/625 loss 0.4603 det 0.1313 da 0.1213 lane 0.0872 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 150ms/step
+[stage A] ep 3 step 450/625 loss 0.4588 det 0.1312 da 0.1202 lane 0.0870 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 150ms/step
+[stage A] ep 3 step 500/625 loss 0.4584 det 0.1311 da 0.1202 lane 0.0870 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 150ms/step
+[stage A] ep 3 step 550/625 loss 0.4574 det 0.1311 da 0.1197 lane 0.0867 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.011 150ms/step
+[stage A] ep 3 step 600/625 loss 0.4561 det 0.1310 da 0.1189 lane 0.0864 budget 0.0000 feat 0.080 out_da 0.030 out_lane 0.010 150ms/step
+[stage A] ep 3 DONE avg_loss=0.4555 saved experiments/expF_single_teacher/kd_trilite_off/checkpoint.pt
+[stage A] ep 4 step 50/625 loss 0.4461 det 0.1285 da 0.1164 lane 0.0830 budget 0.0000 feat 0.079 out_da 0.029 out_lane 0.010 153ms/step
+[stage A] ep 4 step 100/625 loss 0.4418 det 0.1285 da 0.1118 lane 0.0836 budget 0.0000 feat 0.079 out_da 0.029 out_lane 0.010 149ms/step
+[stage A] ep 4 step 150/625 loss 0.4400 det 0.1285 da 0.1104 lane 0.0833 budget 0.0000 feat 0.079 out_da 0.029 out_lane 0.010 148ms/step
+[stage A] ep 4 step 200/625 loss 0.4393 det 0.1285 da 0.1098 lane 0.0835 budget 0.0000 feat 0.079 out_da 0.028 out_lane 0.010 147ms/step
+[stage A] ep 4 step 250/625 loss 0.4385 det 0.1285 da 0.1095 lane 0.0832 budget 0.0000 feat 0.079 out_da 0.028 out_lane 0.010 147ms/step
+[stage A] ep 4 step 300/625 loss 0.4380 det 0.1285 da 0.1097 lane 0.0828 budget 0.0000 feat 0.079 out_da 0.028 out_lane 0.010 147ms/step
+[stage A] ep 4 step 350/625 loss 0.4374 det 0.1283 da 0.1094 lane 0.0827 budget 0.0000 feat 0.079 out_da 0.028 out_lane 0.010 147ms/step
+[stage A] ep 4 step 400/625 loss 0.4368 det 0.1283 da 0.1091 lane 0.0825 budget 0.0000 feat 0.079 out_da 0.028 out_lane 0.010 148ms/step
+[stage A] ep 4 step 450/625 loss 0.4361 det 0.1284 da 0.1087 lane 0.0823 budget 0.0000 feat 0.079 out_da 0.028 out_lane 0.010 148ms/step
+[stage A] ep 4 step 500/625 loss 0.4364 det 0.1284 da 0.1091 lane 0.0821 budget 0.0000 feat 0.079 out_da 0.028 out_lane 0.010 148ms/step
+[stage A] ep 4 step 550/625 loss 0.4368 det 0.1284 da 0.1092 lane 0.0823 budget 0.0000 feat 0.079 out_da 0.028 out_lane 0.010 148ms/step
+[stage A] ep 4 step 600/625 loss 0.4367 det 0.1285 da 0.1092 lane 0.0821 budget 0.0000 feat 0.079 out_da 0.028 out_lane 0.010 148ms/step
+[stage A] ep 4 DONE avg_loss=0.4366 saved experiments/expF_single_teacher/kd_trilite_off/checkpoint.pt
+[train] done -> experiments/expF_single_teacher/kd_trilite_off

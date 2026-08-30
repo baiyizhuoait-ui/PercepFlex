@@ -11,10 +11,11 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MODELS = [
-    ("no_kd", "experiments/exp_train_A/eval_1000", "0.235M"),
-    ("kd_yolop", "experiments/expF_single_teacher/kd_yolop_eval", "0.235M"),
-    ("kd_twinlite", "experiments/expF_single_teacher/kd_twinlite_eval", "0.235M"),
-    ("kd_trilite", "experiments/expF_single_teacher/kd_trilite_eval", "0.235M"),
+    ("no_kd", "experiments/exp_train_A/eval_full", "0.235M"),
+    ("kd_yolop_off10", "experiments/expF_single_teacher/kd_yolop_off10_eval", "0.235M"),
+    ("kd_twinlite_off10", "experiments/expF_single_teacher/kd_twinlite_off10_eval", "0.235M"),
+    ("kd_trilite_off10", "experiments/expF_single_teacher/kd_trilite_off10_eval", "0.235M"),
+    ("kd_yolop_online", "experiments/expF_single_teacher/kd_yolop_eval", "0.235M"),
 ]
 
 
