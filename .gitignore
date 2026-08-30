@@ -29,3 +29,9 @@ __pycache__/
 .DS_Store
 experiments/*/kd_cache/
 experiments/expF_single_teacher/kd_cache/
+
+# Baseline/teacher weights and key trained models (uploaded for the server)
+!weights/
+!trained_models/
+!weights/*.pth
+!trained_models/*.pt
