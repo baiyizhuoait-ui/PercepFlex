@@ -35,3 +35,6 @@ experiments/expF_single_teacher/kd_cache/
 !trained_models/
 !weights/*.pth
 !trained_models/*.pt
+
+# baseline 公共仓库内容由服务器自行 clone，不纳入本仓库
+baselines/

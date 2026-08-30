@@ -59,8 +59,11 @@ def build_yolop(device):
     cfg.MODEL.IMAGE_SIZE = [640, 640]
     cfg.freeze()
     model = get_net(cfg)
-    sd = torch.load(os.path.join(ROOT, "..", "YOLOP", "weights", "End-to-end.pth"),
-                    map_location="cpu", weights_only=False)
+    # 权重随仓库走（weights/YOLOP_End-to-end.pth），模型代码来自 ../YOLOP 克隆仓库
+    wpath = os.path.join(ROOT, "weights", "YOLOP_End-to-end.pth")
+    if not os.path.exists(wpath):
+        wpath = os.path.join(ROOT, "..", "YOLOP", "weights", "End-to-end.pth")
+    sd = torch.load(wpath, map_location="cpu", weights_only=False)
     sd = sd.get("state_dict", sd)
     model.load_state_dict(sd)
     return model.to(device)

@@ -19,7 +19,8 @@ import torch
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASELINES = os.path.join(ROOT, "baselines")
-WEIGHTS = os.path.join(ROOT, "..", "trac_data", "weights")
+# 权重统一放项目内 weights/（随仓库走，服务器克隆即可拿到，无需 GDrive）
+WEIGHTS = os.path.join(ROOT, "weights")
 
 
 def _strip_module(sd):
@@ -31,7 +32,7 @@ def load_twinlitenet(device="cpu"):
     from model.TwinLite import TwinLiteNet  # noqa: E402
 
     model = TwinLiteNet().to(device)
-    sd = torch.load(os.path.join(BASELINES, "TwinLiteNet", "pretrained", "best.pth"),
+    sd = torch.load(os.path.join(WEIGHTS, "TwinLiteNet_best.pth"),
                     map_location="cpu", weights_only=False)
     sd = sd.get("state_dict", sd)
     sd = _strip_module(sd)  # saved from DataParallel; structure otherwise matches current code
@@ -45,7 +46,7 @@ def load_twinlitenetplus(preset, device="cpu"):
     import argparse
 
     model = TwinLiteNetPlus(argparse.Namespace(config=preset)).to(device)
-    sd = torch.load(os.path.join(WEIGHTS, "twinlitenetplus", f"{preset}.pth"),
+    sd = torch.load(os.path.join(WEIGHTS, f"TwinLiteNetPlus_{preset}.pth"),
                     map_location="cpu", weights_only=False)
     sd = _strip_module(sd.get("state_dict", sd))
     model.load_state_dict(sd, strict=True)
@@ -65,7 +66,7 @@ def load_trilitenet(preset, device="cpu"):
     cfg.freeze()
     model = get_net(cfg).to(device)
     wfile = {"tiny": "nano", "small": "small", "base": "base"}[preset]
-    sd = torch.load(os.path.join(WEIGHTS, "trilitenet", f"{wfile}.pth"),
+    sd = torch.load(os.path.join(WEIGHTS, f"TriLiteNet_{wfile}.pth"),
                     map_location="cpu", weights_only=False)
     sd = _strip_module(sd.get("state_dict", sd))
     sd = _strip_module(sd.get("model", sd))
