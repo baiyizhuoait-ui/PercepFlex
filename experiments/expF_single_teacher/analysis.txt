@@ -1,0 +1,8 @@
+model            Params   mAP50  DA_mIoU Lane_fgIoU
+no_kd            0.235M  0.2720   0.8449     0.1794
+kd_yolop         0.235M  0.2798   0.8495     0.1932
+kd_twinlite      0.235M  (training/eval pending)
+kd_trilite       0.235M  (training/eval pending)
+
+KD effect (vs no_kd):
+  kd_yolop: mAP +0.0078 DA +0.0046 Lane +0.0138

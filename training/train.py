@@ -26,6 +26,7 @@ from torch.utils.data import DataLoader
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
+sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
 from datasets.bdd100k import BDD100KDataset, collate_train  # noqa: E402
 from models.static_model import StaticMultiTaskModel  # noqa: E402
@@ -44,7 +45,7 @@ def build_model(cfg, adaptive):
 
 
 def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
-                    log_path, max_steps=None, kd=None):
+                    log_path, max_steps=None, kd=None, kd_offline=None):
     model.train()
     t0 = time.time()
     running = {}
@@ -58,7 +59,10 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
 
         ref = None
         if stage == "A":
-            det, da, lane = model(img)
+            if kd_offline is not None:
+                det, da, lane, z_student = model(img, return_z=True)
+            else:
+                det, da, lane = model(img)
             routing = None
         elif cfg["train"].get("uniform_width"):
             # train heads at uniformly-sampled widths (all tasks, one width per batch)
@@ -83,7 +87,38 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
         total, losses = loss_fn(det, da, lane, det_t, da_m, lane_m, routing,
                                 img_size=cfg["model"].get("input_size", [640, 640])[0],
                                 ref=ref, lambda_diff=float(cfg["train"].get("lambda_diff", 0.0)))
-        if kd is not None:
+        if kd_offline is not None:
+            # fetch cached teacher targets for this batch
+            ids = [kd_offline["name2idx"][n] for n in batch["name"]]
+            feat_t = torch.from_numpy(kd_offline["feat"][ids]).float().to(device)
+            da_t = torch.from_numpy(kd_offline["da"][ids]).float().to(device)
+            lane_t = torch.from_numpy(kd_offline["lane"][ids]).float().to(device)
+            # z_student already computed in the forward (return_z)
+            # feature alignment (upsample cache 1/16 -> 1/8)
+            if feat_t.shape[2:] != z_student.shape[2:]:
+                feat_t = torch.nn.functional.interpolate(
+                    feat_t, size=z_student.shape[2:], mode="bilinear", align_corners=False)
+            from distillation.kd import KDProjection
+            if not hasattr(model, "_kd_proj"):
+                model._kd_proj = KDProjection(feat_t.shape[1], 64).to(device)
+            proj = model._kd_proj(feat_t)
+            _kd = cfg["train"]["kd"]
+            kd_losses = {
+                "feat": torch.nn.functional.mse_loss(proj, z_student) * float(_kd.get("lambda_feat", 0.1)),
+                "out_da": torch.nn.functional.mse_loss(
+                    torch.nn.functional.interpolate(torch.sigmoid(da), size=da_t.shape[2:],
+                                                    mode="bilinear", align_corners=False),
+                    torch.sigmoid(da_t)) * float(_kd.get("lambda_out", 1.0)),
+                "out_lane": torch.nn.functional.mse_loss(
+                    torch.nn.functional.interpolate(torch.sigmoid(lane), size=lane_t.shape[2:],
+                                                    mode="bilinear", align_corners=False),
+                    torch.sigmoid(lane_t)) * float(_kd.get("lambda_out", 1.0)),
+            }
+            for k, v in kd_losses.items():
+                total = total + v
+                losses[k] = v
+            losses["total"] = total
+        elif kd is not None:
             z_student = None
             if hasattr(model, "representation"):
                 feats_m = model.encoder(img)
@@ -149,7 +184,22 @@ def main():
     # ---- KD teacher (optional) ----
     kd_cfg = cfg["train"].get("kd")
     kd = None
-    if kd_cfg:
+    kd_offline = None
+    if kd_cfg and kd_cfg.get("offline_cache"):
+        import numpy as _np
+        from datasets.bdd100k import BDD100KDataset as _DS
+        cache_dir = os.path.join(ROOT, kd_cfg["offline_cache"])
+        tname = kd_cfg["teacher"]
+        manifest = open(os.path.join(cache_dir, f"{tname}_manifest.txt")).read().split()
+        selfeat = _np.load(os.path.join(cache_dir, f"{tname}_feat.npy"), mmap_mode="r")
+        selfda = _np.load(os.path.join(cache_dir, f"{tname}_da.npy"), mmap_mode="r")
+        selflane = _np.load(os.path.join(cache_dir, f"{tname}_lane.npy"), mmap_mode="r")
+        name2idx = {n: i for i, n in enumerate(manifest)}
+        kd_offline = {"names": manifest, "name2idx": name2idx,
+                      "feat": selfeat, "da": selfda, "lane": selflane}
+        print(f"[train] OFFLINE KD teacher={tname} cache={cache_dir} "
+              f"({len(manifest)} imgs)", flush=True)
+    if kd_cfg and not kd_offline:
         from distillation.kd import CrossArchKD
         tname = kd_cfg["teacher"]
         if tname == "YOLOP":
@@ -225,7 +275,8 @@ def main():
 
     for ep in range(1, epochs + 1):
         avg = train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, ep,
-                              log_path, max_steps=tr.get("max_steps"), kd=kd)
+                              log_path, max_steps=tr.get("max_steps"), kd=kd,
+                              kd_offline=kd_offline)
         sched.step()
         ckpt = os.path.join(outdir, "checkpoint.pt")
         torch.save({"epoch": ep, "model_state": model.state_dict(),

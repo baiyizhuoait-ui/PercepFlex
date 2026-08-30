@@ -1,0 +1,3 @@
+07:57:24 C: static+KD eval (best teacher student)
+08:01:09   C done
+08:01:09 D: KD-dynamic pipeline

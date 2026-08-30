@@ -27,3 +27,5 @@ __pycache__/
 .vscode/
 .idea/
 .DS_Store
+experiments/*/kd_cache/
+experiments/expF_single_teacher/kd_cache/

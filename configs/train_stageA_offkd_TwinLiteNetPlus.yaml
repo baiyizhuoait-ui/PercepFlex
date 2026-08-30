@@ -6,9 +6,9 @@ model:
 train:
   stage: A
   train_split: tri_train
-  batch_size: 8
+  batch_size: 16
   num_workers: 2
-  epochs: 6
+  epochs: 4
   lr: 1e-3
   weight_decay: 5e-4
   lambda_da: 1.0
@@ -16,9 +16,8 @@ train:
   lambda_budget: 0.0
   kd:
     teacher: TwinLiteNetPlus
-    preset: large
+    offline_cache: experiments/expF_single_teacher/kd_cache
     lambda_feat: 0.1
     lambda_out: 1.0
-    T: 2
 data:
   root: data/bdd100k

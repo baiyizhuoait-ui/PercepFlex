@@ -1,1 +1,12 @@
 05:19:50 train KD student (teacher=YOLOP)
+07:52:12 eval kd_yolop
+07:56:06   kd_yolop done
+07:56:06 train KD student (teacher=TwinLiteNetPlus)
+07:56:07   kd_twinlite TRAIN FAIL
+07:56:07 train KD student (teacher=TriLiteNet)
+07:56:09   kd_trilite TRAIN FAIL
+07:56:09 EXP-F/G DONE
+08:04:25 train KD student (teacher=TwinLiteNetPlus)
+08:15:30   kd_twinlite TRAIN FAIL
+08:15:30 train KD student (teacher=TriLiteNet)
+08:15:31 train KD student (teacher=TwinLiteNetPlus)

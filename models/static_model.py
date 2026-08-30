@@ -36,13 +36,15 @@ class StaticMultiTaskModel(nn.Module):
         self.da_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
         self.lane_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
 
-    def forward(self, x):
+    def forward(self, x, return_z=False):
         feats = self.encoder(x)
         z = self.representation(feats)["z"]
         det = self.det_head([feats[0], feats[1], feats[2]])
         hw = x.shape[2:]
         da = self.da_head(z, hw)
         lane = self.lane_head(z, hw)
+        if return_z:
+            return det, da, lane, z
         return det, da, lane
 
     def set_width(self, w):

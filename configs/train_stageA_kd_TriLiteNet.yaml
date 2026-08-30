@@ -6,7 +6,7 @@ model:
 train:
   stage: A
   train_split: tri_train
-  batch_size: 16
+  batch_size: 8
   num_workers: 2
   epochs: 6
   lr: 1e-3
