@@ -1,0 +1,41 @@
+[ours] using config /home/mycode/ai_study/trac/experiments/expI_kd_dynamic/kdD_D/config.yaml
+[ours] loaded experiments/expI_kd_dynamic/kdD_D/checkpoint.pt: 261 keys missing=0 unexpected=0
+[profile] failed: name '_profile_ours' is not defined
+  [1000/10000] fwd 7.2ms/img elapsed 25s
+  [2000/10000] fwd 7.0ms/img elapsed 50s
+  [3000/10000] fwd 7.2ms/img elapsed 77s
+  [4000/10000] fwd 7.2ms/img elapsed 103s
+  [5000/10000] fwd 7.2ms/img elapsed 129s
+  [6000/10000] fwd 7.2ms/img elapsed 156s
+  [7000/10000] fwd 7.2ms/img elapsed 183s
+  [8000/10000] fwd 7.2ms/img elapsed 208s
+  [9000/10000] fwd 7.2ms/img elapsed 235s
+  [10000/10000] fwd 7.2ms/img elapsed 261s
+[eval] 10000 images, forward 7.2ms/img (CUDA-synced), total 261s
+[alloc-flops] failed: 0
+{
+  "model": "OursDynamic-experiments/expI_kd_dynamic/kdD_D/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 7.17,
+  "eval_fps": 139.47,
+  "mAP50": 0.0383,
+  "mAP50_95": 0.0065,
+  "det_n_gt": 108363,
+  "det_n_pred": 2812087,
+  "da_pixel_acc": 0.9346,
+  "da_fg_iou": 0.7116,
+  "da_mIoU": 0.8168,
+  "lane_pixel_acc": 0.9857,
+  "lane_fg_iou": 0.114,
+  "lane_mIoU": 0.5498,
+  "lane_line_acc": 0.6069
+}
+allocation stats (per-task budget index distribution):
+  det : {0: 6054, 1: 1669, 2: 2277}
+  da  : {0: 5478, 1: 1258, 2: 3264}
+  lane: {0: 6228, 1: 1459, 2: 2313}
+saved -> experiments/expI_kd_dynamic/kdD_eval/metrics.json

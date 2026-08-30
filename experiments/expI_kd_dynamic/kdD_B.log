@@ -1,27 +1,33 @@
-[train] KD teacher=YOLOP lambda_feat=0.1 lambda_out=1.0
+[train] OFFLINE KD teacher=YOLOP cache=/home/mycode/ai_study/trac/experiments/expF_single_teacher/kd_cache (10000 imgs)
 [train] init from experiments/expF_single_teacher/kd_yolop/checkpoint.pt: loaded 256/256 keys missing=5 unexpected=0
 [train] stage=B adaptive=True params=0.235M
-/home/mycode/ai_study/trac/training/train.py:101: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+/home/mycode/ai_study/trac/training/train.py:138: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
 Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
   running[k] = running.get(k, 0.0) + float(v)
-[stage B] ep 1 step 50/4366 loss 0.4671 det 0.1152 da 0.0848 lane 0.0737 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 393ms/step
-[stage B] ep 1 step 100/4366 loss 0.4466 det 0.1124 da 0.0740 lane 0.0664 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 350ms/step
-[stage B] ep 1 step 150/4366 loss 0.4406 det 0.1109 da 0.0711 lane 0.0644 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 336ms/step
-[stage B] ep 1 step 200/4366 loss 0.4370 det 0.1104 da 0.0694 lane 0.0632 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 339ms/step
-[stage B] ep 1 step 250/4366 loss 0.4349 det 0.1098 da 0.0685 lane 0.0626 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 333ms/step
-[stage B] ep 1 step 300/4366 loss 0.4332 det 0.1096 da 0.0676 lane 0.0620 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 349ms/step
-[stage B] ep 1 step 350/4366 loss 0.4319 det 0.1094 da 0.0673 lane 0.0613 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 446ms/step
-[stage B] ep 1 step 400/4366 loss 0.4306 det 0.1091 da 0.0666 lane 0.0609 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 471ms/step
-[stage B] ep 1 step 450/4366 loss 0.4291 det 0.1089 da 0.0657 lane 0.0605 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 457ms/step
-[stage B] ep 1 step 500/4366 loss 0.4281 det 0.1088 da 0.0653 lane 0.0601 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 508ms/step
-[stage B] ep 1 step 550/4366 loss 0.4272 det 0.1086 da 0.0648 lane 0.0598 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 545ms/step
-[stage B] ep 1 step 600/4366 loss 0.4268 det 0.1085 da 0.0648 lane 0.0596 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.035 572ms/step
-[stage B] ep 1 step 650/4366 loss 0.4266 det 0.1084 da 0.0647 lane 0.0595 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.035 601ms/step
-[stage B] ep 1 step 700/4366 loss 0.4263 det 0.1083 da 0.0648 lane 0.0594 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.035 625ms/step
-[stage B] ep 1 step 750/4366 loss 0.4261 det 0.1082 da 0.0646 lane 0.0594 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 644ms/step
-[stage B] ep 1 step 800/4366 loss 0.4254 det 0.1081 da 0.0643 lane 0.0592 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.035 662ms/step
-[stage B] ep 1 step 850/4366 loss 0.4252 det 0.1080 da 0.0641 lane 0.0592 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.035 678ms/step
-[stage B] ep 1 step 900/4366 loss 0.4248 det 0.1079 da 0.0639 lane 0.0591 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 690ms/step
-[stage B] ep 1 step 950/4366 loss 0.4247 det 0.1080 da 0.0638 lane 0.0591 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 700ms/step
-[stage B] ep 1 step 1000/4366 loss 0.4244 det 0.1078 da 0.0636 lane 0.0591 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.034 710ms/step
-[stage B] ep 1 step 1050/4366 loss 0.4242 det 0.1078 da 0.0635 lane 0.0589 budget 0.0000 feat 0.122 out_da 0.037 out_lane 0.035 719ms/step
+[stage B] ep 1 step 50/625 loss 0.4681 det 0.1173 da 0.0818 lane 0.0730 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 217ms/step
+[stage B] ep 1 step 100/625 loss 0.4492 det 0.1132 da 0.0726 lane 0.0668 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 196ms/step
+[stage B] ep 1 step 150/625 loss 0.4421 det 0.1119 da 0.0695 lane 0.0641 budget 0.0000 feat 0.125 out_da 0.037 out_lane 0.035 188ms/step
+[stage B] ep 1 step 200/625 loss 0.4391 det 0.1108 da 0.0683 lane 0.0633 budget 0.0000 feat 0.125 out_da 0.037 out_lane 0.035 183ms/step
+[stage B] ep 1 step 250/625 loss 0.4363 det 0.1099 da 0.0673 lane 0.0625 budget 0.0000 feat 0.125 out_da 0.037 out_lane 0.035 180ms/step
+[stage B] ep 1 step 300/625 loss 0.4343 det 0.1095 da 0.0663 lane 0.0618 budget 0.0000 feat 0.125 out_da 0.037 out_lane 0.035 177ms/step
+[stage B] ep 1 step 350/625 loss 0.4329 det 0.1091 da 0.0656 lane 0.0615 budget 0.0000 feat 0.125 out_da 0.037 out_lane 0.035 175ms/step
+[stage B] ep 1 step 400/625 loss 0.4319 det 0.1089 da 0.0652 lane 0.0610 budget 0.0000 feat 0.125 out_da 0.037 out_lane 0.035 174ms/step
+[stage B] ep 1 step 450/625 loss 0.4312 det 0.1088 da 0.0650 lane 0.0607 budget 0.0000 feat 0.125 out_da 0.037 out_lane 0.035 173ms/step
+[stage B] ep 1 step 500/625 loss 0.4303 det 0.1085 da 0.0646 lane 0.0605 budget 0.0000 feat 0.125 out_da 0.037 out_lane 0.035 171ms/step
+[stage B] ep 1 step 550/625 loss 0.4300 det 0.1084 da 0.0645 lane 0.0604 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 170ms/step
+[stage B] ep 1 step 600/625 loss 0.4295 det 0.1083 da 0.0643 lane 0.0602 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 169ms/step
+[stage B] ep 1 DONE avg_loss=0.4291 saved experiments/expI_kd_dynamic/kdD_B/checkpoint.pt
+[stage B] ep 2 step 50/625 loss 0.4254 det 0.1069 da 0.0632 lane 0.0588 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 160ms/step
+[stage B] ep 2 step 100/625 loss 0.4233 det 0.1068 da 0.0614 lane 0.0585 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 156ms/step
+[stage B] ep 2 step 150/625 loss 0.4224 det 0.1068 da 0.0610 lane 0.0580 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 156ms/step
+[stage B] ep 2 step 200/625 loss 0.4223 det 0.1068 da 0.0609 lane 0.0580 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 156ms/step
+[stage B] ep 2 step 250/625 loss 0.4232 det 0.1069 da 0.0615 lane 0.0582 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 155ms/step
+[stage B] ep 2 step 300/625 loss 0.4239 det 0.1070 da 0.0621 lane 0.0582 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 155ms/step
+[stage B] ep 2 step 350/625 loss 0.4234 det 0.1068 da 0.0619 lane 0.0581 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 155ms/step
+[stage B] ep 2 step 400/625 loss 0.4235 det 0.1070 da 0.0617 lane 0.0581 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 155ms/step
+[stage B] ep 2 step 450/625 loss 0.4234 det 0.1070 da 0.0617 lane 0.0582 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 155ms/step
+[stage B] ep 2 step 500/625 loss 0.4234 det 0.1070 da 0.0615 lane 0.0583 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 155ms/step
+[stage B] ep 2 step 550/625 loss 0.4233 det 0.1070 da 0.0615 lane 0.0582 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 155ms/step
+[stage B] ep 2 step 600/625 loss 0.4236 det 0.1071 da 0.0616 lane 0.0583 budget 0.0000 feat 0.125 out_da 0.036 out_lane 0.035 155ms/step
+[stage B] ep 2 DONE avg_loss=0.4236 saved experiments/expI_kd_dynamic/kdD_B/checkpoint.pt
+[train] done -> experiments/expI_kd_dynamic/kdD_B

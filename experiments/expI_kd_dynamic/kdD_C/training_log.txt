@@ -1,0 +1,26 @@
+[stage C] ep 1 step 50/625 loss 0.4199 det 0.1075 da 0.0583 lane 0.0589 budget 0.0000 feat 0.124 out_da 0.036 out_lane 0.035 263ms/step
+[stage C] ep 1 step 100/625 loss 0.4178 det 0.1068 da 0.0590 lane 0.0580 budget 0.0000 feat 0.123 out_da 0.036 out_lane 0.035 245ms/step
+[stage C] ep 1 step 150/625 loss 0.4174 det 0.1073 da 0.0597 lane 0.0576 budget 0.0000 feat 0.122 out_da 0.036 out_lane 0.035 238ms/step
+[stage C] ep 1 step 200/625 loss 0.4174 det 0.1072 da 0.0604 lane 0.0581 budget 0.0000 feat 0.121 out_da 0.036 out_lane 0.035 235ms/step
+[stage C] ep 1 step 250/625 loss 0.4165 det 0.1068 da 0.0607 lane 0.0582 budget 0.0000 feat 0.120 out_da 0.036 out_lane 0.035 234ms/step
+[stage C] ep 1 step 300/625 loss 0.4155 det 0.1069 da 0.0607 lane 0.0582 budget 0.0000 feat 0.119 out_da 0.036 out_lane 0.035 233ms/step
+[stage C] ep 1 step 350/625 loss 0.4146 det 0.1068 da 0.0606 lane 0.0583 budget 0.0000 feat 0.118 out_da 0.036 out_lane 0.035 233ms/step
+[stage C] ep 1 step 400/625 loss 0.4138 det 0.1068 da 0.0607 lane 0.0582 budget 0.0000 feat 0.117 out_da 0.036 out_lane 0.035 232ms/step
+[stage C] ep 1 step 450/625 loss 0.4131 det 0.1069 da 0.0608 lane 0.0582 budget 0.0000 feat 0.116 out_da 0.036 out_lane 0.035 232ms/step
+[stage C] ep 1 step 500/625 loss 0.4122 det 0.1068 da 0.0607 lane 0.0582 budget 0.0000 feat 0.115 out_da 0.036 out_lane 0.035 233ms/step
+[stage C] ep 1 step 550/625 loss 0.4117 det 0.1068 da 0.0608 lane 0.0583 budget 0.0000 feat 0.115 out_da 0.036 out_lane 0.035 234ms/step
+[stage C] ep 1 step 600/625 loss 0.4111 det 0.1068 da 0.0608 lane 0.0583 budget 0.0000 feat 0.114 out_da 0.036 out_lane 0.035 235ms/step
+[stage C] ep 1 DONE avg_loss=0.4106 saved experiments/expI_kd_dynamic/kdD_C/checkpoint.pt
+[stage C] ep 2 step 50/625 loss 0.4033 det 0.1064 da 0.0613 lane 0.0586 budget 0.0000 feat 0.106 out_da 0.036 out_lane 0.035 236ms/step
+[stage C] ep 2 step 100/625 loss 0.4008 det 0.1063 da 0.0596 lane 0.0583 budget 0.0000 feat 0.105 out_da 0.036 out_lane 0.035 232ms/step
+[stage C] ep 2 step 150/625 loss 0.3996 det 0.1062 da 0.0593 lane 0.0578 budget 0.0000 feat 0.105 out_da 0.036 out_lane 0.035 230ms/step
+[stage C] ep 2 step 200/625 loss 0.3992 det 0.1062 da 0.0591 lane 0.0578 budget 0.0000 feat 0.105 out_da 0.036 out_lane 0.035 229ms/step
+[stage C] ep 2 step 250/625 loss 0.3999 det 0.1063 da 0.0598 lane 0.0580 budget 0.0000 feat 0.104 out_da 0.036 out_lane 0.035 229ms/step
+[stage C] ep 2 step 300/625 loss 0.4003 det 0.1064 da 0.0604 lane 0.0581 budget 0.0000 feat 0.104 out_da 0.036 out_lane 0.035 228ms/step
+[stage C] ep 2 step 350/625 loss 0.3995 det 0.1063 da 0.0600 lane 0.0580 budget 0.0000 feat 0.104 out_da 0.036 out_lane 0.035 228ms/step
+[stage C] ep 2 step 400/625 loss 0.3992 det 0.1065 da 0.0599 lane 0.0580 budget 0.0000 feat 0.104 out_da 0.036 out_lane 0.035 228ms/step
+[stage C] ep 2 step 450/625 loss 0.3989 det 0.1064 da 0.0598 lane 0.0581 budget 0.0000 feat 0.103 out_da 0.036 out_lane 0.035 228ms/step
+[stage C] ep 2 step 500/625 loss 0.3986 det 0.1065 da 0.0597 lane 0.0581 budget 0.0000 feat 0.103 out_da 0.036 out_lane 0.035 228ms/step
+[stage C] ep 2 step 550/625 loss 0.3983 det 0.1064 da 0.0597 lane 0.0581 budget 0.0000 feat 0.103 out_da 0.036 out_lane 0.035 228ms/step
+[stage C] ep 2 step 600/625 loss 0.3984 det 0.1066 da 0.0598 lane 0.0582 budget 0.0000 feat 0.103 out_da 0.036 out_lane 0.035 228ms/step
+[stage C] ep 2 DONE avg_loss=0.3982 saved experiments/expI_kd_dynamic/kdD_C/checkpoint.pt

@@ -1,0 +1,2 @@
+[train] init from experiments/expF_single_teacher/kd_yolop/checkpoint.pt: loaded 256/256 keys missing=5 unexpected=0
+[train] stage=B adaptive=True params=0.235M

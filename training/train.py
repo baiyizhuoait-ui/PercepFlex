@@ -93,7 +93,9 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
             feat_t = torch.from_numpy(kd_offline["feat"][ids]).float().to(device)
             da_t = torch.from_numpy(kd_offline["da"][ids]).float().to(device)
             lane_t = torch.from_numpy(kd_offline["lane"][ids]).float().to(device)
-            # z_student already computed in the forward (return_z)
+            # z from the shared encoder+representation (compute here for both static & adaptive)
+            feats_m = model.encoder(img)
+            z_student = model.representation(feats_m)["z"]
             # feature alignment (upsample cache 1/16 -> 1/8)
             if feat_t.shape[2:] != z_student.shape[2:]:
                 feat_t = torch.nn.functional.interpolate(

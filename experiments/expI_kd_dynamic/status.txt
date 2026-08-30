@@ -1,3 +1,16 @@
 07:57:24 C: static+KD eval (best teacher student)
 08:01:09   C done
 08:01:09 D: KD-dynamic pipeline
+15:37:26 D: KD-dynamic pipeline (init from full online YOLOP-KD student)
+15:37:44   kdD_B FAIL
+15:42:46 D: KD-dynamic pipeline (init from full online YOLOP-KD student)
+15:43:04   kdD_B FAIL
+15:48:09 D: KD-dynamic pipeline (init from full online YOLOP-KD student)
+15:48:29   kdD_B FAIL
+15:53:40 D: KD-dynamic pipeline (init from full online YOLOP-KD student)
+15:57:19   kdD_B done
+16:02:24   kdD_C done
+16:07:32   kdD_D done
+16:07:32 D eval (dynamic+KD)
+16:12:08 EXP-I DONE
+16:15:26 fair D: full-70k dynamic from KD init
