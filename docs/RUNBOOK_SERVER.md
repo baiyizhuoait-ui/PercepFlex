@@ -79,21 +79,52 @@ for n, ps in [('TwinLiteNet',[None]),('TwinLiteNetPlus',['nano','large']),('TriL
 "
 ```
 
-### 2.3 数据
+### 2.3 数据（BDD100K，~11G，需单独传输）
 
+> 数据不在 GitHub 里（太大）。服务器有两个来源任选：
+> **(A) 从你本机打包传过去**（推荐，本机已有完整 `data/bdd100k/`）；
+> **(B) 服务器能联网时从 BDD100K 官网重新下载**（若服务器访问不了 GDrive，选 A）。
+
+#### 方式 A：本机打包 → scp → 服务器解压
+
+**① 本机（WSL）打包**（在 `ai_study/trac` 所在机器上）：
 ```bash
-# 数据放到：
-#   /home/cmu/Desktop/trac/data/bdd100k/
-#     images/100k/{train,val}   images/10k/test
-#     labels/bdd100k_labels_images_{train,val}.json
-#     segments/masks/{train,val}   lanes/masks/{train,val}
-#     splits/{tri_train,tri_val}.txt
+cd /home/mycode/ai_study/trac
+# 打包成单个 tar（图片是 jpg 已压缩，gz 压不动，直接 tar 更快）
+tar -cf /home/mycode/bdd100k_20260830.tar -C data bdd100k
+# 若想更小可加 z 用 gzip：tar -czf ...（慢一些）
+ls -lh /home/mycode/bdd100k_20260830.tar   # ~11G
+```
 
-# 校验数据
+**② 本机 → 服务器传输**（scp；若提示输密码是 cmu 登录密码，非 root）：
+```bash
+scp /home/mycode/bdd100k_20260830.tar cmu@HIVE:/home/cmu/Desktop/
+# 或断点续传更快用 rsync：
+rsync -avP /home/mycode/bdd100k_20260830.tar cmu@HIVE:/home/cmu/Desktop/
+```
+
+**③ 服务器上解压**（解压到 `data/`，得到 `data/bdd100k/...`）：
+```bash
+cd /home/cmu/Desktop/trac
+tar -xf /home/cmu/Desktop/bdd100k_20260830.tar -C data
+ls data/bdd100k/
+# 期望看到：images/  labels/  segments/  lanes/  splits/
+```
+
+**④ 校验**（确认目录结构、数量正确）：
+```bash
 cd /home/cmu/Desktop/trac
 python3 scripts/verify_dataset.py
 # 期望：images train=70000 val=10000；三任务交集 tri_train=69863 / tri_val=10000
 ```
+
+#### 方式 B：服务器直接从 BDD100K 下载
+```bash
+cd /home/cmu/Desktop/trac
+# 用 BDD100K 官方 tools/脚本或 wget 按需下载 images/100k、labels、segments/masks、lanes/masks、splits
+# 之后目录结构同上，再用 verify_dataset.py 校验
+```
+> 本仓库的 `splits/{tri_train,tri_val}.txt` 是项目自定义的三任务交集划分（随仓库走，勿覆盖）。
 
 ---
 
