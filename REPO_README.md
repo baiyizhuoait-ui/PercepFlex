@@ -31,4 +31,7 @@ Task-Resource Adaptive Compact Representation for Lightweight Multi-Task Driving
   - https://github.com/chequanghuy/TwinLiteNetPlus
   - https://github.com/chequanghuy/TriLiteNet
   - https://github.com/hustvl/YOLOP
+  > clone 位置：前 3 个放到 `baselines/<名字>`（仓库内 baselines/ 为空目录，评测时 sys.path 导入）；
+  > YOLOP 放到 **trac 的上一层**（`evaluate_baseline.py` 固定从 `../YOLOP` 导入其 `lib/`）。
+  > 权重已全部在 `weights/` 内，clone 代码即可评测，无需任何额外下载。
 - **大缓存**（kd_cache 等，可在服务器用 `scripts/precompute_teacher.py` 重新生成）

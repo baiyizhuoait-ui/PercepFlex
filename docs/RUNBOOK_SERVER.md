@@ -45,10 +45,43 @@ python3 -c "import torch, torchvision, numpy, cv2, sklearn, albumentations, timm
 
 ## 2. 项目与数据（全部 🔓）
 
+### 2.1 从 GitHub 拉取项目（含全部权重，无需 GDrive）
+
 ```bash
-mkdir -p /home/cmu/Desktop/trac
+mkdir -p /home/cmu/Desktop
+cd /home/cmu/Desktop
+git clone https://github.com/baiyizhuoait-ui/PercepFlex.git trac
+cd trac
+ls weights/   # 应看到 YOLOP/TwinLiteNet/TwinLiteNetPlus/TriLiteNet 全部权重（共 ~118MB，随仓库走）
+ls trained_models/   # Static_noKD.pt / Static_KD_YOLOP.pt / Dynamic_noKD.pt
+```
+
+### 2.2 拉取 baseline 模型代码（4 个公共仓库，评测用）
+
+> 权重已随主仓库提供；这里只 clone **模型代码**（评测时 `sys.path` 会导入它们）。
+> 注意 `baselines/` 目录在仓库里是空的（嵌套仓库不入库），需按下面命令补全：
+
+```bash
+cd /home/cmu/Desktop/trac/baselines
+git clone --depth 1 https://github.com/chequanghuy/TriLiteNet.git        TriLiteNet
+git clone --depth 1 https://github.com/chequanghuy/TwinLiteNet.git       TwinLiteNet
+git clone --depth 1 https://github.com/chequanghuy/TwinLiteNetPlus.git   TwinLiteNetPlus
+# YOLOP 代码在 trac 的上一层目录（evaluation/evaluate_baseline.py 里写死 ../YOLOP）
+cd /home/cmu/Desktop
+git clone --depth 1 https://github.com/hustvl/YOLOP.git YOLOP
+# 校验 baseline 权重能加载（读 trac/weights/，无需任何额外下载）
 cd /home/cmu/Desktop/trac
-# 把 trac/ 项目代码放进来（不含本地 gpu_env）
+python3 -c "
+from scripts.load_baseline_weights import load_baseline
+for n, ps in [('TwinLiteNet',[None]),('TwinLiteNetPlus',['nano','large']),('TriLiteNet',['tiny','base'])]:
+    m = load_baseline(n, ps[0] if n!='TwinLiteNetPlus' else ps[-1], 'cpu')
+    print(n, 'OK', sum(x.numel() for x in m.parameters())/1e6, 'M')
+"
+```
+
+### 2.3 数据
+
+```bash
 # 数据放到：
 #   /home/cmu/Desktop/trac/data/bdd100k/
 #     images/100k/{train,val}   images/10k/test
