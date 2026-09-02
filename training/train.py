@@ -251,6 +251,8 @@ def main():
                     help="permit running on CPU (tiny smoke tests only)")
     ap.add_argument("--log-every", type=int, default=20,
                     help="print progress every N steps (0 = only epoch summary)")
+    ap.add_argument("--num-workers", type=int, default=None,
+                    help="DataLoader workers (default: auto ~ cores; low values starve the GPU)")
     args = ap.parse_args()
 
     with open(args.config) as f:
@@ -343,9 +345,25 @@ def main():
             ds._det_by_name = {k: v for k, v in ds._det_by_name.items() if k in keep}
     g = torch.Generator()
     g.manual_seed(args.seed)
+    # --- DataLoader workers: the main lever for GPU utilization ---
+    # On a real multi-core box, num_workers=2 starves the GPU (gpu% in the low
+    # single digits) because most wall-time is spent on CPU preprocessing/disk
+    # reads. Auto-raise it when the config default (<=2) is clearly too low.
+    cfg_nw = tr.get("num_workers", 2)
+    nw = args.num_workers or cfg_nw
+    if args.num_workers is None and cfg_nw <= 2 and device.type == "cuda":
+        auto_nw = min(8, max(4, (os.cpu_count() or 8) // 2))
+        if auto_nw > cfg_nw:
+            nw = auto_nw
+    pin = device.type == "cuda"
+    pf = max(2, int(tr.get("prefetch_factor", 4)))
     loader = DataLoader(ds, batch_size=tr.get("batch_size", 8), shuffle=True,
-                        num_workers=tr.get("num_workers", 2), collate_fn=collate_train,
-                        drop_last=True, generator=g)
+                        num_workers=nw, collate_fn=collate_train, drop_last=True,
+                        generator=g, pin_memory=pin,
+                        prefetch_factor=(pf if nw > 0 else None))
+    if nw != cfg_nw:
+        print(f"[train] DataLoader workers {cfg_nw} -> {nw} (auto-raised; "
+              f"pass --num-workers to override) pin_memory={pin} prefetch={pf}", flush=True)
 
     epochs = args.epochs or int(tr.get("epochs", 1))
     lr = float(tr.get("lr", 1e-3))
