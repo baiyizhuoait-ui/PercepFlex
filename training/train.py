@@ -38,6 +38,80 @@ DEFAULT_ANCHORS = torch.tensor([[[4, 12], [7, 19], [11, 28]],
                                 [[62, 136], [88, 206], [124, 412]]])
 
 
+def resolve_device(args):
+    """Pick the device and print an explicit banner so a silent CPU fallback can
+    never go unnoticed. Refuses to run the real pipeline on CPU unless the user
+    opts in with --allow-cpu (intended only for tiny smoke tests)."""
+    cuda_ok = torch.cuda.is_available()
+    if args.device:
+        dev_str = args.device.lower()
+    else:
+        dev_str = "cuda" if cuda_ok else "cpu"
+    device = torch.device(dev_str)
+
+    if dev_str.startswith("cuda") and not cuda_ok:
+        sys.exit("[FATAL] --device cuda requested but torch has NO usable CUDA GPU.\n"
+                 "        Check `nvidia-smi`, `python -c 'import torch;print(torch.__version__,"
+                 " torch.version.cuda)'`\n"
+                 "        and that a CPU-only torch wheel was not installed over the CUDA one.")
+
+    if dev_str == "cpu" and not cuda_ok and not args.allow_cpu:
+        sys.exit("[FATAL] CUDA GPU not detected and no explicit --device given.\n"
+                 "        Training would silently run on CPU. To force CPU for a tiny\n"
+                 "        smoke test only, rerun with: --device cpu --allow-cpu\n"
+                 "        Otherwise fix the torch/CUDA environment first.")
+
+    if cuda_ok:
+        idx = device.index if device.type == "cuda" else torch.cuda.current_device()
+        name = torch.cuda.get_device_name(idx)
+        props = torch.cuda.get_device_properties(idx)
+        cc = torch.cuda.get_device_capability(idx)
+        print(f"\n=== GPU ENV =============================================", flush=True)
+        print(f"  torch            : {torch.__version__}  (cuda build: {torch.version.cuda})", flush=True)
+        print(f"  cuda.is_available: {cuda_ok}", flush=True)
+        print(f"  device (used)    : {device}", flush=True)
+        print(f"  GPU              : {name}  | {props.total_memory/1024**3:.0f} GiB | compute {cc}", flush=True)
+        print(f"========================================================\n", flush=True)
+    else:
+        print(f"\n=== GPU ENV =============================================", flush=True)
+        print(f"  torch            : {torch.__version__}  (cuda build: {torch.version.cuda})", flush=True)
+        print(f"  cuda.is_available: {cuda_ok}", flush=True)
+        print(f"  device (used)    : {device}   <-- CPU", flush=True)
+        print(f"========================================================\n", flush=True)
+    return device
+
+
+def gpu_usage(idx=0):
+    """Live GPU utilization + memory, robust across environments.
+    Prefers torch.cuda.utilization; falls back to `nvidia-smi`; last resort = allocated memory."""
+    parts = []
+    try:
+        util = torch.cuda.utilization(idx)
+        parts.append(f"gpu% {int(util):3d}")
+    except Exception:
+        pass
+    if not parts:  # nvidia-smi fallback (real utilization on the server)
+        try:
+            import subprocess
+            out = subprocess.run(
+                ["nvidia-smi", "--query-gpu=utilization.gpu,memory.used,memory.total",
+                 "--format=csv,noheader,nounits", "-i", str(idx)],
+                capture_output=True, text=True, timeout=3)
+            if out.returncode == 0:
+                u, mu, mt = [x.strip() for x in out.stdout.split(",")]
+                parts.append(f"gpu% {u:>3} mem {mu}/{mt}MiB")
+        except Exception:
+            pass
+    if not parts:
+        try:
+            a = torch.cuda.memory_allocated(idx) / 1024**2
+            r = torch.cuda.memory_reserved(idx) / 1024**2
+            parts.append(f"mem {a:6.0f}/{r:6.0f}MiB")
+        except Exception:
+            parts.append("gpu?")
+    return " | ".join(parts)
+
+
 def build_model(cfg, adaptive):
     if adaptive:
         return AdaptiveMultiTaskModel(cfg["model"])
@@ -45,7 +119,8 @@ def build_model(cfg, adaptive):
 
 
 def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
-                    log_path, max_steps=None, kd=None, kd_offline=None):
+                    log_path, max_steps=None, kd=None, kd_offline=None,
+                    print_every=20):
     model.train()
     t0 = time.time()
     running = {}
@@ -137,14 +212,24 @@ def train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, epoch,
         for k, v in losses.items():
             running[k] = running.get(k, 0.0) + float(v)
         steps += 1
-        if (it + 1) % 50 == 0:
+        if (it + 1) % print_every == 0 or it == 0:
             avg = {k: v / steps for k, v in running.items()}
-            line = (f"[stage {stage}] ep {epoch} step {it+1}/{len(loader)} "
-                    f"loss {avg['total']:.4f} det {avg.get('det',0):.4f} "
+            el = time.time() - t0
+            done = it + 1
+            ipm = done / el if el > 0 else 0.0
+            eta_s = (len(loader) - done) / ipm if ipm > 0 else 0.0
+            gpu = ""
+            if device.type == "cuda":
+                idx = device.index if device.index is not None else 0
+                gpu = gpu_usage(idx)
+            lr = opt.param_groups[0]["lr"]
+            line = (f"[{time.strftime('%H:%M:%S')}] st{stage} ep{epoch} "
+                    f"step {done}/{len(loader)} | {el/60:.1f}m in, ETA {eta_s/60:.1f}m "
+                    f"| {el/done*1e3:.0f}ms/step | lr {lr:.2e} | {gpu}"
+                    f" | loss {avg['total']:.4f} det {avg.get('det',0):.4f} "
                     f"da {avg.get('da',0):.4f} lane {avg.get('lane',0):.4f} "
-                    f"budget {avg.get('budget',0):.4f} "
-                    + ' '.join(f"{k} {avg.get(k,0):.3f}" for k in ('feat','out_da','out_lane') if k in avg)
-                    + f" {(time.time()-t0)/(it+1)*1e3:.0f}ms/step")
+                    f"budget {avg.get('budget',0):.4f}"
+                    + ' '.join(f" {k} {avg.get(k,0):.3f}" for k in ('feat', 'out_da', 'out_lane') if k in avg))
             print(line, flush=True)
             with open(log_path, "a") as f:
                 f.write(line + "\n")
@@ -161,7 +246,11 @@ def main():
     ap.add_argument("--seed", type=int, default=0, help="random seed")
     ap.add_argument("--init", default=None, help="checkpoint to initialize weights from")
     ap.add_argument("--outdir", default=None)
-    ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--device", default=None, help="cuda[:N] or cpu (auto: cuda if available)")
+    ap.add_argument("--allow-cpu", action="store_true",
+                    help="permit running on CPU (tiny smoke tests only)")
+    ap.add_argument("--log-every", type=int, default=20,
+                    help="print progress every N steps (0 = only epoch summary)")
     args = ap.parse_args()
 
     with open(args.config) as f:
@@ -180,7 +269,7 @@ def main():
         yaml.safe_dump(cfg, f)
     log_path = os.path.join(outdir, "training_log.txt")
 
-    device = torch.device(args.device)
+    device = resolve_device(args)
     model = build_model(cfg, adaptive).to(device)
 
     # ---- KD teacher (optional) ----
@@ -278,7 +367,8 @@ def main():
     for ep in range(1, epochs + 1):
         avg = train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, ep,
                               log_path, max_steps=tr.get("max_steps"), kd=kd,
-                              kd_offline=kd_offline)
+                              kd_offline=kd_offline,
+                              print_every=max(args.log_every, 1))
         sched.step()
         ckpt = os.path.join(outdir, "checkpoint.pt")
         torch.save({"epoch": ep, "model_state": model.state_dict(),
