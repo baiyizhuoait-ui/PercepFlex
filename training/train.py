@@ -253,6 +253,8 @@ def main():
                     help="print progress every N steps (0 = only epoch summary)")
     ap.add_argument("--num-workers", type=int, default=None,
                     help="DataLoader workers (default: auto ~ cores; low values starve the GPU)")
+    ap.add_argument("--batch-size", type=int, default=None,
+                    help="override batch size (larger batches amortize data-loading and raise gpu%)")
     args = ap.parse_args()
 
     with open(args.config) as f:
@@ -351,19 +353,24 @@ def main():
     # reads. Auto-raise it when the config default (<=2) is clearly too low.
     cfg_nw = tr.get("num_workers", 2)
     nw = args.num_workers or cfg_nw
+    ncpu = os.cpu_count() or 4
     if args.num_workers is None and cfg_nw <= 2 and device.type == "cuda":
-        auto_nw = min(8, max(4, (os.cpu_count() or 8) // 2))
+        # ~cores-1 (leave a core for the main process), capped; matches torch's
+        # "suggested max workers" so we never trip its worker-count warning.
+        auto_nw = max(2, min(ncpu - 1, 8))
         if auto_nw > cfg_nw:
             nw = auto_nw
     pin = device.type == "cuda"
     pf = max(2, int(tr.get("prefetch_factor", 4)))
-    loader = DataLoader(ds, batch_size=tr.get("batch_size", 8), shuffle=True,
+    bs = args.batch_size or tr.get("batch_size", 8)
+    loader = DataLoader(ds, batch_size=bs, shuffle=True,
                         num_workers=nw, collate_fn=collate_train, drop_last=True,
                         generator=g, pin_memory=pin,
                         prefetch_factor=(pf if nw > 0 else None))
-    if nw != cfg_nw:
-        print(f"[train] DataLoader workers {cfg_nw} -> {nw} (auto-raised; "
-              f"pass --num-workers to override) pin_memory={pin} prefetch={pf}", flush=True)
+    if nw != cfg_nw or bs != tr.get("batch_size", 8):
+        print(f"[train] DataLoader workers {cfg_nw} -> {nw} (auto, cores={ncpu}; "
+              f"pass --num-workers to override) batch_size={bs} "
+              f"pin_memory={pin} prefetch={pf}", flush=True)
 
     epochs = args.epochs or int(tr.get("epochs", 1))
     lr = float(tr.get("lr", 1e-3))
