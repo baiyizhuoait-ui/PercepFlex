@@ -40,6 +40,7 @@ from datasets.bdd100k import BDD100KDataset  # noqa: E402
 from evaluation.metrics import evaluate_detection, SegmentationMetric  # noqa: E402
 from evaluation.nms import non_max_suppression  # noqa: E402
 from profiling.benchmark import profile_model  # noqa: E402
+from profiling.flops_real import count_flops  # noqa: E402
 from load_baseline_weights import load_twinlitenet, load_twinlitenetplus, load_trilitenet  # noqa: E402
 
 IMAGENET_MEAN = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1)
@@ -149,6 +150,18 @@ def crop_content(mask, item):
     pad_w, pad_h = item["pad"]
     nh, nw = item["content_size"]
     return mask[:, pad_h:pad_h + nh, pad_w:pad_w + nw]
+
+
+def _profile_ours(model, input_size, device, reps=3):
+    """Profile our static/dynamic model: real slice-aware FLOPs (flops_real)
+    + params / latency / peak GPU memory (profile_model)."""
+    model = model.to(device).eval()
+    x = torch.randn(*input_size).to(device)
+    with torch.no_grad():
+        flops_total = count_flops(model, x)          # real 2*MACs (handles sliced width)
+    bm = profile_model(model, input_size, device, reps=reps)
+    bm["flops"] = flops_total
+    return bm
 
 
 def main():
