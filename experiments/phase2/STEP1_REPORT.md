@@ -62,3 +62,6 @@ params=0.230M  flops=1.473G  (专用 latency P50/P95 见 Step-9 harness)
   公平同数据对比需把 baseline 也按我们 protocol 重训(代价大)。
 - 当前方向性：**不太可能走 Route A(同预算超 TriLite/TwinLite)**；更可能 Route B
   (紧凑+低FLOPs+弹性的价值，而非绝对精度对标既有轻量模型)。待用户决策。
+### latency (eager bs1/640, RTX5060)
+- A0 0.235M: p50 3.73ms / p95 10.44ms / fps 184 / peak 29MiB
+- 0.5M: p50 3.94ms / p95 10.95ms / fps 178 / peak 36MiB
