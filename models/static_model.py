@@ -28,10 +28,20 @@ class StaticMultiTaskModel(nn.Module):
             enc_cfg["stages"][1:])
         zc = self.representation.z_channels
         det_cfg = model_cfg.get("detection", {})
-        self.det_head = DynamicDetHead(
-            enc_cfg["stages"][1:],
-            nc=det_cfg.get("nc", 1),
-            anchors=det_cfg.get("anchors"))
+        if det_cfg.get("from_z", False):
+            # R1/R2: detection reads Compact Z (optionally via a 1x1 projection).
+            from models.representation.det_from_z import DetFromZ
+            self.det_head = DetFromZ(zc, nc=det_cfg.get("nc", 1),
+                                     proj=det_cfg.get("z_proj", True),
+                                     det_ch=det_cfg.get("det_ch", 32),
+                                     anchors=det_cfg.get("anchors"))
+            self.det_from_z = True
+        else:
+            self.det_head = DynamicDetHead(
+                enc_cfg["stages"][1:],
+                nc=det_cfg.get("nc", 1),
+                anchors=det_cfg.get("anchors"))
+            self.det_from_z = False
         seg_cfg = model_cfg.get("segmentation", {"hidden": 32})
         self.da_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
         self.lane_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
@@ -39,8 +49,11 @@ class StaticMultiTaskModel(nn.Module):
     def forward(self, x, return_z=False):
         feats = self.encoder(x)
         z = self.representation(feats)["z"]
-        det = self.det_head([feats[0], feats[1], feats[2]])
         hw = x.shape[2:]
+        if self.det_from_z:
+            det = self.det_head(z, hw)
+        else:
+            det = self.det_head([feats[0], feats[1], feats[2]])
         da = self.da_head(z, hw)
         lane = self.lane_head(z, hw)
         if return_z:

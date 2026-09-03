@@ -1,0 +1,24 @@
+# Phase-2-B Task 2(a) Z-capacity sweep — PURE Z variation, encoder FIXED.
+# encoder FIXED at 0.235M geometry (stem16 / stages[32,64,96,128] / blocks[2,2,2]).
+# ONLY representation.z_channels varies -> isolates Compact-Z capacity from backbone width.
+# Fixed Stage-A protocol: 4ep, bs16, AdamW lr1e-3, cosine, tri_train full, seed0.
+model:
+  encoder: {stem: 16, stages: [32, 64, 96, 128], blocks: [2, 2, 2]}
+  representation: {z_channels: 16}
+  detection: {nc: 1}
+  segmentation: {hidden: 32}
+input_size: [640, 640]
+train:
+  stage: A
+  train_split: tri_train
+  batch_size: 16
+  num_workers: 2
+  epochs: 4
+  lr: 1e-3
+  weight_decay: 5e-4
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lambda_budget: 0.0
+  grad_clip: 10.0
+data:
+  root: data/bdd100k
