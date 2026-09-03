@@ -1,1 +1,3 @@
 z,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_fg,lane_mIoU,checkpoint,seed,epochs,git_commit
+16,0.189,1.060,139.23,0.2368,0.0768,0.8199,0.7190,0.1818,0.5792,experiments/phase2b/zsweep_z16/checkpoint.pt,0,4,ce560f490ddfe921aaf70dc92519d694ca240b6d
+32,0.203,1.197,416.01,0.2421,0.0793,0.8317,0.7359,0.1802,0.5775,experiments/phase2b/zsweep_z32/checkpoint.pt,0,4,ce560f490ddfe921aaf70dc92519d694ca240b6d
