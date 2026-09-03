@@ -28,3 +28,13 @@ params=0.230M  flops=1.473G  (专用 latency P50/P95 见 Step-9 harness)
 - s2_nokd: DONE (control)
 - s2_kd_YOLOP: DONE (avg_loss 0.4637)
 - s2_kd_TLP / s2_kd_TriLite: 后台训练中
+
+## 等预算表（统一评测 tri_val; A0/0.5M=固定4ep, 1.0/2.0M=Phase1 3/2ep 注记）
+| budget | params | FLOPs | mAP50 | DA_mIoU | DA_fg | Lane_fg | Lane_m | fps |
+|---|---|---|---|---|---|---|---|---|
+| A0 0.235M | 0.230M | 1.47G | 0.2414 | 0.8360 | 0.7418 | 0.1843 | 0.5802 | 157 |
+| 0.5M | 0.424M | 2.46G | 0.2846 | 0.8334 | 0.7384 | 0.1915 | 0.5837 | 186 |
+| 1.0M | 0.959M | 4.22G | 0.2951 | 0.8518 | 0.7654 | 0.1943 | 0.5855 | 179 |
+| 2.0M | 1.980M | 8.84G | 0.3187 | 0.8450 | 0.7555 | 0.1939 | 0.5853 | 158 |
+趋势：mAP 随容量↑(0.24→0.32)，Detection 最敏感；DA/Lane 早饱和(0.5M)。确认 Phase1 H2。
+评测: experiments/phase2/s1_eval/{A_budget_0.5M,ph_1.0M,ph_2.0M}; A0: A0_static_nokd_eval
