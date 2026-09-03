@@ -23,3 +23,8 @@ params=0.230M  flops=1.473G  (专用 latency P50/P95 见 Step-9 harness)
 ### Budget chain (fixed 4ep protocol)
 - A_budget_0.5M: DONE (avg_loss 0.2347, ep4) @ 14:32
 - A_budget_1.0M / 2.0M: 后台训练中 (串行)
+
+### Step-2 single-teacher KD recheck (fixed 4ep, SAME 9999-train-subset paired)
+- s2_nokd: DONE (control)
+- s2_kd_YOLOP: DONE (avg_loss 0.4637)
+- s2_kd_TLP / s2_kd_TriLite: 后台训练中
