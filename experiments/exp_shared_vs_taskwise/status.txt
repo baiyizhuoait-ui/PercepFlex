@@ -1,3 +1,0 @@
-=== Exp2: Shared vs Task-wise ===
-DONE methodA_shared
-DONE methodB_taskwise

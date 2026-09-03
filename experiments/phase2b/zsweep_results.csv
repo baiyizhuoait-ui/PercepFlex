@@ -3,3 +3,5 @@ z,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_fg,lane_mIoU,checkpoint
 32,0.203,1.197,416.01,0.2421,0.0793,0.8317,0.7359,0.1802,0.5775,experiments/phase2b/zsweep_z32/checkpoint.pt,0,4,ce560f490ddfe921aaf70dc92519d694ca240b6d
 48,0.217,1.335,375.41,0.2360,0.0762,0.8328,0.7374,0.1799,0.5772,experiments/phase2b/zsweep_z48/checkpoint.pt,0,4,f7ff266275f15e9e80fa9d9906dd747e128b6458
 64,0.230,1.473,171.97,0.2424,0.0787,0.8258,0.7274,0.1836,0.5796,experiments/phase2b/zsweep_z64/checkpoint.pt,0,4,ebe0248d2b2baaffc97adf5da3448870cec351eb
+96,0.258,1.748,150.81,0.2437,0.0809,0.8247,0.7259,0.1809,0.5776,experiments/phase2b/zsweep_z96/checkpoint.pt,0,4,7b71d4bac322fcb718a5f50f6ab2580bffba6758
+128,0.286,2.023,152.91,0.2403,0.0789,0.8318,0.7360,0.1841,0.5798,experiments/phase2b/zsweep_z128/checkpoint.pt,0,4,71a3c50753da542785625daa6c754d4acc1143d3
