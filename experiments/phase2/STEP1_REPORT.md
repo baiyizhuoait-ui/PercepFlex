@@ -19,3 +19,7 @@ epochs=4, bs16, AdamW lr1e-3 wd5e-4, cosine, tri_train全量, seed0.
 
 ### A0 profile (eager, bs1)
 params=0.230M  flops=1.473G  (专用 latency P50/P95 见 Step-9 harness)
+
+### Budget chain (fixed 4ep protocol)
+- A_budget_0.5M: DONE (avg_loss 0.2347, ep4) @ 14:32
+- A_budget_1.0M / 2.0M: 后台训练中 (串行)
