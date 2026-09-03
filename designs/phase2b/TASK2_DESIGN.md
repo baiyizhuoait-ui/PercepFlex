@@ -68,6 +68,22 @@ Eval: `tri_val` full (10,000), 640 letterbox, `evaluate_baseline.py --baseline O
 - Because R0's det does **not** read Z, the (a) Z-sweep primarily probes **segmentation** sensitivity to Z;
   detection is a near-flat control (expected). The (c) R2 sweep is what makes det depend on Z.
 - R1/R2 are **additive**: `det_from_z.py` is only imported when `detection.from_z:true`; default off.
+- **Z resolution is 1/8** (`compact_z.py` interpolates Z to `f2.shape[2:]`), so an R1/R2 detection
+  pyramid built from Z starts at stride 8 and downsamples to 16/32.
+- **CORRECTION (2026-09-03, commit e498cde) — R2 was rewritten after the first smoke test.**
+  The first `DetFromZ` draft emitted a **single** detection scale. It crashed in
+  `yolo_loss.build_targets` (`preds[i]` IndexError) because `YOLOLoss.nl = anchors.shape[0] = 3`.
+  Fixing the crash alone was not enough: a 1-scale head would lose to R0 for *missing scales*
+  rather than for *information bottleneck*, which would invalidate the R0-vs-R2 comparison.
+  Rewritten to emit the **same 3 scales, strides [8,16,32] and anchors as R0**, so the only
+  difference under test is the **information source** (encoder multi-scale vs. one unified Z).
+- Downsampling branches inside `DetFromZ` use a **fixed internal width `det_ch=32`**, not
+  `z_channels`. Otherwise R2 head params would grow O(z²) across the Z sweep and "Z capacity"
+  would be confounded with "head capacity". With `det_ch` fixed, R2 params stay ~constant
+  across Z (only the 1×1 entry projection scales as zc·det_ch).
+- Measured cost of this design (smoke test, 1ep/160 imgs): R0 z16 = 0.189M / 1.060G / 2.53ms;
+  R2 z32 = 0.216M / 1.224G / 4.59ms. R2 pays ≈27K params + ≈0.16G FLOPs for the Z→3-scale
+  reconstruction — this overhead is itself part of the research question and is reported.
 
 ---
 
@@ -82,18 +98,21 @@ git add configs/phase2b_*.yaml models/representation/det_from_z.py \
         designs/phase2b/TASK2_DESIGN.md experiments/phase2b/STEP2B_ANALYSIS_PROXY.md
 git commit -m "Phase2-B Task2: Z-sweep + R1/R2 configs, runner, analyzer, design doc"
 
-# 2) Task 2(a) R0 Z-sweep (≈6 × ~30min train + ~8min eval ≈ 4h, single serial job)
-nohup bash scripts/phase2b_run_zsweep.sh > experiments/phase2b/zsweep_runner.log 2>&1 &
+# 2) Task 2(a) R0 Z-sweep (6 × ~28min train + ~5min eval ≈ 3.3h, single serial job)
+# NOTE: on Windows use the FULL path C:\Windows\System32\wsl.exe — the bare `wsl`
+#       name resolves to the WindowsApps alias and is blocked. To survive after the
+#       launching shell exits, use setsid + nohup + disown.
+setsid nohup bash scripts/phase2b_run_zsweep.sh \
+  > experiments/phase2b/zsweep_stdout.log 2>&1 < /dev/null & disown
 
-# 3) Task 2(c) R1/R2 (after (a) sanity-checks; extend the runner or loop manually)
-for m in r1 r2; do for z in 32 64 96; do
-  PY=/home/mycode/ai_study/gpu_env/bin/python
-  $PY training/train.py --config configs/phase2b_${m}_zsweep_z${z}.yaml \
-       --outdir experiments/phase2b/${m}_z${z} --epochs 4 --seed 0
-  $PY evaluation/evaluate_baseline.py --baseline OursStatic \
-       --preset experiments/phase2b/${m}_z${z}/checkpoint.pt \
-       --outdir experiments/phase2b/${m}_z${z}_eval
-done; done
+# poll (from Windows):
+#   C:\Windows\System32\wsl.exe -e bash -lc 'cd /home/mycode/ai_study/trac && tail -3 experiments/phase2b/zsweep_stdout.log && cat experiments/phase2b/zsweep_results.csv'
+
+# 3) Task 2(c) R1/R2 — AFTER the (a) sweep, so the Z points can be chosen from the
+#    observed saturation curve rather than guessed. Default: R2 @ z=32,64,96 + R1 @ z=64.
+setsid nohup bash scripts/phase2b_run_r1r2.sh \
+  > experiments/phase2b/r1r2_stdout.log 2>&1 < /dev/null & disown
+#   custom set:  bash scripts/phase2b_run_r1r2.sh "R2:32,64,96" "R1:64"
 
 # 4) analyze (works without GPU)
 /home/mycode/ai_study/gpu_env/bin/python scripts/phase2b_analyze.py --root . --mode auto \
