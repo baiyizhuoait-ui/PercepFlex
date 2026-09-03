@@ -10,6 +10,11 @@ experiments/*/checkpoint.pt
 experiments/*/training_log.txt
 experiments/*/*.csv
 
+# ...but the aggregated sweep RESULT TABLES are the deliverable of Phase 2-B:
+# they are small, and they carry params/FLOPs/FPS/per-task metrics/git-commit for
+# every run. Without them the sweep is not reproducible, so un-ignore them.
+!experiments/phase2b/*_results.csv
+
 # Baseline repos keep their own .git; ignore their weight files
 baselines/*/pretrained/
 baselines/*/weights/
