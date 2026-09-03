@@ -32,9 +32,11 @@ def build(checkpoint, model_cls="OursStatic"):
     from evaluation.evaluate_baseline import build_ours
     if model_cls == "OursDynamic":
         from models.adaptive_model import AdaptiveMultiTaskModel
-        return build_ours(AdaptiveMultiTaskModel.__name__, checkpoint, "cuda")
+        model, _ = build_ours(AdaptiveMultiTaskModel.__name__, checkpoint, "cuda")
+        return model
     from models.static_model import StaticMultiTaskModel
-    return build_ours(StaticMultiTaskModel.__name__, checkpoint, "cuda")
+    model, _ = build_ours(StaticMultiTaskModel.__name__, checkpoint, "cuda")
+    return model
 
 
 def bench(model, x, device, warmup, reps):

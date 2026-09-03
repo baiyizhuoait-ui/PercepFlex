@@ -38,3 +38,7 @@ params=0.230M  flops=1.473G  (专用 latency P50/P95 见 Step-9 harness)
 | 2.0M | 1.980M | 8.84G | 0.3187 | 0.8450 | 0.7555 | 0.1939 | 0.5853 | 158 |
 趋势：mAP 随容量↑(0.24→0.32)，Detection 最敏感；DA/Lane 早饱和(0.5M)。确认 Phase1 H2。
 评测: experiments/phase2/s1_eval/{A_budget_0.5M,ph_1.0M,ph_2.0M}; A0: A0_static_nokd_eval
+
+### A0 latency (bs1, 640, RTX5060, bench_latency.py)
+- eager: mean 5.45ms, p50 3.73ms, p95 10.44ms, fps 184, peak_mem 29MiB(forward)
+- torch.compile: 在此环境(RTX5060/Blackwell + torch2.11) inductor 报错 → 记录为部署限制，待服务器/稳定环境再测
