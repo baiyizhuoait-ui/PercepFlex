@@ -71,3 +71,15 @@
 ## D. 下一步（待你决策后）
 按你选择的路径推进；无论哪条，先把 Step-1 剩余评测 + latency 补齐，形成等预算表与 Pareto，
 再进入你拍板的 KD/Adapter/Elastic 主攻路线。
+
+## 补充决策信息（Round 9）
+### Step-1 同预算对齐：我们并不领先既有轻量模型（绝对精度）
+同参数下 ours 的 mAP/DA/Lane **均落后**官方 pretrained TriLiteNet / TwinLiteNet+
+(检测 0.24 vs TriLite-tiny 0.50; DA 0.84 vs TLP 0.92)，但 **FLOPs 低 6-10×**
+(ours 0.235M=1.47G vs TriLite-tiny=1.83G vs TLP-medium=15G)。注：baseline 官方权重
+=全量+充分训练，我们=tri_train 4ep，非完全同protocol。
+→ 倾向 Route B(紧凑+低FLOPs+弹性价值)，基本排除 Route A(同预算超 TriLite/TwinLite)。
+### 两处关键证据汇总(供 Route 决策)
+- Step2: 受控 9999 下 KD 无稳定增益 → KD 不宜当基石
+- Step1: 同参数绝对精度落后既有轻量模型 → 不走 Route A 精度竞赛
+两者共同指向 Route B：**Compact + Adapter + Elastic(global)**, 价值=紧凑/低算力/一模型多档。
