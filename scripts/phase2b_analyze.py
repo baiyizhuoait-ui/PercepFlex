@@ -134,7 +134,7 @@ def knee_point(runs, cost_key, acc_key):
     return best_lab, best_d
 
 
-def render_md(runs, mode):
+def render_md(runs, mode, noise_control=None):
     lines = []
     lines.append(f"# Phase-2-B Task 2 — Capacity / Sensitivity / Utility Analysis (`{mode}` mode)\n")
     if mode == "proxy":
@@ -203,6 +203,26 @@ def render_md(runs, mode):
                  "or negative while FLOPs keep rising; `ΔmAP per +1 GFLOP` falling toward 0 is the "
                  "diminishing-return signal.\n".format(t=top, v=tot[top]))
 
+    # noise floor from a control metric that should NOT respond to the sweep
+    if noise_control and noise_control in runs[0] and len(runs) >= 3:
+        import statistics as _st
+        vals = [r[noise_control] for r in runs]
+        sd = _st.stdev(vals)
+        mean = _st.mean(vals)
+        lines.append("\n## Empirical noise floor (from a control metric)\n")
+        lines.append(
+            "`{nc}` does not receive the swept quantity under the current routing, so its "
+            "variation across these {n} runs is **run-to-run noise, not a capacity effect**.\n".format(
+                nc=noise_control, n=len(runs)))
+        lines.append("| control metric | mean | std (σ) | 2σ (min claimable Δ) | range |")
+        lines.append("|---|---|---|---|---|")
+        lines.append("| {nc} | {m:.4f} | {s:.4f} | **{t:.4f}** | {r:.4f} |".format(
+            nc=noise_control, m=mean, s=sd, t=2 * sd, r=max(vals) - min(vals)))
+        lines.append("\n> Any per-step Δ smaller than **2σ = {t:.4f}** should be read as noise. "
+                     "Compare the per-step table above against this threshold before calling any "
+                     "difference an effect. With n={n} runs this σ is itself a rough estimate.\n".format(
+                         t=2 * sd, n=len(runs)))
+
     # (a) utility + efficiency + pareto
     lines.append("\n## (a) Utility, efficiency, and Pareto\n")
     lines.append("| label | Utility(0-1) | U/params(1/M) | U/flops(1/G) | mAP/flops |")
@@ -246,6 +266,10 @@ def main():
     ap.add_argument("--root", default=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     ap.add_argument("--mode", choices=["auto", "proxy"], default="auto")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--noise-control", default=None,
+                    help="metric that is INVARIANT to the swept quantity under the current "
+                         "routing (e.g. mAP50 in R0, where detection does not read Z). Its "
+                         "spread across runs is then reported as an empirical noise floor.")
     args = ap.parse_args()
 
     if args.mode == "auto":
@@ -261,7 +285,7 @@ def main():
         mode = "proxy"
 
     RUNS = runs
-    md = render_md(runs, mode)
+    md = render_md(runs, mode, args.noise_control)
     if args.out:
         os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
         with open(args.out, "w") as f:
