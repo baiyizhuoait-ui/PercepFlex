@@ -30,7 +30,7 @@ PY=/home/mycode/ai_study/gpu_env/bin/python
 ROOT=/home/mycode/ai_study/trac
 cd "$ROOT" || exit 1
 
-ZS=(${ZS_OVERRIDE:-"16 32 48 64 96 128"})
+ZS=(${ZS_OVERRIDE:-16 32 48 64 96 128})
 OUT=experiments/phase2b
 mkdir -p "$OUT"
 CSV="$OUT/zsweep_results.csv"

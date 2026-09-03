@@ -105,6 +105,35 @@ def pareto_frontier(key_acc, key_cost):
     return front
 
 
+def knee_point(runs, cost_key, acc_key):
+    """Largest perpendicular distance to the first->last chord of the (cost,
+    accuracy) curve, after min-max normalising both axes. Returns (label, dist).
+    Needs >= 3 points; returns (None, 0.0) when the curve is degenerate."""
+    if len(runs) < 3:
+        return None, 0.0
+    pts = [(r[cost_key], r[acc_key], r["label"]) for r in runs]
+    cs = [p[0] for p in pts]
+    accs = [p[1] for p in pts]
+    cmin, cmax = min(cs), max(cs)
+    amin, amax = min(accs), max(accs)
+    if cmax - cmin < 1e-12 or amax - amin < 1e-12:
+        return None, 0.0
+    norm = [((c - cmin) / (cmax - cmin), (a - amin) / (amax - amin), lab)
+            for c, a, lab in pts]
+    x0, y0, _ = norm[0]
+    x1, y1, _ = norm[-1]
+    dx, dy = x1 - x0, y1 - y0
+    denom = (dx * dx + dy * dy) ** 0.5
+    if denom < 1e-12:
+        return None, 0.0
+    best_lab, best_d = None, -1.0
+    for x, y, lab in norm:
+        d = abs(dy * x - dx * y + x1 * y0 - y1 * x0) / denom
+        if d > best_d:
+            best_d, best_lab = d, lab
+    return best_lab, best_d
+
+
 def render_md(runs, mode):
     lines = []
     lines.append(f"# Phase-2-B Task 2 — Capacity / Sensitivity / Utility Analysis (`{mode}` mode)\n")
@@ -134,22 +163,45 @@ def render_md(runs, mode):
             b=100 * r["da_mIoU"] / best["da_mIoU"],
             c=100 * r["lane_fg"] / best["lane_fg"],
             d=100 * r["lane_mIoU"] / best["lane_mIoU"]))
-    lines.append("\n> Detection retains the least at low capacity; DA the most — tasks degrade "
-                 "**non-synchronously** (Compact Z is a contested information-allocation problem, "
-                 "not merely a small feature map).\n")
+    lo = runs[0]
+    rets = {t: 100.0 * lo[t] / best[t] for t in ["mAP50", "da_mIoU", "lane_fg", "lane_mIoU"]}
+    worst = min(rets, key=rets.get)
+    bestt = max(rets, key=rets.get)
+    spread = rets[bestt] - rets[worst]
+    lines.append(
+        "\n> **Derived from the table above (not asserted a priori).** At the lowest-capacity "
+        "point (**{lab}**) the least-retained task is **{w}** ({wr:.1f}% of its best) and the "
+        "most-retained is **{b}** ({br:.1f}%). Spread = {sp:.1f} pp.\n".format(
+            lab=lo["label"], w=worst, wr=rets[worst], b=bestt, br=rets[bestt], sp=spread))
+    if spread < 5.0:
+        lines.append(
+            "> ⚠️ **Spread is only {sp:.1f} pp — retention is nearly SYNCHRONOUS across this "
+            "capacity range.** The non-synchronous-degradation claim is therefore NOT supported by "
+            "these data; do not report it as a finding.\n".format(sp=spread))
+    else:
+        lines.append(
+            "> Tasks degrade **non-synchronously**: the compact representation is a contested "
+            "information-allocation problem, not merely a smaller feature map.\n")
 
     # (b) per-step sensitivity
     lines.append("\n## (b) Per-step capacity sensitivity (Δ per capacity/Z step)\n")
-    lines.append("| step | ΔmAP50 | Δda_mIoU | Δlane_fg | Δflops(G) |")
-    lines.append("|---|---|---|---|---|")
+    lines.append("| step | ΔmAP50 | Δda_mIoU | Δlane_fg | Δflops(G) | ΔmAP per +1 GFLOP |")
+    lines.append("|---|---|---|---|---|---|")
     for i in range(1, len(runs)):
         a, b = runs[i], runs[i - 1]
-        lines.append("| {la}->{lb} | {dm:+.4f} | {dd:+.4f} | {dl:+.4f} | {df:+.2f} |".format(
-            la=a["label"], lb=b["label"],
-            dm=a["mAP50"] - b["mAP50"], dd=a["da_mIoU"] - b["da_mIoU"],
-            dl=a["lane_fg"] - b["lane_fg"], df=a["flops_G"] - b["flops_G"]))
-    lines.append("\n> Detection gains the most per step (most capacity-hungry); DA/Lane saturate "
-                 "early — confirms Phase-1 H2 / Exp-D D3-2 (Detection > Lane > DA sensitivity).\n")
+        df = a["flops_G"] - b["flops_G"]
+        dm = a["mAP50"] - b["mAP50"]
+        slope = dm / df if abs(df) > 1e-9 else float("nan")
+        lines.append("| {la}->{lb} | {dm:+.4f} | {dd:+.4f} | {dl:+.4f} | {df:+.2f} | {sl:+.4f} |".format(
+            la=a["label"], lb=b["label"], dm=dm,
+            dd=a["da_mIoU"] - b["da_mIoU"],
+            dl=a["lane_fg"] - b["lane_fg"], df=df, sl=slope))
+    tot = {t: runs[-1][t] - runs[0][t] for t in ["mAP50", "da_mIoU", "lane_fg", "lane_mIoU"]}
+    top = max(tot, key=lambda k: abs(tot[k]))
+    lines.append("\n> **Derived from the table above (not asserted a priori).** Largest total change "
+                 "across the sweep: **{t}** ({v:+.4f}). A task has saturated where its Δ turns ~0 "
+                 "or negative while FLOPs keep rising; `ΔmAP per +1 GFLOP` falling toward 0 is the "
+                 "diminishing-return signal.\n".format(t=top, v=tot[top]))
 
     # (a) utility + efficiency + pareto
     lines.append("\n## (a) Utility, efficiency, and Pareto\n")
@@ -167,9 +219,24 @@ def render_md(runs, mode):
     fp_par = pareto_frontier("mAP50", "params_M")
     lines.append(f"\n- **Pareto frontier (mAP vs FLOPs):** {', '.join(fp_acc)}")
     lines.append(f"- **Pareto frontier (mAP vs Params):** {', '.join(fp_par)}")
-    lines.append("\n> Diminishing-return region = where ΔmAP per +ΔFLOPs falls toward ~0 while "
-                 "FLOPs/params keep rising. Identify the knee from the per-step table above once "
-                 "the dedicated Z-sweep (auto) data is available.\n")
+    kf, kfd = knee_point(runs, "flops_G", "mAP50")
+    kp, kpd = knee_point(runs, "params_M", "mAP50")
+    lines.append(f"- **Knee (mAP vs FLOPs, max-distance-to-chord):** {kf} (dist {kfd:.3f})")
+    lines.append(f"- **Knee (mAP vs Params, max-distance-to-chord):** {kp} (dist {kpd:.3f})")
+    lines.append("\n> The knee is the capacity point beyond which extra capacity buys progressively "
+                 "less accuracy. Treat it as a **descriptive** summary of this single sweep, not a "
+                 "fitted model.\n")
+    lines.append("\n---\n\n## ⚠️ Statistical caveats (read before quoting any number above)\n")
+    lines.append("- **Single seed (0), no repeats.** Every cell above is ONE run. There is no "
+                 "confidence interval and no significance test. Small adjacent-step deltas "
+                 "(especially in da_mIoU / lane_mIoU, which move by ~0.001–0.01) are very likely "
+                 "within run-to-run noise and **must not** be reported as effects.")
+    lines.append("- **4-epoch protocol.** Absolute accuracies are far from convergence; they are "
+                 "comparable *across rows* (same protocol) but not against published fully-trained "
+                 "baselines.")
+    lines.append("- **To make a claim about the saturation point**, re-run at least the two "
+                 "candidate Z points with 2–3 seeds and report mean ± std. Until then, describe "
+                 "the curve's shape, not its exact inflection.\n")
     return "\n".join(lines)
 
 
