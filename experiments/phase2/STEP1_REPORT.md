@@ -42,3 +42,23 @@ params=0.230M  flops=1.473G  (专用 latency P50/P95 见 Step-9 harness)
 ### A0 latency (bs1, 640, RTX5060, bench_latency.py)
 - eager: mean 5.45ms, p50 3.73ms, p95 10.44ms, fps 184, peak_mem 29MiB(forward)
 - torch.compile: 在此环境(RTX5060/Blackwell + torch2.11) inductor 报错 → 记录为部署限制，待服务器/稳定环境再测
+
+## 同预算对齐参考（官方 pretrained, tri_val）
+| 模型 | params | FLOPs | mAP50 | DA_mIoU | Lane_fg |
+|---|---|---|---|---|---|
+| Ours 0.235M | 0.230M | 1.47G | 0.2414 | 0.8360 | 0.1843 |
+| TriLite-tiny | 0.151M | 1.83G | 0.4953 | 0.8796 | 0.1952 |
+| TriLite-small | 0.592M | 6.61G | 0.6326 | 0.9053 | 0.2198 |
+| TriLite-base | 2.350M | 25.4G | 0.7235 | 0.9203 | 0.2371 |
+| Ours 0.5M | 0.424M | 2.46G | 0.2846 | 0.8334 | 0.1915 |
+| TLP-medium | 0.479M | 15.4G | (n/a) | 0.9191 | 0.2297 |
+| TLP-large | 1.944M | 58.6G | (n/a) | 0.9279 | 0.2450 |
+| Ours 2.0M | 1.980M | 8.84G | 0.3187 | 0.8450 | 0.1939 |
+
+## 诚实解读 (影响 §35 Route 判定)
+- 我们的 FLOPs 效率远高：同 params 下 FLOPs 低 ~6-10x（紧凑 1/8 表示）。
+- **但同参数下 mAP/DA/Lane 均明显落后官方 pretrained TriLite/TLP**，尤其检测(0.24 vs 0.50 tiny)。
+- **不对等注记**：baseline 官方权重 = 全量 BDD100K + 充分训练；我们 = tri_train(69863) + 固定4ep。
+  公平同数据对比需把 baseline 也按我们 protocol 重训(代价大)。
+- 当前方向性：**不太可能走 Route A(同预算超 TriLite/TwinLite)**；更可能 Route B
+  (紧凑+低FLOPs+弹性的价值，而非绝对精度对标既有轻量模型)。待用户决策。
