@@ -1,0 +1,7 @@
+z,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_fg,lane_mIoU,checkpoint,seed,epochs,git_commit
+16,0.189,1.060,227.37,0.2346,0.0755,0.8315,0.7355,0.1733,0.5735,experiments/phase2c/expA_z16_s1/checkpoint.pt,1,4,591b9e37dad4c2ebef889598e3a303fcf56aa41e
+16,0.189,1.060,434.47,0.2332,0.0730,0.8092,0.7038,0.1738,0.5740,experiments/phase2c/expA_z16_s2/checkpoint.pt,2,4,591b9e37dad4c2ebef889598e3a303fcf56aa41e
+32,0.203,1.197,133.30,0.2260,0.0732,0.8258,0.7274,0.1763,0.5751,experiments/phase2c/expA_z32_s1/checkpoint.pt,1,4,591b9e37dad4c2ebef889598e3a303fcf56aa41e
+32,0.203,1.197,376.86,0.2502,0.0831,0.8223,0.7223,0.1811,0.5784,experiments/phase2c/expA_z32_s2/checkpoint.pt,2,4,591b9e37dad4c2ebef889598e3a303fcf56aa41e
+128,0.286,2.023,415.50,0.2419,0.0795,0.8321,0.7365,0.1822,0.5782,experiments/phase2c/expA_z128_s1/checkpoint.pt,1,4,591b9e37dad4c2ebef889598e3a303fcf56aa41e
+128,0.286,2.023,154.01,0.2454,0.0820,0.7950,0.6835,0.1817,0.5790,experiments/phase2c/expA_z128_s2/checkpoint.pt,2,4,591b9e37dad4c2ebef889598e3a303fcf56aa41e
