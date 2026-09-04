@@ -48,10 +48,14 @@ extract_train_stats() {
   local PEAK_MEM="NA"
   local FINAL_LOSS="NA"
   if [ -f "$LOG" ]; then
-    PEAK_MEM=$(grep -oE 'mem [0-9]+/[0-9]+MiB' "$LOG" | awk '{print $2}' | sort -t/ -k1 -n -r | head -1 | tr -d '/' | sed 's/MiB$//')
+    # Log lines look like: "... gpu%  82 mem 2700/8151MiB | loss ..."
+    # Take the NUMERATOR (MiB used) BEFORE any slash removal, otherwise
+    # "2700/8151MiB" becomes "27008151" (numerator glued to denominator).
+    PEAK_MEM=$(grep -oE 'mem [0-9]+/[0-9]+MiB' "$LOG" | awk '{print $2}' | cut -d/ -f1 | sort -n | tail -1)
     if [ -z "$PEAK_MEM" ]; then
-      PEAK_MEM=$(awk '{for(i=1;i<=NF;i++) if($i=="mem") print $(i+1)}' "$LOG" | awk -F'/' '{print $1}' | tr -d 'M' | sort -n | tail -1)
+      PEAK_MEM=$(awk '{for(i=1;i<=NF;i++) if($i=="mem") print $(i+1)}' "$LOG" | cut -d/ -f1 | sort -n | tail -1)
     fi
+    [ -z "$PEAK_MEM" ] && PEAK_MEM="NA"
     FINAL_LOSS=$(grep -oE 'avg_loss=[0-9.]+' "$LOG" | tail -1 | sed 's/avg_loss=//')
   fi
   echo "${PEAK_MEM} ${FINAL_LOSS}"

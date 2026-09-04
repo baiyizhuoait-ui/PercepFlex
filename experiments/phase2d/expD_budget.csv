@@ -1,0 +1,2 @@
+z,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_fg,lane_mIoU,train_wall_min,peak_gpu_mem_mib,final_train_loss,seed,git_commit
+16,10,0.189,1.060,94.06,0.2880,0.0971,0.8387,0.7464,0.1888,0.5819,65,2700,0.2257,0,81a09cb95b1cc882673f61758909687604ed9d57
