@@ -1,0 +1,31 @@
+# Phase 3A · Encoder-Capacity Sanity Check — E-small
+#
+# ONLY the encoder width differs from the baseline. Everything else is
+# byte-identical to configs/phase2b_zsweep_z16.yaml.
+#
+#   stem / stages scaled x0.65 from baseline 16 / [32,64,96,128]
+#   blocks stay [2,2,2]  -> depth untouched
+#   representation z_channels stays 16 -> never sacrificed to hit a budget
+#   detection / DA / lane heads untouched
+#
+# Measured (scripts/phase3a_encoder_scan.py): 0.1013M params, 0.722 GFLOPs
+model:
+  encoder: {stem: 12, stages: [24, 40, 64, 80], blocks: [2, 2, 2]}
+  representation: {z_channels: 16}
+  detection: {nc: 1}
+  segmentation: {hidden: 32}
+input_size: [640, 640]
+train:
+  stage: A
+  train_split: tri_train
+  batch_size: 16
+  num_workers: 2
+  epochs: 20
+  lr: 1e-3
+  weight_decay: 5e-4
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lambda_budget: 0.0
+  grad_clip: 10.0
+data:
+  root: data/bdd100k

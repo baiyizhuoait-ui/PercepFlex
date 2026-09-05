@@ -1,0 +1,33 @@
+# Phase 3A · Encoder-Capacity Sanity Check — E-base (current baseline)
+#
+# This is the CURRENT encoder, unchanged: stem 16 / stages [32,64,96,128].
+# Width scale x1.00. Depth, Z width, and all heads are identical to
+# configs/phase2b_zsweep_z16.yaml.
+#
+# NOTE: an equivalent run already exists from Phase 2-D
+# (experiments/phase2d/expD_z16_e20, 20ep / seed=0 / z=16 / same encoder).
+# Its checkpoint and eval metrics are REUSED for E-base rather than burning
+# another ~132 min of GPU time, because the config and protocol are identical.
+# The reuse is recorded explicitly in the analysis and report.
+#
+# Measured (scripts/phase3a_encoder_scan.py): 0.1889M params, 1.060 GFLOPs
+model:
+  encoder: {stem: 16, stages: [32, 64, 96, 128], blocks: [2, 2, 2]}
+  representation: {z_channels: 16}
+  detection: {nc: 1}
+  segmentation: {hidden: 32}
+input_size: [640, 640]
+train:
+  stage: A
+  train_split: tri_train
+  batch_size: 16
+  num_workers: 2
+  epochs: 20
+  lr: 1e-3
+  weight_decay: 5e-4
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lambda_budget: 0.0
+  grad_clip: 10.0
+data:
+  root: data/bdd100k
