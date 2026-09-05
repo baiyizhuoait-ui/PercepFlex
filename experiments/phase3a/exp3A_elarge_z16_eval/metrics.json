@@ -1,0 +1,29 @@
+{
+  "model": "OursStatic-experiments/phase3a/exp3A_elarge_z16/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 5.282,
+  "eval_fps": 189.32,
+  "mAP50": 0.3585,
+  "mAP50_95": 0.1356,
+  "det_n_gt": 108363,
+  "det_n_pred": 2439219,
+  "da_pixel_acc": 0.9515,
+  "da_fg_iou": 0.7761,
+  "da_mIoU": 0.8589,
+  "lane_pixel_acc": 0.9758,
+  "lane_fg_iou": 0.2,
+  "lane_mIoU": 0.5878,
+  "lane_line_acc": 0.8545,
+  "parameters": 291526,
+  "flops": 1427852800.0,
+  "model_size_mb": 1.166,
+  "avg_latency_ms": 2.665,
+  "p50_latency_ms": 2.35,
+  "p95_latency_ms": 3.446,
+  "fps": 375.21,
+  "gpu_memory_mib": 36.3
+}
