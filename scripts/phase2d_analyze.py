@@ -190,18 +190,35 @@ def main():
     print("-" * 80)
     curves = extract_loss_curves([10, 20], [16, 32, 128])
     if curves:
-        # Write CSV
+        # Per-step rows and EPOCH_DONE rows carry different keys; normalise to a
+        # single union so csv.DictWriter does not raise on missing fields.
+        union = []
+        for r in curves:
+            for k in r:
+                if k not in union:
+                    union.append(k)
+        for r in curves:
+            for k in union:
+                r.setdefault(k, "")
         curve_csv = os.path.join(OUTD, "expD_loss_curves.csv")
         with open(curve_csv, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=list(curves[0].keys()))
+            w = csv.DictWriter(f, fieldnames=union)
             w.writeheader()
             w.writerows(curves)
         print(f"Wrote {curve_csv}  ({len(curves)} rows)")
-        # Print compact
-        for r in curves[:6]:
-            print(r)
-        if len(curves) > 6:
-            print(f"  ... ({len(curves)-6} more rows in CSV)")
+        # Print compact per-epoch summary (per-step rows only)
+        step_rows = [r for r in curves if r.get("n_steps_logged") != ""]
+        print(f"{'z':>4} {'cfg_ep':>7} {'epoch':>6} {'mean_loss':>10} {'det':>8} {'da':>8} {'lane':>8}")
+        for r in step_rows:
+            print(f"{r['z']:>4} {r['epochs_configured']:>7} {r['epoch']:>6} "
+                  f"{r['mean_loss']:>10.4f} {r['mean_det']:>8.4f} "
+                  f"{r['mean_da']:>8.4f} {r['mean_lane']:>8.4f}")
+        done_rows = [r for r in curves if r.get("epoch_done_avg_loss") != ""]
+        if done_rows:
+            print("\nFinal-epoch avg_loss per cell (from EPOCH DONE lines):")
+            for r in done_rows:
+                print(f"  z={r['z']:>3}  cfg_ep={r['epochs_configured']:>2}  "
+                      f"avg_loss={r['epoch_done_avg_loss']}")
 
     # Save merged table CSV
     merged_csv = os.path.join(OUTD, "expD_budget_merged.csv")

@@ -1,0 +1,69 @@
+============================================================================================
+PHASE 2-D DECISION ANALYSIS
+============================================================================================
+
+### Q1  BUDGET EFFECT vs Z EFFECT  (spread = max - min across the 3 z's)
+
+metric         budget 4->20 (z16)    z-spread@4   z-spread@10   z-spread@20  noise_floor
+--------------------------------------------------------------------------------------------
+mAP50                      0.0811        0.0053        0.0163        0.0027       0.0073
+da_mIoU                    0.0276        0.0119        0.0017        0.0019       0.0142
+lane_mIoU                  0.0081        0.0023        0.0041        0.0016       0.0021
+mAP50_95                   0.0368        0.0025        0.0059        0.0010       0.0032
+da_fg                      0.0406        0.0170        0.0026        0.0027       0.0202
+lane_fg                    0.0163        0.0039        0.0072        0.0032       0.0032
+
+  ratio  |budget effect| / z-spread@20   (>1 means budget dominates)
+    mAP50            30.0x
+    da_mIoU          14.5x
+    lane_mIoU         5.1x
+    mAP50_95         36.8x
+    da_fg            15.0x
+    lane_fg           5.1x
+
+  z-spread@20 vs noise floor  (spread <= noise => z effect indistinguishable)
+    mAP50        spread=0.0027  noise=0.0073  -> INSIDE noise
+    da_mIoU      spread=0.0019  noise=0.0142  -> INSIDE noise
+    lane_mIoU    spread=0.0016  noise=0.0021  -> INSIDE noise
+    mAP50_95     spread=0.0010  noise=0.0032  -> INSIDE noise
+    da_fg        spread=0.0027  noise=0.0202  -> INSIDE noise
+    lane_fg      spread=0.0032  noise=0.0032  -> INSIDE noise
+
+### Q2/Q3  PER-TASK Z SENSITIVITY @ 20ep  (relative spread = spread / mean)
+
+metric             z=16       z=32      z=128     spread     rel%      noise            verdict
+--------------------------------------------------------------------------------------------
+mAP50            0.3204     0.3197     0.3224     0.0027    0.84%     0.0073       INSIDE noise
+da_mIoU          0.8564     0.8545     0.8553     0.0019    0.22%     0.0142       INSIDE noise
+lane_mIoU        0.5867     0.5863     0.5879     0.0016    0.27%     0.0021       INSIDE noise
+mAP50_95         0.1149     0.1147     0.1157     0.0010    0.87%     0.0032       INSIDE noise
+da_fg            0.7723     0.7696     0.7708     0.0027    0.35%     0.0202       INSIDE noise
+lane_fg          0.1973     0.1973     0.2005     0.0032    1.61%     0.0032       INSIDE noise
+
+  NOTE (from docs/PHASE2D_BOTTLENECK_AUDIT.md): in R0 the detection head reads
+  encoder F2/F3/F4 DIRECTLY and never sees Z. Only da/lane consume Z. So any
+  mAP50 spread is gradient coupling + run noise, NOT a Z-capacity effect.
+
+### Q4  PARETO @ 20ep  (accuracy vs params / FLOPs)
+
+    z   params_M    flops_G      mAP50    da_mIoU   lane_mIoU
+--------------------------------------------------------------------------------------------
+   16      0.189      1.060     0.3204     0.8564      0.5867
+   32      0.203      1.197     0.3197     0.8545      0.5863
+  128      0.286      2.023     0.3224     0.8553      0.5879
+
+  pairwise deltas (row - col), positive = row is better
+    z16 - z32:  mAP50 +0.0007  da +0.0019  lane +0.0004 | params -6.9%  flops -11.4%
+    z16 - z128:  mAP50 -0.0020  da +0.0011  lane -0.0012 | params -33.9%  flops -47.6%
+    z32 - z128:  mAP50 -0.0027  da -0.0008  lane -0.0016 | params -29.0%  flops -40.8%
+
+  dominance (a dominates b if a is <= on params AND flops AND >= on all metrics):
+    z16 DOMINATES z32  (cheaper on params+flops, >= on all 3 metrics)
+
+### Q5  VERDICT
+
+  metrics whose z-spread@20 is inside noise: 6/6
+  da_mIoU spread shrank 4ep->20ep: True (0.0119 -> 0.0019)
+  budget effect / z-spread@20 (mAP50): 30.0x
+
+  BRANCH B -> z effect did NOT emerge; STOP searching the knee.
