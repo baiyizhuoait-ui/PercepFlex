@@ -1,0 +1,277 @@
+====================================================================================================
+PHASE 3B · ENCODER x Z INTERACTION ANALYSIS
+====================================================================================================
+
+cells present: 9/9
+
+NOISE HANDLING: Phase 3B is single-seed (seed=0) and does NOT
+independently estimate 20-epoch multi-seed variance. The noise floor
+used below is an EXTERNAL reference from Phase 2-C (3 seeds, 4 epochs,
+pooled stdev). Differences near it are reported but not claimed.
+
+----------------------------------------------------------------------------------------------------
+### A. RAW MATRIX
+----------------------------------------------------------------------------------------------------
+cell           params_M  flops_G   mAP50 mAP50-95  da_mIoU   da_fg lane_mIoU  lane_fg    loss       src
+----------------------------------------------------------------------------------------------------
+esmall_z16          0.1013   0.7218  0.2687   0.0890   0.8423  0.7515    0.5818   0.1885  0.2290   trained
+esmall_z32          0.1135   0.8522  0.2810   0.0968   0.8456  0.7564    0.5841   0.1922  0.2267   trained
+esmall_z128         0.1867   1.6350  0.2639   0.0879   0.8490  0.7613    0.5855   0.1955  0.2247   trained
+ebase_z16          0.1889   1.0597  0.3204   0.1149   0.8564  0.7723    0.5867   0.1973  0.2156 reused:ph
+ebase_z32          0.2027   1.1973  0.3222   0.1158   0.8527  0.7670    0.5875   0.1992  0.2138   trained
+ebase_z128         0.2858   2.0231  0.3161   0.1129   0.8522  0.7663    0.5877   0.2005  0.2111   trained
+elarge_z16          0.2915   1.4279  0.3585   0.1356   0.8589  0.7761    0.5878   0.2000  0.2068   trained
+elarge_z32          0.3068   1.5709  0.3494   0.1308   0.8546  0.7699    0.5893   0.2026  0.2070   trained
+elarge_z128         0.3984   2.4292  0.3436   0.1271   0.8575  0.7740    0.5925   0.2085  0.2044   trained
+
+----------------------------------------------------------------------------------------------------
+### B. Z MAIN EFFECT   (delta vs z=16, within each encoder)
+----------------------------------------------------------------------------------------------------
+Is widening Z positive, neutral, or negative? Judge on the whole set of
+metrics, never on a single one.
+
+encoder      z metric          z16    value     delta   noise*       verdict
+----------------------------------------------------------------------------------------------------
+esmall      32 mAP50        0.2687   0.2810   +0.0123   0.0073   above noise
+esmall      32 mAP50_95     0.0890   0.0968   +0.0078   0.0032   above noise
+esmall      32 da_mIoU      0.8423   0.8456   +0.0033   0.0142  within noise
+esmall      32 da_fg        0.7515   0.7564   +0.0049   0.0202  within noise
+esmall      32 lane_mIoU    0.5818   0.5841   +0.0023   0.0021   above noise
+esmall      32 lane_fg      0.1885   0.1922   +0.0037   0.0032   above noise
+
+esmall     128 mAP50        0.2687   0.2639   -0.0048   0.0073  within noise
+esmall     128 mAP50_95     0.0890   0.0879   -0.0011   0.0032  within noise
+esmall     128 da_mIoU      0.8423   0.8490   +0.0067   0.0142  within noise
+esmall     128 da_fg        0.7515   0.7613   +0.0098   0.0202  within noise
+esmall     128 lane_mIoU    0.5818   0.5855   +0.0037   0.0021   above noise
+esmall     128 lane_fg      0.1885   0.1955   +0.0070   0.0032   above noise
+
+ebase       32 mAP50        0.3204   0.3222   +0.0018   0.0073  within noise
+ebase       32 mAP50_95     0.1149   0.1158   +0.0009   0.0032  within noise
+ebase       32 da_mIoU      0.8564   0.8527   -0.0037   0.0142  within noise
+ebase       32 da_fg        0.7723   0.7670   -0.0053   0.0202  within noise
+ebase       32 lane_mIoU    0.5867   0.5875   +0.0008   0.0021  within noise
+ebase       32 lane_fg      0.1973   0.1992   +0.0019   0.0032  within noise
+
+ebase      128 mAP50        0.3204   0.3161   -0.0043   0.0073  within noise
+ebase      128 mAP50_95     0.1149   0.1129   -0.0020   0.0032  within noise
+ebase      128 da_mIoU      0.8564   0.8522   -0.0042   0.0142  within noise
+ebase      128 da_fg        0.7723   0.7663   -0.0060   0.0202  within noise
+ebase      128 lane_mIoU    0.5867   0.5877   +0.0010   0.0021  within noise
+ebase      128 lane_fg      0.1973   0.2005   +0.0032   0.0032   above noise
+
+elarge      32 mAP50        0.3585   0.3494   -0.0091   0.0073   above noise
+elarge      32 mAP50_95     0.1356   0.1308   -0.0048   0.0032   above noise
+elarge      32 da_mIoU      0.8589   0.8546   -0.0043   0.0142  within noise
+elarge      32 da_fg        0.7761   0.7699   -0.0062   0.0202  within noise
+elarge      32 lane_mIoU    0.5878   0.5893   +0.0015   0.0021  within noise
+elarge      32 lane_fg      0.2000   0.2026   +0.0026   0.0032  within noise
+
+elarge     128 mAP50        0.3585   0.3436   -0.0149   0.0073   above noise
+elarge     128 mAP50_95     0.1356   0.1271   -0.0085   0.0032   above noise
+elarge     128 da_mIoU      0.8589   0.8575   -0.0014   0.0142  within noise
+elarge     128 da_fg        0.7761   0.7740   -0.0021   0.0202  within noise
+elarge     128 lane_mIoU    0.5878   0.5925   +0.0047   0.0021   above noise
+elarge     128 lane_fg      0.2000   0.2085   +0.0085   0.0032   above noise
+
+* noise column = Phase 2-C external reference, not a Phase 3B estimate
+
+Sign summary of Z effect (how many of the 6 metrics move each way):
+  esmall    z32    positive 6/6   negative 0/6   beyond external noise 4/6
+  esmall    z128   positive 4/6   negative 2/6   beyond external noise 2/6
+  ebase     z32    positive 4/6   negative 2/6   beyond external noise 0/6
+  ebase     z128   positive 2/6   negative 4/6   beyond external noise 1/6
+  elarge    z32    positive 2/6   negative 4/6   beyond external noise 2/6
+  elarge    z128   positive 2/6   negative 4/6   beyond external noise 4/6
+
+----------------------------------------------------------------------------------------------------
+### C. ENCODER MAIN EFFECT   (cross-check of Phase 3A, now per Z column)
+----------------------------------------------------------------------------------------------------
+
+  z = 16
+    metric       E-small    E-base   E-large  d(base-sm)  d(lg-base)    d(lg-sm)  monotonic
+    mAP50         0.2687    0.3204    0.3585     +0.0517     +0.0381     +0.0898  True
+    mAP50_95      0.0890    0.1149    0.1356     +0.0259     +0.0207     +0.0466  True
+    da_mIoU       0.8423    0.8564    0.8589     +0.0141     +0.0025     +0.0166  True
+    da_fg         0.7515    0.7723    0.7761     +0.0208     +0.0038     +0.0246  True
+    lane_mIoU     0.5818    0.5867    0.5878     +0.0049     +0.0011     +0.0060  True
+    lane_fg       0.1885    0.1973    0.2000     +0.0088     +0.0027     +0.0115  True
+
+  z = 32
+    metric       E-small    E-base   E-large  d(base-sm)  d(lg-base)    d(lg-sm)  monotonic
+    mAP50         0.2810    0.3222    0.3494     +0.0412     +0.0272     +0.0684  True
+    mAP50_95      0.0968    0.1158    0.1308     +0.0190     +0.0150     +0.0340  True
+    da_mIoU       0.8456    0.8527    0.8546     +0.0071     +0.0019     +0.0090  True
+    da_fg         0.7564    0.7670    0.7699     +0.0106     +0.0029     +0.0135  True
+    lane_mIoU     0.5841    0.5875    0.5893     +0.0034     +0.0018     +0.0052  True
+    lane_fg       0.1922    0.1992    0.2026     +0.0070     +0.0034     +0.0104  True
+
+  z = 128
+    metric       E-small    E-base   E-large  d(base-sm)  d(lg-base)    d(lg-sm)  monotonic
+    mAP50         0.2639    0.3161    0.3436     +0.0522     +0.0275     +0.0797  True
+    mAP50_95      0.0879    0.1129    0.1271     +0.0250     +0.0142     +0.0392  True
+    da_mIoU       0.8490    0.8522    0.8575     +0.0032     +0.0053     +0.0085  True
+    da_fg         0.7613    0.7663    0.7740     +0.0050     +0.0077     +0.0127  True
+    lane_mIoU     0.5855    0.5877    0.5925     +0.0022     +0.0048     +0.0070  True
+    lane_fg       0.1955    0.2005    0.2085     +0.0050     +0.0080     +0.0130  True
+
+----------------------------------------------------------------------------------------------------
+### D. INTERACTION EFFECT   (the core question)
+----------------------------------------------------------------------------------------------------
+interaction = [m(E,z) - m(E,z16)] - [m(E-small,z) - m(E-small,z16)]
+
+  > 0  -> a stronger encoder makes Z MORE valuable (z=16 is throttling)
+  ~ 0  -> the two factors are independent
+  < 0  -> Z matters LESS as the encoder grows
+
+vs E-small     z metric       dZ(ref)  dZ(small)  interaction   noise*            read
+----------------------------------------------------------------------------------------------------
+ebase         32 mAP50        +0.0018    +0.0123      -0.0105   0.0073 Z LESS valuable
+ebase         32 mAP50_95     +0.0009    +0.0078      -0.0069   0.0032 Z LESS valuable
+ebase         32 da_mIoU      -0.0037    +0.0033      -0.0070   0.0142    ~independent
+ebase         32 da_fg        -0.0053    +0.0049      -0.0102   0.0202    ~independent
+ebase         32 lane_mIoU    +0.0008    +0.0023      -0.0015   0.0021    ~independent
+ebase         32 lane_fg      +0.0019    +0.0037      -0.0018   0.0032    ~independent
+
+ebase        128 mAP50        -0.0043    -0.0048      +0.0005   0.0073    ~independent
+ebase        128 mAP50_95     -0.0020    -0.0011      -0.0009   0.0032    ~independent
+ebase        128 da_mIoU      -0.0042    +0.0067      -0.0109   0.0142    ~independent
+ebase        128 da_fg        -0.0060    +0.0098      -0.0158   0.0202    ~independent
+ebase        128 lane_mIoU    +0.0010    +0.0037      -0.0027   0.0021 Z LESS valuable
+ebase        128 lane_fg      +0.0032    +0.0070      -0.0038   0.0032 Z LESS valuable
+
+elarge        32 mAP50        -0.0091    +0.0123      -0.0214   0.0073 Z LESS valuable
+elarge        32 mAP50_95     -0.0048    +0.0078      -0.0126   0.0032 Z LESS valuable
+elarge        32 da_mIoU      -0.0043    +0.0033      -0.0076   0.0142    ~independent
+elarge        32 da_fg        -0.0062    +0.0049      -0.0111   0.0202    ~independent
+elarge        32 lane_mIoU    +0.0015    +0.0023      -0.0008   0.0021    ~independent
+elarge        32 lane_fg      +0.0026    +0.0037      -0.0011   0.0032    ~independent
+
+elarge       128 mAP50        -0.0149    -0.0048      -0.0101   0.0073 Z LESS valuable
+elarge       128 mAP50_95     -0.0085    -0.0011      -0.0074   0.0032 Z LESS valuable
+elarge       128 da_mIoU      -0.0014    +0.0067      -0.0081   0.0142    ~independent
+elarge       128 da_fg        -0.0021    +0.0098      -0.0119   0.0202    ~independent
+elarge       128 lane_mIoU    +0.0047    +0.0037      +0.0010   0.0021    ~independent
+elarge       128 lane_fg      +0.0085    +0.0070      +0.0015   0.0032    ~independent
+
+* interaction is compared against the SAME external noise floor; a
+  difference of two single-seed cells is itself noisy, so treat the
+  sign pattern across metrics as the evidence, not any single row.
+
+Interaction by task (mean over metrics in the task, z=128 only):
+  ebase     detection  mean interaction = -0.0002
+  ebase     DA         mean interaction = -0.0134
+  ebase     lane       mean interaction = -0.0033
+  elarge    detection  mean interaction = -0.0088
+  elarge    DA         mean interaction = -0.0100
+  elarge    lane       mean interaction = +0.0012
+
+----------------------------------------------------------------------------------------------------
+### E. DA / LANE BOTTLENECK DIAGNOSIS
+----------------------------------------------------------------------------------------------------
+Phase 3A saw DA/Lane flatten from E-base to E-large at z=16. Two rival
+explanations: (A) the tasks are genuinely saturated, or (B) z=16 is
+throttling the richer encoder features before they reach the seg heads.
+The discriminator is whether DA/Lane REVIVE when Z widens at E-large.
+
+  metric           z16       z32      z128   d(32-16)  d(128-16)  verdict
+  ------------------------------------------------------------------
+  da_mIoU       0.8589    0.8546    0.8575    -0.0043    -0.0014  flat -> task saturation
+  da_fg         0.7761    0.7699    0.7740    -0.0062    -0.0021  flat -> task saturation
+  lane_mIoU     0.5878    0.5893    0.5925    +0.0015    +0.0047  REVIVES -> z bottleneck
+  lane_fg       0.2000    0.2026    0.2085    +0.0026    +0.0085  REVIVES -> z bottleneck
+
+  NOTE: even the 'task saturation' branch is only EVIDENCE CONSISTENT
+  WITH saturation at z<=128 / 20 epochs. It is not a proof, and it
+  does not rule out saturation at some larger Z we did not test.
+
+----------------------------------------------------------------------------------------------------
+### F. DETECTION DIAGNOSIS   (R0 bypasses Z)
+----------------------------------------------------------------------------------------------------
+In R0 the detection head reads encoder F2/F3/F4 directly; it never sees
+Z. So ANY mAP response to z cannot be a direct Z effect -- it can only
+be multi-task gradient coupling / shared training dynamics / indirect
+effects through the shared encoder. Detection's primary driver must be
+the ENCODER. Verify both claims below.
+
+  mAP50: encoder main effect (z=16)  small 0.2687 -> base 0.3204 -> large 0.3585   total +0.0898
+  mAP50: z effect at E-large            z16 0.3585 / z32 0.3494 / z128 0.3436   spread 0.0149  (noise 0.0073)
+          -> exceeds noise: indirect/coupling effect, NOT direct Z consumption
+  mAP50_95: encoder main effect (z=16)  small 0.0890 -> base 0.1149 -> large 0.1356   total +0.0466
+  mAP50_95: z effect at E-large            z16 0.1356 / z32 0.1308 / z128 0.1271   spread 0.0085  (noise 0.0032)
+          -> exceeds noise: indirect/coupling effect, NOT direct Z consumption
+
+  Do NOT write 'detection consumes the compact representation' anywhere
+  in the R0 report. That statement only becomes available under R2.
+
+----------------------------------------------------------------------------------------------------
+### G. COMPUTE / PARAMETER TRADE-OFF
+----------------------------------------------------------------------------------------------------
+  reference = E-base + z16  (0.1889M, 1.0597G)
+
+  cell           dParams_M  dFLOPs_G   d mAP50  d da_mIoU  d lane_mIoU  per 0.01M per 0.1GF
+  ----------------------------------------------------------------------------
+  esmall_z16          -0.0876   -0.3379   -0.0517    -0.0141      -0.0049   +0.00590  +0.01530
+  esmall_z32          -0.0754   -0.2075   -0.0394    -0.0108      -0.0026   +0.00523  +0.01899
+  esmall_z128         -0.0022   +0.5753   -0.0565    -0.0074      -0.0012   +0.25682  -0.00982
+  ebase_z32          +0.0138   +0.1376   +0.0018    -0.0037      +0.0008   +0.00130  +0.00131
+  ebase_z128         +0.0969   +0.9634   -0.0043    -0.0042      +0.0010   -0.00044  -0.00045
+  elarge_z16          +0.1026   +0.3682   +0.0381    +0.0025      +0.0011   +0.00371  +0.01035
+  elarge_z32          +0.1179   +0.5112   +0.0290    -0.0018      +0.0026   +0.00246  +0.00567
+  elarge_z128         +0.2095   +1.3695   +0.0232    +0.0011      +0.0058   +0.00111  +0.00169
+
+  ('per 0.01M' and 'per 0.1GF' are mAP50 only -- do not compare
+   across tasks, whose metrics live on different scales.)
+
+  Per-task unit-cost of the two ways to spend ~0.1M params:
+    esmall: spend on Z (z16->z128)  dParams +0.0854M  dFLOPs +0.9132G
+        detection  mean d -0.0029   per 0.01M -0.00035
+        DA         mean d +0.0082   per 0.01M +0.00097
+        lane       mean d +0.0054   per 0.01M +0.00063
+    ebase: spend on Z (z16->z128)  dParams +0.0969M  dFLOPs +0.9634G
+        detection  mean d -0.0032   per 0.01M -0.00033
+        DA         mean d -0.0051   per 0.01M -0.00053
+        lane       mean d +0.0021   per 0.01M +0.00022
+    elarge: spend on Z (z16->z128)  dParams +0.1069M  dFLOPs +1.0013G
+        detection  mean d -0.0117   per 0.01M -0.00109
+        DA         mean d -0.0017   per 0.01M -0.00016
+        lane       mean d +0.0066   per 0.01M +0.00062
+    encoder: spend on encoder (E-small->E-large, z16)  dParams +0.1902M  dFLOPs +0.7061G
+        detection  mean d +0.0682   per 0.01M +0.00359
+        DA         mean d +0.0206   per 0.01M +0.00108
+        lane       mean d +0.0088   per 0.01M +0.00046
+
+----------------------------------------------------------------------------------------------------
+### H. PARETO FRONTIER
+----------------------------------------------------------------------------------------------------
+The highest-scoring cell is NOT automatically the best. A cell is
+non-dominated only if no other cell costs less (params AND FLOPs) while
+scoring at least as well on ALL SIX metrics.
+
+  NON-DOMINATED (Pareto frontier):
+    esmall_z16       params 0.1013M  flops 0.7218G  mAP50 0.2687  da 0.8423  lane 0.5818
+    esmall_z32       params 0.1135M  flops 0.8522G  mAP50 0.2810  da 0.8456  lane 0.5841
+    esmall_z128      params 0.1867M  flops 1.6350G  mAP50 0.2639  da 0.8490  lane 0.5855
+    ebase_z16       params 0.1889M  flops 1.0597G  mAP50 0.3204  da 0.8564  lane 0.5867
+    ebase_z32       params 0.2027M  flops 1.1973G  mAP50 0.3222  da 0.8527  lane 0.5875
+    ebase_z128      params 0.2858M  flops 2.0231G  mAP50 0.3161  da 0.8522  lane 0.5877
+    elarge_z16       params 0.2915M  flops 1.4279G  mAP50 0.3585  da 0.8589  lane 0.5878
+    elarge_z32       params 0.3068M  flops 1.5709G  mAP50 0.3494  da 0.8546  lane 0.5893
+    elarge_z128      params 0.3984M  flops 2.4292G  mAP50 0.3436  da 0.8575  lane 0.5925
+
+  DOMINATED (some cell is cheaper and at least as accurate):
+
+----------------------------------------------------------------------------------------------------
+### I. STOPPING RULE  (A / B / C / D)
+----------------------------------------------------------------------------------------------------
+  DA/Lane metrics revived by z128 at E-large : 2/4
+  DA/Lane metrics revived by z128 at E-small : 2/4
+  any metric moved by z128 anywhere          : 7/18
+
+  ==> RULE C: Z produces real gains in several places, so Phase 2-D's
+      'Z is saturated' must be RE-SCOPED to 'saturated under the
+      baseline encoder'. Stop saying z=16 is universally
+      sufficient. NEXT: fixed-budget comparison first -- do not
+      simply keep growing z.
+
+  (rule chosen: C)
