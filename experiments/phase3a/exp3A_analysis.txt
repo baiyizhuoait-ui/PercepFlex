@@ -1,0 +1,66 @@
+================================================================================================
+PHASE 3A · ENCODER CAPACITY ANALYSIS
+================================================================================================
+
+### Phase 3A TABLE  (z=16, 20ep, seed=0; only encoder width varies)
+
+Encoder   stem              stages   Params   FLOPs    mAP50  mAP50-95  DA mIoU    DA fg  Lane mIoU  Lane fg
+------------------------------------------------------------------------------------------------
+E-small     12         24-40-64-80   0.1013   0.722   0.2687    0.0890   0.8423   0.7515     0.5818   0.1885
+E-base      16        32-64-96-128   0.1889   1.060   0.3204    0.1149   0.8564   0.7723     0.5867   0.1973
+E-large     20       40-80-128-168   0.2915   1.428   0.3585    0.1356   0.8589   0.7761     0.5878   0.2000
+
+### COST & RUNTIME
+
+Encoder    Params M   FLOPs G  peak mem MiB  final loss  train min                            source
+------------------------------------------------------------------------------------------------
+E-small      0.1013     0.722          2130      0.2290        113                           trained
+E-base       0.1889     1.060          2446      0.2156         NA       reused:phase2d/expD_z16_e20
+E-large      0.2915     1.428          2970      0.2068        153                           trained
+
+### Q1  MONOTONICITY with encoder capacity
+
+metric        E-small    E-base   E-large  Δ(base-sm)  Δ(lg-base)   Δ(lg-sm)  monotonic
+------------------------------------------------------------------------------------------------
+mAP50          0.2687    0.3204    0.3585     +0.0517     +0.0381    +0.0898       True
+mAP50_95       0.0890    0.1149    0.1356     +0.0259     +0.0207    +0.0466       True
+da_mIoU        0.8423    0.8564    0.8589     +0.0141     +0.0025    +0.0166       True
+da_fg          0.7515    0.7723    0.7761     +0.0208     +0.0038    +0.0246       True
+lane_mIoU      0.5818    0.5867    0.5878     +0.0049     +0.0011    +0.0060       True
+lane_fg        0.1885    0.1973    0.2000     +0.0088     +0.0027    +0.0115       True
+
+### Q2  ΔEncoder vs ΔZ   (both at 20ep, seed=0)
+
+metric       ΔZ spread   Z noise  ΔEnc(sm→lg)   ΔEnc/ΔZ          enc vs noise
+------------------------------------------------------------------------------------------------
+mAP50           0.0027    0.0073       0.0898     33.3x   encoder ABOVE noise
+mAP50_95        0.0010    0.0032       0.0466     46.6x   encoder ABOVE noise
+da_mIoU         0.0019    0.0142       0.0166      8.7x   encoder ABOVE noise
+da_fg           0.0027    0.0202       0.0246      9.1x   encoder ABOVE noise
+lane_mIoU       0.0016    0.0021       0.0060      3.8x   encoder ABOVE noise
+lane_fg         0.0032    0.0032       0.0115      3.6x   encoder ABOVE noise
+
+### Q3  UNIT-COST EFFICIENCY  (E-small -> E-large)
+
+  Δparams = 0.1902 M     ΔFLOPs = 0.706 G
+
+metric         Δ total  per +0.01M params   per +0.1 GFLOP
+------------------------------------------------------------------------------------------------
+mAP50          +0.0898           +0.00472         +0.01272
+mAP50_95       +0.0466           +0.00245         +0.00660
+da_mIoU        +0.0166           +0.00087         +0.00235
+da_fg          +0.0246           +0.00129         +0.00348
+lane_mIoU      +0.0060           +0.00032         +0.00085
+lane_fg        +0.0115           +0.00060         +0.00163
+
+### Q4  ENCODER SENSITIVITY / SATURATION
+
+  mAP50       small→base +0.0517 (real),  base→large +0.0381 (real)
+  mAP50_95    small→base +0.0259 (real),  base→large +0.0207 (real)
+  da_mIoU     small→base +0.0141 (noise),  base→large +0.0025 (noise)
+  da_fg       small→base +0.0208 (real),  base→large +0.0038 (noise)
+  lane_mIoU   small→base +0.0049 (real),  base→large +0.0011 (noise)
+  lane_fg     small→base +0.0088 (real),  base→large +0.0027 (noise)
+
+  Encoder capacity moves 5/6 metrics beyond noise on the small→base step.
+  -> E-large still improves ['mAP50', 'mAP50_95']: no saturation yet at E-large.
