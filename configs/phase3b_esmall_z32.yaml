@@ -1,0 +1,51 @@
+# Phase 3B · Encoder x Z Interaction Study — ESMALL + z32
+#
+# Generated from configs/phase3a_esmall_z16.yaml by
+# scripts/phase3b_make_configs.py: the template is loaded and exactly ONE
+# field is mutated (representation.z_channels 16 -> 32). Everything else is
+# byte-identical to the Phase 3A cell that already ran.
+#
+#   encoder  : stem 12 / stages [24, 40, 64, 80]  (width scale x0.65 of baseline)
+#   blocks   : [2,2,2]                      -> depth untouched
+#   Z width  : 32                          -> THE ONLY variable that changed
+#   heads    : detection / DA / lane untouched
+#   protocol : epochs 20, batch 16, lr 1e-3, AdamW, cosine, seed 0, tri_train
+#
+# Purpose: test whether the DA/Lane plateau seen at E-large + z16 in Phase 3A
+# is (A) genuine task saturation, or (B) a z=16 bottleneck. If widening Z
+# revives DA/Lane at E-large more than at E-small, there is an interaction.
+model:
+  encoder:
+    stem: 12
+    stages:
+    - 24
+    - 40
+    - 64
+    - 80
+    blocks:
+    - 2
+    - 2
+    - 2
+  representation:
+    z_channels: 32
+  detection:
+    nc: 1
+  segmentation:
+    hidden: 32
+input_size:
+- 640
+- 640
+train:
+  stage: A
+  train_split: tri_train
+  batch_size: 16
+  num_workers: 2
+  epochs: 20
+  lr: 1e-3
+  weight_decay: 5e-4
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lambda_budget: 0.0
+  grad_clip: 10.0
+data:
+  root: data/bdd100k

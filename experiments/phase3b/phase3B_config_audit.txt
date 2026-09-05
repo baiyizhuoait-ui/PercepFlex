@@ -1,0 +1,113 @@
+========================================================================================
+PHASE 3B · STRUCTURAL CONFIG AUDIT
+========================================================================================
+
+Rule: across the 3x3 matrix the ONLY permitted differences are
+      model.encoder.stem, model.encoder.stages, model.representation.z_channels.
+      Everything else must be byte-identical to the pinned protocol.
+
+pinned spec: {'blocks': [2, 2, 2], 'input_size': [640, 640], 'detection': {'nc': 1}, 'segmentation': {'hidden': 32}, 'stage': 'A', 'train_split': 'tri_train', 'batch_size': 16, 'epochs': 20, 'lr': 0.001, 'weight_decay': 0.0005, 'lambda_da': 1.0, 'lambda_lane': 1.0, 'lambda_budget': 0.0, 'grad_clip': 10.0, 'data_root': 'data/bdd100k', 'seed': 0}
+
+----------------------------------------------------------------------------------------
+### 1. PER-CELL FIELD CHECK
+----------------------------------------------------------------------------------------
+cell             file                                stem stages                  z  result
+----------------------------------------------------------------------------------------
+esmall_z16       configs/phase3a_esmall_z16.yaml       12 [24,40,64,80]          16  OK
+esmall_z32       configs/phase3b_esmall_z32.yaml       12 [24,40,64,80]          32  OK
+esmall_z128      configs/phase3b_esmall_z128.yaml      12 [24,40,64,80]         128  OK
+ebase_z16        configs/phase3a_ebase_z16.yaml        16 [32,64,96,128]         16  OK
+ebase_z32        configs/phase3b_ebase_z32.yaml        16 [32,64,96,128]         32  OK
+ebase_z128       configs/phase3b_ebase_z128.yaml       16 [32,64,96,128]        128  OK
+elarge_z16       configs/phase3a_elarge_z16.yaml       20 [40,80,128,168]        16  OK
+elarge_z32       configs/phase3b_elarge_z32.yaml       20 [40,80,128,168]        32  OK
+elarge_z128      configs/phase3b_elarge_z128.yaml      20 [40,80,128,168]       128  OK
+
+----------------------------------------------------------------------------------------
+### 2. CROSS-CELL INVARIANCE  (which fields actually vary?)
+----------------------------------------------------------------------------------------
+  model.encoder.stages  ->  ALLOWED (experimental axis)
+        ebase_z128   [32, 64, 96, 128]
+        ebase_z16    [32, 64, 96, 128]
+        ebase_z32    [32, 64, 96, 128]
+        elarge_z128  [40, 80, 128, 168]
+        elarge_z16   [40, 80, 128, 168]
+        elarge_z32   [40, 80, 128, 168]
+        esmall_z128  [24, 40, 64, 80]
+        esmall_z16   [24, 40, 64, 80]
+        esmall_z32   [24, 40, 64, 80]
+  model.encoder.stem  ->  ALLOWED (experimental axis)
+        ebase_z128   16
+        ebase_z16    16
+        ebase_z32    16
+        elarge_z128  20
+        elarge_z16   20
+        elarge_z32   20
+        esmall_z128  12
+        esmall_z16   12
+        esmall_z32   12
+  model.representation.z_channels  ->  ALLOWED (experimental axis)
+        ebase_z128   128
+        ebase_z16    16
+        ebase_z32    32
+        elarge_z128  128
+        elarge_z16   16
+        elarge_z32   32
+        esmall_z128  128
+        esmall_z16   16
+        esmall_z32   32
+
+----------------------------------------------------------------------------------------
+### 3. SOURCE-LEVEL INVARIANTS  (optimizer / scheduler / seed)
+----------------------------------------------------------------------------------------
+  These are not expressible in the YAML, so they are checked at source.
+
+  [PASS] training/train.py: optimizer is AdamW
+           found optim.AdamW(
+  [PASS] training/train.py: scheduler is CosineAnnealingLR
+           found CosineAnnealingLR
+  [PASS] training/train.py: no LR/optimizer branching on config
+           optimizer hyperparameters not config-driven
+  [PASS] scripts/phase3b_run_matrix.sh: SEED pinned to 0
+           SEED=${SEED_OVERRIDE:-0}
+  [PASS] scripts/phase3b_run_matrix.sh: EPOCHS pinned to 20
+           EP=${EPOCHS_OVERRIDE:-20}
+  [PASS] scripts/phase3b_run_matrix.sh: passes --seed to train.py
+           --seed "$SEED"
+  [PASS] scripts/phase3b_run_matrix.sh: no --batch-size override
+           batch size comes from the config only
+  [PASS] scripts/phase3b_run_matrix.sh: no --num-workers override
+           worker count comes from the config only
+
+----------------------------------------------------------------------------------------
+### 4. RUNTIME EVIDENCE  (what the trainer actually did)
+----------------------------------------------------------------------------------------
+  The YAML is the intent; the log is what happened. Read every training
+  log that exists so far and confirm lr / batch / schedule at runtime.
+
+  cell             log    lr@step1   batch   steps/ep  ep done  result
+  ----------------------------------------------------------------------
+  esmall_z16       found  1.00e-03   16      4366      20       OK
+  ebase_z16        found  1.00e-03   16      4366      20       OK
+  elarge_z16       found  1.00e-03   16      4366      20       OK
+  esmall_z32       (pending) -          -       -         -        not run yet
+  esmall_z128      (pending) -          -       -         -        not run yet
+  ebase_z32        (pending) -          -       -         -        not run yet
+  ebase_z128       (pending) -          -       -         -        not run yet
+  elarge_z32       (pending) -          -       -         -        not run yet
+  elarge_z128      (pending) -          -       -         -        not run yet
+
+  (3/9 logs present; missing ones are cells not yet run)
+  Note: train.py auto-raises DataLoader workers (2 -> 8) from CPU count.
+        That is identical on every cell (same machine, cores=24) and is
+        not a protocol variable, so it is recorded, not flagged.
+
+========================================================================================
+AUDIT RESULT: PASS
+========================================================================================
+
+PASS: only encoder.stem / encoder.stages / representation.z_channels
+      differ across the 9 cells. Everything else -- blocks, heads,
+      input size, optimizer (AdamW), scheduler (cosine), epochs (20),
+      batch (16), lr (1e-3), losses, seed (0), dataset (tri_train) --
+      is identical to the pinned Phase 3A / Phase 2-D protocol.
