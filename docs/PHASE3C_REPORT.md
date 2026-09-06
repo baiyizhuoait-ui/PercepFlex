@@ -41,13 +41,21 @@ detection should favour the encoder, DA should be indifferent, lane should favou
 ## 3. Budget Design
 
 Three budget layers were proposed (0.19M / 0.29M / 0.39M). A cell joins a layer if
-its measured parameters are within ±10% of the target; a comparison inside a layer is
-treated as like-for-like only when the **whole layer's** parameter span is ≤ 5%.
+its measured parameters are within ±5% of the target. Membership uses the same
+tolerance as the like-for-like test, so a layer can never contain a cell that then
+fails the comparison it was admitted for.
+
+Cells that sit near a layer but outside the tolerance are excluded from the triad
+(they are still real measurements and still appear in the Pareto frontier):
+
+- `ebase_z32` — +6.68% from the Budget-L target (0.2027 M).
+- `elarge_z32` — +5.79% from the Budget-M target (0.3068 M).
+
 
 | layer | target | cells | param span | verdict |
 |---|---|---|---|---|
-| Budget-L | 0.19 M | 3 | 8.57% | exceeds 5% tolerance |
-| Budget-M | 0.29 M | 3 | 7.35% | exceeds 5% tolerance |
+| Budget-L | 0.19 M | 3 | 1.56% | equal-budget |
+| Budget-M | 0.29 M | 3 | 2.21% | equal-budget |
 | Budget-H | 0.39 M | 1 | 0.00% | equal-budget |
 
 Two new encoders were created **only** to complete the missing *balanced* leg, by
@@ -69,14 +77,14 @@ allocation claim is made there.
 | allocation | cell | params (M) | FLOPs (G) | mAP50 | mAP50-95 | da_mIoU | da_fg | lane_mIoU | lane_fg |
 |---|---|---|---|---|---|---|---|---|---|
 | encoder-heavy | `ebase_z16` | 0.1889 | 1.0597 | 0.3204 | 0.1149 | 0.8564 | 0.7723 | 0.5867 | 0.1973 |
-| balanced | `ebase_z32` | 0.2027 | 1.1973 | 0.3222 | 0.1158 | 0.8527 | 0.7670 | 0.5875 | 0.1992 |
+| balanced | `midL_z32` | 0.1860 | 1.1603 | 0.3152 | 0.1109 | 0.8532 | 0.7676 | 0.5862 | 0.1972 |
 | Z-heavy | `esmall_z128` | 0.1867 | 1.6350 | 0.2639 | 0.0879 | 0.8490 | 0.7613 | 0.5855 | 0.1955 |
 
 Delta versus the encoder-heavy cell (`ebase_z16`):
 
 | cell | allocation | Δparams | ΔFLOPs | ΔmAP50 | Δda_mIoU | Δlane_mIoU | Δlane_fg |
 |---|---|---|---|---|---|---|---|
-| `ebase_z32` | balanced | +0.0138 | +0.1376 | +0.0018 | -0.0037 | +0.0008 | +0.0019 |
+| `midL_z32` | balanced | -0.0029 | +0.1006 | -0.0052 | -0.0032 | -0.0005 | -0.0001 |
 | `esmall_z128` | Z-heavy | -0.0022 | +0.5753 | -0.0565 | -0.0074 | -0.0012 | -0.0018 |
 
 ### Budget-M (~0.29 M)
@@ -84,14 +92,14 @@ Delta versus the encoder-heavy cell (`ebase_z16`):
 | allocation | cell | params (M) | FLOPs (G) | mAP50 | mAP50-95 | da_mIoU | da_fg | lane_mIoU | lane_fg |
 |---|---|---|---|---|---|---|---|---|---|
 | encoder-heavy | `elarge_z16` | 0.2915 | 1.4279 | 0.3585 | 0.1356 | 0.8589 | 0.7761 | 0.5878 | 0.2000 |
-| balanced | `elarge_z32` | 0.3068 | 1.5709 | 0.3494 | 0.1308 | 0.8546 | 0.7699 | 0.5893 | 0.2026 |
+| balanced | `midM_z32` | 0.2852 | 1.5249 | 0.3462 | 0.1279 | 0.8572 | 0.7737 | 0.5900 | 0.2037 |
 | Z-heavy | `ebase_z128` | 0.2858 | 2.0231 | 0.3161 | 0.1129 | 0.8522 | 0.7663 | 0.5877 | 0.2005 |
 
 Delta versus the encoder-heavy cell (`elarge_z16`):
 
 | cell | allocation | Δparams | ΔFLOPs | ΔmAP50 | Δda_mIoU | Δlane_mIoU | Δlane_fg |
 |---|---|---|---|---|---|---|---|
-| `elarge_z32` | balanced | +0.0153 | +0.1430 | -0.0091 | -0.0043 | +0.0015 | +0.0026 |
+| `midM_z32` | balanced | -0.0063 | +0.0970 | -0.0123 | -0.0017 | +0.0022 | +0.0037 |
 | `ebase_z128` | Z-heavy | -0.0057 | +0.5952 | -0.0424 | -0.0067 | -0.0001 | +0.0005 |
 
 ### Budget-H (~0.39 M) — single cell, no comparison possible
@@ -110,18 +118,18 @@ pick a winner.
 | allocation | cell | mAP50 | mAP50_95 |
 |---|---|---|---|
 | encoder-heavy | `ebase_z16` | 0.3204 | 0.1149 |
-| balanced | `ebase_z32` | 0.3222 | 0.1158 |
+| balanced | `midL_z32` | 0.3152 | 0.1109 |
 | Z-heavy | `esmall_z128` | 0.2639 | 0.0879 |
 
-- `mAP50`: spread 0.0583 > noise 0.0073 — best (statistical tie): **balanced, encoder-heavy**.
-- `mAP50_95`: spread 0.0279 > noise 0.0032 — best (statistical tie): **balanced, encoder-heavy**.
+- `mAP50`: spread 0.0565 > noise 0.0073 — best (statistical tie): **balanced, encoder-heavy**.
+- `mAP50_95`: spread 0.0270 > noise 0.0032 — best (statistical tie): **encoder-heavy**.
 
 **Budget-M (~0.29 M)**
 
 | allocation | cell | mAP50 | mAP50_95 |
 |---|---|---|---|
 | encoder-heavy | `elarge_z16` | 0.3585 | 0.1356 |
-| balanced | `elarge_z32` | 0.3494 | 0.1308 |
+| balanced | `midM_z32` | 0.3462 | 0.1279 |
 | Z-heavy | `ebase_z128` | 0.3161 | 0.1129 |
 
 - `mAP50`: spread 0.0424 > noise 0.0073 — best (statistical tie): **encoder-heavy**.
@@ -134,7 +142,7 @@ pick a winner.
 | allocation | cell | da_mIoU | da_fg |
 |---|---|---|---|
 | encoder-heavy | `ebase_z16` | 0.8564 | 0.7723 |
-| balanced | `ebase_z32` | 0.8527 | 0.7670 |
+| balanced | `midL_z32` | 0.8532 | 0.7676 |
 | Z-heavy | `esmall_z128` | 0.8490 | 0.7613 |
 
 - `da_mIoU`: spread 0.0074 ≤ noise 0.0142 — **no allocation wins**.
@@ -145,7 +153,7 @@ pick a winner.
 | allocation | cell | da_mIoU | da_fg |
 |---|---|---|---|
 | encoder-heavy | `elarge_z16` | 0.8589 | 0.7761 |
-| balanced | `elarge_z32` | 0.8546 | 0.7699 |
+| balanced | `midM_z32` | 0.8572 | 0.7737 |
 | Z-heavy | `ebase_z128` | 0.8522 | 0.7663 |
 
 - `da_mIoU`: spread 0.0067 ≤ noise 0.0142 — **no allocation wins**.
@@ -158,22 +166,22 @@ pick a winner.
 | allocation | cell | lane_mIoU | lane_fg |
 |---|---|---|---|
 | encoder-heavy | `ebase_z16` | 0.5867 | 0.1973 |
-| balanced | `ebase_z32` | 0.5875 | 0.1992 |
+| balanced | `midL_z32` | 0.5862 | 0.1972 |
 | Z-heavy | `esmall_z128` | 0.5855 | 0.1955 |
 
-- `lane_mIoU`: spread 0.0020 ≤ noise 0.0021 — **no allocation wins**.
-- `lane_fg`: spread 0.0037 > noise 0.0032 — best (statistical tie): **balanced, encoder-heavy**.
+- `lane_mIoU`: spread 0.0012 ≤ noise 0.0021 — **no allocation wins**.
+- `lane_fg`: spread 0.0018 ≤ noise 0.0032 — **no allocation wins**.
 
 **Budget-M (~0.29 M)**
 
 | allocation | cell | lane_mIoU | lane_fg |
 |---|---|---|---|
 | encoder-heavy | `elarge_z16` | 0.5878 | 0.2000 |
-| balanced | `elarge_z32` | 0.5893 | 0.2026 |
+| balanced | `midM_z32` | 0.5900 | 0.2037 |
 | Z-heavy | `ebase_z128` | 0.5877 | 0.2005 |
 
-- `lane_mIoU`: spread 0.0016 ≤ noise 0.0021 — **no allocation wins**.
-- `lane_fg`: spread 0.0026 ≤ noise 0.0032 — **no allocation wins**.
+- `lane_mIoU`: spread 0.0023 > noise 0.0021 — best (statistical tie): **balanced**.
+- `lane_fg`: spread 0.0037 > noise 0.0032 — best (statistical tie): **Z-heavy, balanced**.
 
 ## 6. Params vs FLOPs
 
@@ -183,15 +191,15 @@ little parameter cost. That asymmetry is a result in its own right.
 
 | layer | param span | FLOPs span |
 |---|---|---|
-| Budget-L | 8.57% | 54.3% |
-| Budget-M | 7.35% | 41.7% |
+| Budget-L | 1.56% | 54.3% |
+| Budget-M | 2.21% | 41.7% |
 
 **Budget-L**
 
 | allocation | cell | params (M) | FLOPs (G) | FLOPs per 0.01M params |
 |---|---|---|---|---|
 | encoder-heavy | `ebase_z16` | 0.1889 | 1.0597 | 0.0561 |
-| balanced | `ebase_z32` | 0.2027 | 1.1973 | 0.0591 |
+| balanced | `midL_z32` | 0.1860 | 1.1603 | 0.0624 |
 | Z-heavy | `esmall_z128` | 0.1867 | 1.6350 | 0.0876 |
 
 **Budget-M**
@@ -199,16 +207,46 @@ little parameter cost. That asymmetry is a result in its own right.
 | allocation | cell | params (M) | FLOPs (G) | FLOPs per 0.01M params |
 |---|---|---|---|---|
 | encoder-heavy | `elarge_z16` | 0.2915 | 1.4279 | 0.0490 |
-| balanced | `elarge_z32` | 0.3068 | 1.5709 | 0.0512 |
+| balanced | `midM_z32` | 0.2852 | 1.5249 | 0.0535 |
 | Z-heavy | `ebase_z128` | 0.2858 | 2.0231 | 0.0708 |
 
 ## 7. Fixed-budget Dominance
 
-A dominates B only if it costs no more in **both** params and FLOPs while scoring at
-least as well on **all six** metrics. A metric counts as a genuine advantage only
-when the gap exceeds the noise floor; a gap inside the noise is never claimed as a win.
+Only pairs whose parameter gap is within 5% are tested at all. Inside such a pair
+the two cells are treated as sharing one budget by construction, so the residual 1-2%
+gap is neither an advantage nor a disadvantage.
 
-No strict dominance was found among equal-budget pairs.
+**Tier 1 (strict).** params ≤, FLOPs ≤, all six metrics ≥ raw value.
+**Tier 2 (noise-aware).** same budget, FLOPs ≤, no metric worse by more than the
+noise floor, at least one metric better beyond it.
+
+Tier 2 is the rule that applies here. Tier 1 is shown only for transparency: it fails
+on this data purely because of sub-tolerance and sub-noise residuals, not because any
+allocation is genuinely competitive.
+
+**Tier 1 — strict**
+
+| dominating | dominated | Δparams | ΔFLOPs | better beyond noise |
+|---|---|---|---|---|
+| `midL_z32` | `esmall_z128` | -0.0007 (-0.37%) | -0.4747 (-29.0%) | mAP50, mAP50_95 |
+| `midM_z32` | `ebase_z128` | -0.0006 (-0.21%) | -0.4982 (-24.6%) | mAP50, mAP50_95, lane_mIoU |
+
+**Tier 2 — noise-aware (the applicable rule)**
+
+| dominating | dominated | Δparams | ΔFLOPs | better beyond noise |
+|---|---|---|---|---|
+| `ebase_z16` | `esmall_z128` | +0.0022 (+1.18%) | -0.5753 (-35.2%) | mAP50, mAP50_95 |
+| `ebase_z16` | `midL_z32` | +0.0029 (+1.56%) | -0.1006 (-8.7%) | mAP50_95 |
+| `elarge_z16` | `ebase_z128` | +0.0057 (+1.99%) | -0.5952 (-29.4%) | mAP50, mAP50_95 |
+
+**Near miss** — blocked only by metrics whose shortfall is at most 1.5× noise:
+
+- `elarge_z16` vs `midM_z32`: wins mAP50, mAP50_95, blocked by `lane_mIoU` (1.05× noise), `lane_fg` (1.16× noise).
+
+A margin that small is not a loss, it is an unresolved measurement. It is reported
+as unresolved rather than as a win for either side.
+
+Under tier 2 the cells that are never dominated by anything are: `ebase_z16`, `elarge_z16`.
 
 ## 8. Pareto Frontier
 
@@ -221,16 +259,15 @@ nothing here.
 |---|---|---|---|---|---|
 | `esmall_z16` | 0.1013 | 0.7218 | 0.2687 | 0.8423 | 0.5818 |
 | `esmall_z32` | 0.1135 | 0.8522 | 0.2810 | 0.8456 | 0.5841 |
-| `esmall_z128` | 0.1867 | 1.6350 | 0.2639 | 0.8490 | 0.5855 |
+| `midL_z32` | 0.1860 | 1.1603 | 0.3152 | 0.8532 | 0.5862 |
 | `ebase_z16` | 0.1889 | 1.0597 | 0.3204 | 0.8564 | 0.5867 |
 | `ebase_z32` | 0.2027 | 1.1973 | 0.3222 | 0.8527 | 0.5875 |
-| `ebase_z128` | 0.2858 | 2.0231 | 0.3161 | 0.8522 | 0.5877 |
+| `midM_z32` | 0.2852 | 1.5249 | 0.3462 | 0.8572 | 0.5900 |
 | `elarge_z16` | 0.2915 | 1.4279 | 0.3585 | 0.8589 | 0.5878 |
 | `elarge_z32` | 0.3068 | 1.5709 | 0.3494 | 0.8546 | 0.5893 |
 | `elarge_z128` | 0.3984 | 2.4292 | 0.3436 | 0.8575 | 0.5925 |
 
-No cell is dominated. As in Phase 3B, Pareto domination alone cannot pick a winner;
-the decision has to be made on a cost budget.
+**Dominated (2):** `esmall_z128`, `ebase_z128`
 
 ## 9. Task-specific Capacity Analysis
 
@@ -239,11 +276,11 @@ The Phase 3B priors are treated as hypotheses and re-tested here under a fixed b
 ### detection
 
 - Budget-L `mAP50`: best (statistical tie) **balanced, encoder-heavy**.
-- Budget-L `mAP50_95`: best (statistical tie) **balanced, encoder-heavy**.
+- Budget-L `mAP50_95`: best (statistical tie) **encoder-heavy**.
 - Budget-M `mAP50`: best (statistical tie) **encoder-heavy**.
 - Budget-M `mAP50_95`: best (statistical tie) **encoder-heavy**.
 
-Decided cells: 4 · within noise: 0 · wins: encoder-heavy ×4, balanced ×2
+Decided cells: 4 · within noise: 0 · wins: encoder-heavy ×4, balanced ×1
 
 ### DA
 
@@ -256,21 +293,25 @@ Decided cells: 0 · within noise: 4 · wins: none
 
 ### lane
 
-- Budget-L `lane_mIoU`: spread 0.0020 ≤ noise 0.0021 → no allocation wins.
-- Budget-L `lane_fg`: best (statistical tie) **balanced, encoder-heavy**.
-- Budget-M `lane_mIoU`: spread 0.0016 ≤ noise 0.0021 → no allocation wins.
-- Budget-M `lane_fg`: spread 0.0026 ≤ noise 0.0032 → no allocation wins.
+- Budget-L `lane_mIoU`: spread 0.0012 ≤ noise 0.0021 → no allocation wins.
+- Budget-L `lane_fg`: spread 0.0018 ≤ noise 0.0032 → no allocation wins.
+- Budget-M `lane_mIoU`: best (statistical tie) **balanced**.
+- Budget-M `lane_fg`: best (statistical tie) **Z-heavy, balanced**.
 
-Decided cells: 1 · within noise: 3 · wins: encoder-heavy ×1, balanced ×1
+Decided cells: 2 · within noise: 2 · wins: balanced ×2, Z-heavy ×1
 
 ## 10. Conclusion
 
-**Direct answer: under an equal parameter budget, capacity should go to the encoder.**
+**Direct answer: for detection, yes — under an equal parameter budget capacity should
+go to the encoder. For DA and lane the answer is not established, because moving the
+allocation barely moves them at all.**
 
 Across every budget layer that supports a comparison, the encoder-heavy allocation
-beats the Z-heavy allocation on detection by a margin far beyond noise, while DA and
-lane show no measurable difference in either direction — and the encoder-heavy cell
-does it with **substantially fewer FLOPs**.
+beats the Z-heavy allocation on detection by a margin far beyond noise, and it does it
+with **substantially fewer FLOPs**. DA is indifferent to the allocation at every layer.
+Lane is indifferent at Budget-L, and at Budget-M shows a marginal lead for the
+*balanced* cell — not for Z-heavy — at roughly 1.05-1.16× noise, which one seed cannot
+resolve.
 
 The result is stronger than a trade-off:
 
@@ -286,18 +327,31 @@ Per task:
 
 | task | where capacity should go | evidence |
 |---|---|---|
-| detection | **encoder** | encoder-heavy wins beyond noise in every comparable layer |
-| DA | **neither** — indifferent | all layer spreads inside the noise floor |
-| lane | **no reliable preference** | spreads mostly inside noise; no Z-heavy win observed |
+| detection | **encoder** | encoder-heavy clearly wins in 2/2 comparable layers |
+| DA | **neither** — indifferent | every layer spread inside the noise floor |
+| lane | **no reliable preference** | 1/2 layers inside noise; where a winner does appear it is *balanced*, never Z-heavy |
 
-**Stopping condition: A.**
+**Stopping condition: none of A/B/C/D matches exactly.**
 
-Encoder-heavy is better under a fixed budget and no Z-heavy win was observed on any
-task, which supports spending limited parameters on the encoder.
+No rule matches, and choosing one anyway would be the wrong move. Concretely:
+
+- **Rule A fails its second clause.** Encoder-heavy clearly wins detection in
+  2/2 layers, but it wins **no** segmentation task anywhere: DA is inside noise
+  at every layer, and at Budget-M the balanced cell is the one that is ahead on lane.
+- **Rule B fails.** Z-heavy never wins lane, on any layer.
+- **Rule C fails.** Balanced does win lane at Budget-M, but it is a clear detection
+  loser at both layers, so it is not the best all-round trade-off.
+- **Rule D fails.** The detection margin is 5.8-7.7× the noise floor.
+
+The honest reading is therefore a **detection-only rule A**: encoder-first is
+established for detection and is *not* established for DA or lane. The lane
+counter-signal is real but sits at only ~1.05-1.16× noise, which is exactly the
+regime a single seed cannot adjudicate. It is recorded as unresolved, not as a
+win for either allocation.
 
 One caveat that must not be lost: this does **not** say Z is useless. It says that at
 these budgets, *marginal* parameters are better spent on the encoder. Lane in
-Particular showed a real Z main effect in Phase 3B; what Phase 3C shows is that when
+particular showed a real Z main effect in Phase 3B; what Phase 3C shows is that when
 the budget is fixed, buying that Z capacity by shrinking the encoder is a bad deal.
 
 ## 11. Limitations

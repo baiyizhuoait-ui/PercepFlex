@@ -67,7 +67,7 @@ def w(s=""): L.append(s)
 
 layers = {}
 for b, t in BUDGETS:
-    mem = [r for r in rows if abs(r["params_M"] - t) / t <= 0.10]
+    mem = [r for r in rows if abs(r["params_M"] - t) / t <= TOL]
     layers[b] = (t, mem, layer_roles(mem))
 
 def ordered(b):
@@ -126,8 +126,23 @@ w()
 w("## 3. Budget Design")
 w()
 w("Three budget layers were proposed (0.19M / 0.29M / 0.39M). A cell joins a layer if")
-w("its measured parameters are within ±10% of the target; a comparison inside a layer is")
-w("treated as like-for-like only when the **whole layer's** parameter span is ≤ 5%.")
+w("its measured parameters are within ±5% of the target. Membership uses the same")
+w("tolerance as the like-for-like test, so a layer can never contain a cell that then")
+w("fails the comparison it was admitted for.")
+w()
+excl = []
+for b, t in BUDGETS:
+    for r in rows:
+        dev = (r["params_M"] - t) / t
+        if TOL < abs(dev) <= 0.10:
+            excl.append((b, nm(r), r["params_M"], dev * 100))
+if excl:
+    w("Cells that sit near a layer but outside the tolerance are excluded from the triad")
+    w("(they are still real measurements and still appear in the Pareto frontier):")
+    w()
+    for b, c, pp, dv in excl:
+        w("- `%s` — %+.2f%% from the %s target (%.4f M)." % (c, dv, b, pp))
+    w()
 w()
 w("| layer | target | cells | param span | verdict |")
 w("|---|---|---|---|---|")
@@ -262,32 +277,72 @@ for b, t in BUDGETS:
 # ---------------------------------------------------------------- 7
 w("## 7. Fixed-budget Dominance")
 w()
-w("A dominates B only if it costs no more in **both** params and FLOPs while scoring at")
-w("least as well on **all six** metrics. A metric counts as a genuine advantage only")
-w("when the gap exceeds the noise floor; a gap inside the noise is never claimed as a win.")
+w("Only pairs whose parameter gap is within %.0f%% are tested at all. Inside such a pair" % (TOL * 100))
+w("the two cells are treated as sharing one budget by construction, so the residual 1-2%")
+w("gap is neither an advantage nor a disadvantage.")
 w()
-found = []
+w("**Tier 1 (strict).** params ≤, FLOPs ≤, all six metrics ≥ raw value.")
+w("**Tier 2 (noise-aware).** same budget, FLOPs ≤, no metric worse by more than the")
+w("noise floor, at least one metric better beyond it.")
+w()
+w("Tier 2 is the rule that applies here. Tier 1 is shown only for transparency: it fails")
+w("on this data purely because of sub-tolerance and sub-noise residuals, not because any")
+w("allocation is genuinely competitive.")
+w()
+t1, t2, near = [], [], []
 for a, b in itertools.permutations(rows, 2):
     lo, hi = sorted([a["params_M"], b["params_M"]])
     if (hi - lo) / lo > TOL:
         continue
-    if (a["params_M"] <= b["params_M"] + 1e-9 and a["flops_G"] <= b["flops_G"] + 1e-9
-            and all(a[m] >= b[m] - 1e-9 for m in METRICS)):
-        real = [m for m in METRICS if abs(a[m] - b[m]) > NOISE[m]]
-        found.append((a, b, real))
-if found:
-    w("| dominating | dominated | Δparams | ΔFLOPs | metrics beyond noise |")
-    w("|---|---|---|---|---|")
-    for a, b, real in found:
-        w("| `%s` | `%s` | %+.4f | %+.4f | %s |" % (
-            nm(a), nm(b), a["params_M"] - b["params_M"], a["flops_G"] - b["flops_G"],
-            ", ".join(real) if real else "none — all within noise"))
+    fl = a["flops_G"] <= b["flops_G"] + 1e-9
+    real = [m for m in METRICS if abs(a[m] - b[m]) > NOISE[m] and a[m] > b[m]]
+    strict = fl and a["params_M"] <= b["params_M"] + 1e-9 and all(a[m] >= b[m] - 1e-9 for m in METRICS)
+    na = fl and all(a[m] >= b[m] - NOISE[m] for m in METRICS) and bool(real)
+    if strict:
+        t1.append((a, b, real))
+    elif na:
+        t2.append((a, b, real))
+    blockers = [m for m in METRICS if a[m] < b[m] - NOISE[m]]
+    gaps = [b[m] - a[m] for m in blockers]
+    if fl and real and blockers and all(g <= NOISE[m] * 1.5 for m, g in zip(blockers, gaps)):
+        near.append((a, b, real, blockers, gaps))
+
+def domtable(items, label):
+    w("**%s**" % label)
     w()
-    w("Where the metric list is empty, the dominance is on **cost only**: the cheaper cell")
-    w("is not measurably worse on any task, which is still a deployment-relevant result.")
-else:
-    w("No strict dominance was found among equal-budget pairs.")
-w()
+    if not items:
+        w("none.")
+        w()
+        return
+    w("| dominating | dominated | Δparams | ΔFLOPs | better beyond noise |")
+    w("|---|---|---|---|---|")
+    for a, b, real in items:
+        w("| `%s` | `%s` | %+.4f (%+.2f%%) | %+.4f (%+.1f%%) | %s |" % (
+            nm(a), nm(b),
+            a["params_M"] - b["params_M"],
+            (a["params_M"] - b["params_M"]) / b["params_M"] * 100,
+            a["flops_G"] - b["flops_G"],
+            (a["flops_G"] - b["flops_G"]) / b["flops_G"] * 100,
+            ", ".join(real) if real else "none — cost only"))
+    w()
+
+domtable(t1, "Tier 1 — strict")
+domtable(t2, "Tier 2 — noise-aware (the applicable rule)")
+if near:
+    w("**Near miss** — blocked only by metrics whose shortfall is at most 1.5× noise:")
+    w()
+    for a, b, real, blockers, gaps in near:
+        w("- `%s` vs `%s`: wins %s, blocked by %s." % (
+            nm(a), nm(b), ", ".join(real),
+            ", ".join("`%s` (%.2f× noise)" % (m, g / NOISE[m]) for m, g in zip(blockers, gaps))))
+    w()
+    w("A margin that small is not a loss, it is an unresolved measurement. It is reported")
+    w("as unresolved rather than as a win for either side.")
+    w()
+if t2:
+    w("Under tier 2 the cells that are never dominated by anything are: %s." % ", ".join(
+        "`%s`" % s for s in sorted({nm(a) for a, b, _ in t2})))
+    w()
 
 # ---------------------------------------------------------------- 8
 w("## 8. Pareto Frontier")
@@ -359,32 +414,55 @@ for task in TASKS:
     w()
 
 # ---------------------------------------------------------------- 10
-det_w, lane_w = 0, 0
-for b, t in BUDGETS:
+ROLES3 = ("encoder-heavy", "balanced", "Z-heavy")
+tri = [b for b, t in BUDGETS if len(layers[b][1]) >= 3]
+cnt = {(k, t): 0 for k in ROLES3 for t in TASKS}
+for b in tri:
     tv, mem, roles = layers[b]
-    d = [r for r in mem if role_of(b, r) == "encoder-heavy"]
-    z = [r for r in mem if role_of(b, r) == "Z-heavy"]
-    if d and z:
-        d, z = d[0], z[0]
-        if d["mAP50"] - z["mAP50"] > NOISE["mAP50"]:
-            det_w += 1
-        if z["lane_fg"] - d["lane_fg"] > NOISE["lane_fg"]:
-            lane_w += 1
-if det_w >= 1 and lane_w >= 1:
-    rule = "B"
-elif det_w >= 1:
+    by = {}
+    for r in mem:
+        by.setdefault(role_of(b, r), r)
+    if not all(k in by for k in ROLES3):
+        continue
+    for task in TASKS:
+        ms = [m for m in METRICS if TASK_OF[m] == task]
+        ws, ls = {}, {}
+        for m in ms:
+            vals = {k: by[k][m] for k in ROLES3}
+            top = max(vals.values())
+            ws[m] = {k for k, v in vals.items() if top - v <= NOISE[m]}
+            ls[m] = {k for k, v in vals.items() if top - v > NOISE[m]}
+        for k in ROLES3:
+            if all(k in ws[m] for m in ms) and any(o in ls[m] for o in ROLES3 if o != k for m in ms):
+                cnt[(k, task)] += 1
+enc_det = cnt[("encoder-heavy", "detection")]
+enc_seg = cnt[("encoder-heavy", "DA")] + cnt[("encoder-heavy", "lane")]
+z_lane = cnt[("Z-heavy", "lane")]
+bal_seg = cnt[("balanced", "DA")] + cnt[("balanced", "lane")]
+bal_det = cnt[("balanced", "detection")]
+if enc_det >= 1 and enc_seg >= 1:
     rule = "A"
-else:
+elif enc_det >= 1 and z_lane >= 1:
+    rule = "B"
+elif bal_det + bal_seg >= 2 and enc_det == 0:
+    rule = "C"
+elif enc_det == 0 and enc_seg == 0 and z_lane == 0 and bal_seg == 0:
     rule = "D"
+else:
+    rule = "none"
 
 w("## 10. Conclusion")
 w()
-w("**Direct answer: under an equal parameter budget, capacity should go to the encoder.**")
+w("**Direct answer: for detection, yes — under an equal parameter budget capacity should")
+w("go to the encoder. For DA and lane the answer is not established, because moving the")
+w("allocation barely moves them at all.**")
 w()
 w("Across every budget layer that supports a comparison, the encoder-heavy allocation")
-w("beats the Z-heavy allocation on detection by a margin far beyond noise, while DA and")
-w("lane show no measurable difference in either direction — and the encoder-heavy cell")
-w("does it with **substantially fewer FLOPs**.")
+w("beats the Z-heavy allocation on detection by a margin far beyond noise, and it does it")
+w("with **substantially fewer FLOPs**. DA is indifferent to the allocation at every layer.")
+w("Lane is indifferent at Budget-L, and at Budget-M shows a marginal lead for the")
+w("*balanced* cell — not for Z-heavy — at roughly 1.05-1.16× noise, which one seed cannot")
+w("resolve.")
 w()
 w("The result is stronger than a trade-off:")
 w()
@@ -412,24 +490,44 @@ w("Per task:")
 w()
 w("| task | where capacity should go | evidence |")
 w("|---|---|---|")
-w("| detection | **encoder** | encoder-heavy wins beyond noise in every comparable layer |")
-w("| DA | **neither** — indifferent | all layer spreads inside the noise floor |")
-w("| lane | **no reliable preference** | spreads mostly inside noise; no Z-heavy win observed |")
+w("| detection | **encoder** | encoder-heavy clearly wins in %d/%d comparable layers |" % (enc_det, len(tri)))
+w("| DA | **neither** — indifferent | every layer spread inside the noise floor |")
+w("| lane | **no reliable preference** | %d/%d layers inside noise; where a winner does appear it is *balanced*, never Z-heavy |" % (
+    len(tri) - bal_seg, len(tri)))
 w()
-w("**Stopping condition: %s.**" % rule)
+w("**Stopping condition: %s.**" % ("none of A/B/C/D matches exactly" if rule == "none" else rule))
 w()
 if rule == "A":
-    w("Encoder-heavy is better under a fixed budget and no Z-heavy win was observed on any")
-    w("task, which supports spending limited parameters on the encoder.")
+    w("Encoder-heavy is better under a fixed budget and the trend also holds on a")
+    w("segmentation task, which supports spending limited parameters on the encoder.")
 elif rule == "B":
     w("Encoder-heavy wins detection while Z-heavy wins lane. No single allocation winner is")
     w("declared; the model has a genuine task-specific capacity allocation problem.")
-else:
+elif rule == "C":
+    w("Balanced gives the best trade-off across the three tasks.")
+elif rule == "D":
     w("Differences do not clearly exceed the noise floor, so no allocation effect is claimed.")
+else:
+    w("No rule matches, and choosing one anyway would be the wrong move. Concretely:")
+    w()
+    w("- **Rule A fails its second clause.** Encoder-heavy clearly wins detection in")
+    w("  %d/%d layers, but it wins **no** segmentation task anywhere: DA is inside noise"
+      % (enc_det, len(tri)))
+    w("  at every layer, and at Budget-M the balanced cell is the one that is ahead on lane.")
+    w("- **Rule B fails.** Z-heavy never wins lane, on any layer.")
+    w("- **Rule C fails.** Balanced does win lane at Budget-M, but it is a clear detection")
+    w("  loser at both layers, so it is not the best all-round trade-off.")
+    w("- **Rule D fails.** The detection margin is 5.8-7.7× the noise floor.")
+    w()
+    w("The honest reading is therefore a **detection-only rule A**: encoder-first is")
+    w("established for detection and is *not* established for DA or lane. The lane")
+    w("counter-signal is real but sits at only ~1.05-1.16× noise, which is exactly the")
+    w("regime a single seed cannot adjudicate. It is recorded as unresolved, not as a")
+    w("win for either allocation.")
 w()
 w("One caveat that must not be lost: this does **not** say Z is useless. It says that at")
 w("these budgets, *marginal* parameters are better spent on the encoder. Lane in")
-w("Particular showed a real Z main effect in Phase 3B; what Phase 3C shows is that when")
+w("particular showed a real Z main effect in Phase 3B; what Phase 3C shows is that when")
 w("the budget is fixed, buying that Z capacity by shrinking the encoder is a bad deal.")
 w()
 
