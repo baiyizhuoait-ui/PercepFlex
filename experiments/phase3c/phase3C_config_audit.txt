@@ -1,0 +1,36 @@
+====================================================================================================
+PHASE 3C - CONFIG GENERATION + STATIC AUDIT
+====================================================================================================
+template : configs/phase3b_ebase_z32.yaml
+reference: configs/phase3a_ebase_z16.yaml
+allowed to change: model.encoder.stem, model.encoder.stages  (nothing else)
+
+----------------------------------------------------------------------------------------------------
+### LAYER 0 - template already matches the Phase 3A protocol
+----------------------------------------------------------------------------------------------------
+  non-encoder differences vs Phase 3A ebase_z16: 0
+  -> PASS (protocol untouched)
+
+----------------------------------------------------------------------------------------------------
+### midL  -> configs/phase3c_midL_z32.yaml
+----------------------------------------------------------------------------------------------------
+  stem=15  stages=[32, 64, 88, 120]  z=32  blocks=[2, 2, 2]  input_size=[640, 640]
+  fields differing from template: ['model.encoder.stages', 'model.encoder.stem']
+  unexpected differences        : none
+  params 0.1860 M   target 0.19 M   dev -2.10%
+  invariants (blocks [2,2,2], z=32, stages applied): PASS
+  CELL VERDICT: PASS
+
+----------------------------------------------------------------------------------------------------
+### midM  -> configs/phase3c_midM_z32.yaml
+----------------------------------------------------------------------------------------------------
+  stem=19  stages=[40, 80, 120, 160]  z=32  blocks=[2, 2, 2]  input_size=[640, 640]
+  fields differing from template: ['model.encoder.stages', 'model.encoder.stem']
+  unexpected differences        : none
+  params 0.2852 M   target 0.29 M   dev -1.65%
+  invariants (blocks [2,2,2], z=32, stages applied): PASS
+  CELL VERDICT: PASS
+
+====================================================================================================
+STATIC AUDIT: PASS - only encoder width differs; protocol identical
+====================================================================================================
