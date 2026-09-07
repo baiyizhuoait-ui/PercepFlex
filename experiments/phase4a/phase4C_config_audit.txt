@@ -1,0 +1,29 @@
+Level 2 probe B config audit
+========================================================================
+
+r2d_z16   base=configs/phase4a_r2_z16.yaml  rec=dw_dilated
+    [OK ] model.detection.rec          <absent> -> dw_dilated
+    [OK ] train.epochs                 20 -> 4
+    verdict: PASS
+    params: total=204246  det_head=23798  rates=[2, 4]
+
+r2d_z32   base=configs/phase4a_r2_z32.yaml  rec=dw_dilated
+    [OK ] model.detection.rec          <absent> -> dw_dilated
+    [OK ] train.epochs                 20 -> 4
+    verdict: PASS
+    params: total=218614  det_head=24310  rates=[2, 4]
+
+r2p_z16   base=configs/phase4a_r2_z16.yaml  rec=dw_plain
+    [OK ] model.detection.rec          <absent> -> dw_plain
+    [OK ] train.epochs                 20 -> 4
+    verdict: PASS
+    params: total=204246  det_head=23798  rates=[1, 1]
+
+delta vs the R2 baseline it is compared against:
+  r2d_z16   vs r2u_z16 : +2880 params (+1.43%)
+  r2p_z16   vs r2u_z16 : +2880 params (+1.43%)
+  r2d_z32   vs r2u_z32 : +2880 params (+1.33%)
+
+r2d_z16 and r2p_z16 differ ONLY in dilation: True
+
+OVERALL: PASS

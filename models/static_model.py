@@ -39,7 +39,11 @@ class StaticMultiTaskModel(nn.Module):
             self.det_head = DetFromZ(zc, nc=det_cfg.get("nc", 1),
                                      proj=det_cfg.get("z_proj", True),
                                      det_ch=det_cfg.get("det_ch", 32),
-                                     anchors=det_cfg.get("anchors"))
+                                     anchors=det_cfg.get("anchors"),
+                                     rec=det_cfg.get("rec", "1x1"),
+                                     rec_blocks=det_cfg.get("rec_blocks", 2),
+                                     rec_rates=tuple(det_cfg.get(
+                                         "rec_rates", [2, 4])))
             self.det_from_z = True
         else:
             self.det_head = DynamicDetHead(

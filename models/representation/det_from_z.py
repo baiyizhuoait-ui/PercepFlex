@@ -37,11 +37,38 @@ import math
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 # Must match models/heads/det_head.py defaults (R0) and the anchors fed to YOLOLoss.
 DEFAULT_ANCHORS_3S = [[[4, 12], [7, 19], [11, 28]],
                       [[17, 40], [25, 58], [38, 89]],
                       [[62, 136], [88, 206], [124, 412]]]
+
+
+class _DWResBlock(nn.Module):
+    """Depthwise-separable residual block used by the reconstruction variants.
+
+    depthwise 3x3 (groups=c) -> BN -> ReLU -> 1x1 -> BN, residual add, ReLU.
+    The dilation rate is the ONLY thing that differs between the dilated arm and
+    its control, so any measured difference is attributable to receptive field
+    and not to depth, width or parameter count.
+    """
+
+    def __init__(self, c, rate):
+        super().__init__()
+        self.f = nn.Sequential(
+            nn.Conv2d(c, c, 3, padding=rate, dilation=rate, groups=c, bias=False),
+            nn.BatchNorm2d(c),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(c, c, 1, bias=False),
+            nn.BatchNorm2d(c),
+        )
+
+    def forward(self, x):
+        return F.relu(x + self.f(x), inplace=True)
+
+    def extra_repr(self):
+        return "dilation=%d" % self.f[0].dilation[0]
 
 
 class DetFromZ(nn.Module):
@@ -54,9 +81,16 @@ class DetFromZ(nn.Module):
                 if False, Z feeds the pyramid directly (R1).
         det_ch: fixed internal width of the downsampling branches (see module doc).
         anchors: list of 3 anchor-pair lists, in input pixels (input is 640x640).
+        rec: reconstruction applied after the entry projection, before the
+            pyramid. "1x1" (default, unchanged behaviour), "dw_plain" (N
+            depthwise residual blocks at dilation 1) or "dw_dilated" (same
+            blocks at rec_rates). Motivated by YOLOF: a single-level feature has
+            a fixed receptive field, and a 1x1 projector has a receptive field of
+            exactly one pixel.
     """
 
-    def __init__(self, zc, nc=1, proj=True, det_ch=32, anchors=None, num_anchors=3):
+    def __init__(self, zc, nc=1, proj=True, det_ch=32, anchors=None, num_anchors=3,
+                 rec="1x1", rec_blocks=2, rec_rates=(2, 4)):
         super().__init__()
         self.zc = zc
         self.nc = nc
@@ -86,6 +120,20 @@ class DetFromZ(nn.Module):
                 nn.Identity(),
             )
 
+        # --- reconstruction (default "1x1" => Identity => identical to before) ---
+        self.rec = rec
+        self.rec_blocks = int(rec_blocks)
+        self.rec_rates = tuple(rec_rates)
+        if rec == "1x1":
+            self.rec_op = nn.Identity()
+        elif rec in ("dw_plain", "dw_dilated"):
+            rates = ([1] * self.rec_blocks if rec == "dw_plain"
+                     else list(self.rec_rates)[: self.rec_blocks])
+            self.rec_op = nn.Sequential(
+                *[_DWResBlock(det_ch, r) for r in rates])
+        else:
+            raise ValueError("unknown detection rec: %r" % (rec,))
+
         # --- 1/8 -> 1/16 -> 1/32 (fixed width det_ch, independent of zc) ---
         def _down():
             return nn.Sequential(
@@ -113,7 +161,7 @@ class DetFromZ(nn.Module):
 
     def forward(self, z, hw=None):
         """z: (B, zc, H/8, W/8). Returns the same formats as R0's DetectHead."""
-        x0 = self.proj(z)          # 1/8
+        x0 = self.rec_op(self.proj(z))   # 1/8, after the reconstruction
         x1 = self.down1(x0)        # 1/16
         x2 = self.down2(x1)        # 1/32
         feats = [x0, x1, x2]
