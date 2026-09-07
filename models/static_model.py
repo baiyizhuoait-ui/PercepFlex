@@ -28,6 +28,11 @@ class StaticMultiTaskModel(nn.Module):
             enc_cfg["stages"][1:])
         zc = self.representation.z_channels
         det_cfg = model_cfg.get("detection", {})
+        _tp = model_cfg.get("task_proj") or {}
+        _tp_on = bool(_tp.get("enabled", False))
+        if _tp_on and "det" in _tp:
+            det_cfg = dict(det_cfg)
+            det_cfg["det_ch"] = int(_tp["det"])
         if det_cfg.get("from_z", False):
             # R1/R2: detection reads Compact Z (optionally via a 1x1 projection).
             from models.representation.det_from_z import DetFromZ
@@ -43,8 +48,21 @@ class StaticMultiTaskModel(nn.Module):
                 anchors=det_cfg.get("anchors"))
             self.det_from_z = False
         seg_cfg = model_cfg.get("segmentation", {"hidden": 32})
-        self.da_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
-        self.lane_head = DynamicSegHead(zc, seg_cfg.get("hidden", 32))
+        _hidden = seg_cfg.get("hidden", 32)
+        # Phase 4A Level 2 probe A: per-task projection off the shared Z.
+        # Default off -> existing R0/R1/R2 models build exactly as before.
+        self.task_proj = _tp_on
+        if self.task_proj:
+            from models.representation.task_proj import TaskProj
+            self.da_proj = TaskProj(zc, int(_tp.get("da", zc)))
+            self.lane_proj = TaskProj(zc, int(_tp.get("lane", zc)))
+            _w_da = self.da_proj.out_ch
+            _w_lane = self.lane_proj.out_ch
+        else:
+            _w_da = zc
+            _w_lane = zc
+        self.da_head = DynamicSegHead(_w_da, _hidden)
+        self.lane_head = DynamicSegHead(_w_lane, _hidden)
 
     def forward(self, x, return_z=False):
         feats = self.encoder(x)
@@ -54,8 +72,12 @@ class StaticMultiTaskModel(nn.Module):
             det = self.det_head(z, hw)
         else:
             det = self.det_head([feats[0], feats[1], feats[2]])
-        da = self.da_head(z, hw)
-        lane = self.lane_head(z, hw)
+        if self.task_proj:
+            da = self.da_head(self.da_proj(z), hw)
+            lane = self.lane_head(self.lane_proj(z), hw)
+        else:
+            da = self.da_head(z, hw)
+            lane = self.lane_head(z, hw)
         if return_z:
             return det, da, lane, z
         return det, da, lane

@@ -1,0 +1,39 @@
+Phase 4B (Level 2 probe A) config audit
+======================================================================
+R3 per-task projection targets: det=32 lane=32 da=16 (absolute, same at both z)
+
+r2u_z16   base=configs/phase4a_r2_z16.yaml
+  differences vs base (1):
+    [OK ] train.epochs                 20 -> 4
+  verdict: PASS - only allow-listed keys moved
+
+r2u_z32   base=configs/phase4a_r2_z32.yaml
+  differences vs base (1):
+    [OK ] train.epochs                 20 -> 4
+  verdict: PASS - only allow-listed keys moved
+
+r3tp_z16  base=configs/phase4a_r2_z16.yaml
+  differences vs base (5):
+    [OK ] model.task_proj.da           <absent> -> 16
+    [OK ] model.task_proj.det          <absent> -> 32
+    [OK ] model.task_proj.enabled      <absent> -> True
+    [OK ] model.task_proj.lane         <absent> -> 32
+    [OK ] train.epochs                 20 -> 4
+  verdict: PASS - only allow-listed keys moved
+
+r3tp_z32  base=configs/phase4a_r2_z32.yaml
+  differences vs base (5):
+    [OK ] model.task_proj.da           <absent> -> 16
+    [OK ] model.task_proj.det          <absent> -> 32
+    [OK ] model.task_proj.enabled      <absent> -> True
+    [OK ] model.task_proj.lane         <absent> -> 32
+    [OK ] train.epochs                 20 -> 4
+  verdict: PASS - only allow-listed keys moved
+
+OVERALL: PASS
+
+Note on r2u_z16: its 4ep result already exists from Phase 4A STEP 2 sanity
+(experiments/phase4a/exp4A_r2_z16_e4, commit 63fa17b). It is REUSED, not
+retrained: the model builds to the identical 201366 parameters (verified by
+scripts/phase4b_compat.py) and task_proj defaults off, so the forward graph is
+unchanged. Its provenance is recorded as source=reused:phase4a-sanity.
