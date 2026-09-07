@@ -1,0 +1,216 @@
+==============================================================================
+PROBE B  (reconstruction: receptive field vs depth)  4 epochs, seed 0
+==============================================================================
+
+Cells vs the R2 baseline at the same z (probe A cells, same protocol):
+
+  cell       z          mAP50  mAP50_95   da_mIoU     da_fg lane_mIoU   lane_fg
+  r2u_z16    16        0.2411    0.0728    0.8169    0.7146    0.5761    0.1765
+  r2d_z16    16        0.2471    0.0776    0.8206    0.7200    0.5786    0.1798
+  r2p_z16    16        0.2737    0.0881    0.8314    0.7355    0.5742    0.1746
+  r2u_z32    32        0.2496    0.0764    0.8262    0.7280    0.5767    0.1784
+  r2d_z32    32        0.2497    0.0802    0.8295    0.7327    0.5750    0.1762
+
+Deltas vs same-z baseline, in units of the external Phase 2-C noise floor:
+
+  comparison                 metric    delta x noise / verdict
+  ------------------------------------------------------------
+  r2d_z16 - r2u_z16           mAP50    +0.0060   +0.82x  noise
+  r2d_z16 - r2u_z16        mAP50_95    +0.0048   +1.50x  unresolved
+  r2d_z16 - r2u_z16         da_mIoU    +0.0037   +0.26x  noise
+  r2d_z16 - r2u_z16           da_fg    +0.0054   +0.27x  noise
+  r2d_z16 - r2u_z16       lane_mIoU    +0.0025   +1.19x  unresolved
+  r2d_z16 - r2u_z16         lane_fg    +0.0033   +1.03x  unresolved
+
+  r2d_z32 - r2u_z32           mAP50    +0.0001   +0.01x  noise
+  r2d_z32 - r2u_z32        mAP50_95    +0.0038   +1.19x  unresolved
+  r2d_z32 - r2u_z32         da_mIoU    +0.0033   +0.23x  noise
+  r2d_z32 - r2u_z32           da_fg    +0.0047   +0.23x  noise
+  r2d_z32 - r2u_z32       lane_mIoU    -0.0017   -0.81x  noise
+  r2d_z32 - r2u_z32         lane_fg    -0.0022   -0.69x  noise
+
+  r2p_z16 - r2u_z16           mAP50    +0.0326   +4.47x  READABLE
+  r2p_z16 - r2u_z16        mAP50_95    +0.0153   +4.78x  READABLE
+  r2p_z16 - r2u_z16         da_mIoU    +0.0145   +1.02x  unresolved
+  r2p_z16 - r2u_z16           da_fg    +0.0209   +1.03x  unresolved
+  r2p_z16 - r2u_z16       lane_mIoU    -0.0019   -0.90x  noise
+  r2p_z16 - r2u_z16         lane_fg    -0.0019   -0.59x  noise
+
+  r2p_z16 - r2d_z16           mAP50    +0.0266   +3.64x  READABLE
+  r2p_z16 - r2d_z16        mAP50_95    +0.0105   +3.28x  READABLE
+  r2p_z16 - r2d_z16         da_mIoU    +0.0108   +0.76x  noise
+  r2p_z16 - r2d_z16           da_fg    +0.0155   +0.77x  noise
+  r2p_z16 - r2d_z16       lane_mIoU    -0.0044   -2.10x  READABLE(neg)
+  r2p_z16 - r2d_z16         lane_fg    -0.0052   -1.62x  unresolved
+
+------------------------------------------------------------------------------
+Q1  r2d_z16 beats r2u_z16 by >=2x noise on mAP50 or mAP50_95
+    mAP50    +0.0060  = +0.82x noise
+    mAP50_95 +0.0048  = +1.50x noise
+    Q1 = FAIL
+
+Q2  r2d_z16 (dilated) beats r2p_z16 (plain, same params) by >=2x noise
+    mAP50    -0.0266  = -3.64x noise
+    mAP50_95 -0.0105  = -3.28x noise
+    Q2 = FAIL
+    NOTE: the sign is REVERSED. Dilation does not merely fail to add
+    value over depth - it destroys 3.64x noise of what depth bought.
+
+Q3  DA and lane move <1x noise under both r2d_* cells (reconstruction
+    is detection-only; anything larger is a shared-Z interaction)
+    r2d_z16   da_mIoU      +0.26x
+    r2d_z16   da_fg        +0.27x
+    r2d_z16   lane_mIoU    +1.19x
+    r2d_z16   lane_fg      +1.03x
+    r2d_z32   da_mIoU      +0.23x
+    r2d_z32   da_fg        +0.23x
+    r2d_z32   lane_mIoU    -0.81x
+    r2d_z32   lane_fg      -0.69x
+    worst = +1.19x (r2d_z16 lane_mIoU)  ->  Q3 = FAIL (marginal)
+
+------------------------------------------------------------------------------
+PRE-REGISTERED DECISION RULE
+    B = YES      if Q1 and Q2 both hold
+    B = PARTIAL  if Q1 holds, Q2 fails
+    B = NO       if Q1 fails (Q2 then moot)
+    Q1=False Q2=False  -->  B = NO
+
+The rule answers the question it was written for: is RECEPTIVE FIELD the
+binding constraint on the reconstruction? Answer: no, and not by a small
+margin - dilation moved detection the wrong way by 3.64x noise.
+
+UNPRE-REGISTERED FINDING IN THE CONTROL ARM (must be reported as such)
+    r2p_z16 is the *control* (dilation 1,1) and it was not predicted to
+    win. It wins by the largest margin measured anywhere in Level 2:
+      mAP50    +0.0326 = +4.47x noise
+      mAP50_95 +0.0153 = +4.78x noise
+    for +2880 params (+1.43%). Decomposition of the two effects:
+      depth (plain blocks, dilation 1)  +4.47x noise  <- real lever
+      dilation on top of that depth     -3.64x noise  <- actively harmful
+    net dilated cell vs baseline       +0.82x noise
+
+This is a 4-epoch, single-seed result and probe A already showed that a
+4ep reading is not safe at 20ep (its detection control was inert at 4ep
+and -2.53x noise at 20ep). r2p_z16 and r2d_z16 were therefore queued at
+20 epochs before this file was written; see phase4B_e20_confirm2.csv.
+
+
+==============================================================================
+PROBE C  (H11: rebalance the gradient magnitudes on Z)  20 ep, seed 0
+==============================================================================
+
+Rebalanced cells vs the R2 baseline at the same z (20ep, same seed):
+
+  cell       z          mAP50  mAP50_95   da_mIoU     da_fg lane_mIoU   lane_fg
+  r2_z16     16        0.3543    0.1273    0.8488    0.7612    0.5847    0.1943
+  rw_z16     16        0.2589    0.0817    0.8526    0.7667    0.5872    0.1983
+  r2_z32     32        0.3553    0.1248    0.8573    0.7736    0.5875    0.1992
+  rw_z32     32        0.2614    0.0826    0.8573    0.7738    0.5871    0.1988
+
+Deltas vs same-z R2 baseline, in noise units:
+
+  rw_z16 - r2_z16
+    mAP50         -0.0954    -13.07x  READABLE(neg)
+    mAP50_95      -0.0456    -14.25x  READABLE(neg)
+    da_mIoU       +0.0038     +0.27x  noise
+    da_fg         +0.0055     +0.27x  noise
+    lane_mIoU     +0.0025     +1.19x  unresolved
+    lane_fg       +0.0040     +1.25x  unresolved
+
+  rw_z32 - r2_z32
+    mAP50         -0.0939    -12.86x  READABLE(neg)
+    mAP50_95      -0.0422    -13.19x  READABLE(neg)
+    da_mIoU       +0.0000     +0.00x  noise
+    da_fg         +0.0002     +0.01x  noise
+    lane_mIoU     -0.0004     -0.19x  noise
+    lane_fg       -0.0004     -0.12x  noise
+
+------------------------------------------------------------------------------
+C4  MANIPULATION CHECK (gates everything)
+
+The diagnostic backpropagates each task loss separately, so its share_*
+columns are UNWEIGHTED and cannot be compared with the 0.50 gate as
+written. Effective share is recomputed here by applying lambda to the
+same measured norms - which is what the gate describes in words.
+
+  cell           g_det        g_da      g_lane |   raw_det   EFF_det |      gate
+  rw_z16       0.03062     0.00717     0.00552 |     0.707     0.326 | PASS
+  rw_z32       0.03529     0.00414     0.00372 |     0.818     0.473 | PASS
+
+    baselines for comparison (R2, lambda=1 everywhere):
+      r2_z16   raw effective share of det = 0.732
+      r2_z32   raw effective share of det = 0.770
+    C4 = PASS
+
+Secondary observation: the unweighted norms also moved. vs the R2 20ep
+checkpoints, g_da rose 0.00587 -> 0.00717 at z16 (+22%) and 0.00322 ->
+0.00414 at z32 (+29%) while g_det was flat at z16 and rose at z32. The
+rebalanced model learned a Z that the segmentation tasks push harder,
+i.e. the intervention changed the solution, not just the loss scale.
+
+C1  a segmentation task gains >=2x noise at fixed z
+    best segmentation movement anywhere: +1.25x noise (rw_z16 lane_fg, +0.0040)
+    C1 = FAIL
+
+C2  under rebalancing, DA and lane become z-sensitive
+    rw z32-z16 lane_fg gap +0.0005 = +0.16x noise  (R2 gap was +1.53x)
+    rw z32-z16 da_mIoU gap +0.0047 = +0.33x noise  (R2 gap was +0.60x)
+    C2 = FAIL
+
+C3  detection gives something up (>=2x noise on mAP50, either arm)
+    rw_z16   mAP50 -0.0954 =  -13.07x   mAP50_95 -0.0456 =  -14.25x
+    rw_z32   mAP50 -0.0939 =  -12.86x   mAP50_95 -0.0422 =  -13.19x
+    C3 = PASS   (detection was sacrificed, by a very large margin)
+
+------------------------------------------------------------------------------
+THE EXCHANGE RATE (the number that settles H11)
+
+  rw_z16   gave up   13.07x noise of mAP50
+           bought     0.27x noise of da_fg,    1.25x noise of lane_fg
+  rw_z32   gave up   12.86x noise of mAP50
+           bought     0.01x noise of da_fg,   -0.12x noise of lane_fg
+
+Detection was not nudged down, it was pulled down by an order of
+magnitude more than the 2x-noise threshold, and the segmentation tasks
+moved by a fraction of one noise unit. Whatever caps DA and lane, it is
+not detection's 73-77% share of the Z gradient.
+
+------------------------------------------------------------------------------
+EFFECTIVE RANK OF Z (did rebalancing change how much of Z is used?)
+
+  cell            z      erank  frac of z
+  r2_z16         16       6.79      42.5%
+  rw_z16         16       7.85      49.1%
+  r2_z32         32      11.88      37.1%
+  rw_z32         32      13.43      42.0%
+
+Rebalancing raised Z utilisation (z16 6.79->7.85 effective dims,
+z32 11.88->13.43) without raising either segmentation metric. More of Z
+is being used and none of the extra use reaches DA or lane.
+
+------------------------------------------------------------------------------
+PRE-REGISTERED DECISION RULE
+    C4=True C1=False C2=False C3=True
+    --> H11 REJECTED AS A LEVER
+    --> imbalance is real but reallocating gradient does not help the seg tasks; their ceiling is set by what Z contains
+
+==============================================================================
+CROSS-PROBE READING
+==============================================================================
+
+A (per-task projection width, 20ep)  NO       - lane gain 1.16x noise,
+                                                detection cost 2.53x
+B (reconstruction receptive field)   NO       - dilation costs 3.64x vs
+                                                plain depth
+B (reconstruction DEPTH, unreg.)     POSITIVE - +4.47x noise mAP50 at 4ep,
+                                                awaiting 20ep
+C (gradient magnitude balance, 20ep) REJECTED - sacrificing 13x noise of
+                                                detection buys 0.27x DA
+
+All three probes point the same way: the segmentation tasks are not
+limited by how much of Z they get (A), nor by how hard they push on it
+(C). Detection is limited by the reconstruction, and specifically by its
+depth rather than its receptive field (B). The two groups of tasks have
+different bottlenecks, which is the case for a task-aware FINAL design
+but not for a task-aware SHARED Z.
+
