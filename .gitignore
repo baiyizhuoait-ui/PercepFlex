@@ -15,6 +15,14 @@ experiments/*/*.csv
 # every run. Without them the sweep is not reproducible, so un-ignore them.
 !experiments/phase2b/*_results.csv
 
+# Same reasoning for the later phases: the aggregated result tables are the
+# deliverable and the reports are generated from them. Un-ignore them so a
+# phase is never committed with its numbers missing.
+!experiments/phase3a/*.csv
+!experiments/phase3b/*.csv
+!experiments/phase3c/*.csv
+!experiments/phase4a/*.csv
+
 # Baseline repos keep their own .git; ignore their weight files
 baselines/*/pretrained/
 baselines/*/weights/
