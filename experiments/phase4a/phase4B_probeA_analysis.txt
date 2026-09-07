@@ -1,0 +1,73 @@
+Phase 4A Level 2 probe A - analysis
+==========================================================================
+4 epochs, seed 0, E-base, 640x640, batch 16. Noise floor external (Phase 2-C,
+3 seeds @ 4ep). This probe is single-seed and estimates no variance of its own.
+
+## Cells
+
+| cell | z | params | GFLOPs | mAP50 | mAP50-95 | da_mIoU | da_fg | lane_mIoU | lane_fg |
+|---|---|---|---|---|---|---|---|---|---|
+| r2u_z16 | 16 | 0.2014 | 1.0796 | 0.2411 | 0.0728 | 0.8169 | 0.7146 | 0.5761 | 0.1765 |
+| r2u_z32 | 32 | 0.2157 | 1.2238 | 0.2496 | 0.0764 | 0.8262 | 0.7280 | 0.5767 | 0.1784 |
+| r3tp_z16 | 16 | 0.2066 | 1.1452 | 0.2430 | 0.0725 | 0.8218 | 0.7217 | 0.5757 | 0.1773 |
+| r3tp_z32 | 32 | 0.2117 | 1.1714 | 0.2544 | 0.0790 | 0.8124 | 0.7084 | 0.5769 | 0.1789 |
+
+## P1 (z16 arm, lane)  predicted: lane_fg gain >= 2x noise
+   lane_fg   R3 - R2 = +0.0008 (0.25x noise)   [threshold +0.0064]
+   lane_mIoU R3 - R2 = -0.0004 (-0.19x noise)
+   -> P1 FAIL
+
+## P2 (z32 arm, DA)  predicted: squeezing DA 32->16 costs < 2x noise
+   da_fg     R3 - R2 = -0.0196 (-0.97x noise)   [threshold |d| < 0.0404]
+   da_mIoU   R3 - R2 = -0.0138 (-0.97x noise)
+   -> P2 PASS
+   NOTE: both point estimates are NEGATIVE and sit at ~1x noise, so this
+   passes the pre-registered 2x criterion while leaving the sign unresolved.
+
+## P3 (cross-arm, PRIMARY)  predicted: R3 z-gap < R2 z-gap - 2x noise
+
+| metric | R2 gap (z32-z16) | R3 gap (z32-z16) | R3 - R2 | verdict |
+|---|---|---|---|---|
+| mAP50 | +0.0085 (1.16x noise) | +0.0114 (1.56x noise) | +0.0029 (0.40x noise) | NOT shrunk |
+| mAP50_95 | +0.0036 (1.12x noise) | +0.0065 (2.03x noise) | +0.0029 (0.91x noise) | NOT shrunk |
+| lane_mIoU | +0.0006 (0.29x noise) | +0.0012 (0.57x noise) | +0.0006 (0.29x noise) | NOT shrunk |
+| lane_fg | +0.0019 (0.59x noise) | +0.0016 (0.50x noise) | -0.0003 (-0.09x noise) | NOT shrunk |
+
+   -> P3 FAIL
+
+## P4 (detection control)  predicted: det held at 32 -> |R3-R2| < 1x noise
+   z=16 mAP50     R3 - R2 = +0.0019 (0.26x noise)  -> ok
+   z=16 mAP50_95  R3 - R2 = -0.0003 (-0.09x noise)  -> ok
+   z=32 mAP50     R3 - R2 = +0.0048 (0.66x noise)  -> ok
+   z=32 mAP50_95  R3 - R2 = +0.0026 (0.81x noise)  -> ok
+   -> P4 PASS
+
+## Decision (rule fixed in the pre-registration)
+
+   P1=False  P2=True  P3=False  P4=True
+   A = PARTIAL (literal 'either' reading) / A = NO (substantive reading)
+   -- only P2 holds and P2 is a null, not a gain. P1 (the gain test) and P3 (the primary test) both fail. No prediction that required something to IMPROVE was met.
+
+   HONEST READING: every prediction that required an IMPROVEMENT failed.
+   The single pass (P2) predicted that nothing would happen, and nothing
+   measurable did. So the probe produced no positive signal for task-specific
+   projection at these widths. Under the user's plan that routes to B,
+   except for the power caveat below.
+
+## Power diagnosis (how much to trust the null)
+
+   r2u_z16 @4ep  mAP50 = 0.2411
+   r2_z16  @20ep mAP50 = 0.3543 (Phase 4A, same cell)
+   4ep sits at 68% of the 20ep level -> the probe is far from converged.
+
+   R2 z-gap mAP50 at 4ep  : +0.0085 (1.16x noise)
+   R2 z-gap mAP50 at 20ep : +0.0010 (0.14x noise, z16->z32) / +0.0171 (2.34x, z16->z128)
+   => the gap P3 was supposed to shrink is itself only ~1x noise at 4ep, so
+      P3's failure is weak evidence on its own. P1 is the better-powered test
+      because it does not depend on the baseline gap being large.
+
+## Efficiency (secondary, not part of the decision rule)
+
+   r3tp_z32 vs r2u_z32 : FLOPs -4.3%  mAP50 +0.0048 (0.66x noise)
+   r3tp_z16 vs r2u_z16 : FLOPs +6.1%  mAP50 +0.0019 (0.26x noise)
+
