@@ -336,7 +336,8 @@ def main():
         lambda_da=tr.get("lambda_da", 1.0), lambda_lane=tr.get("lambda_lane", 1.0),
         lambda_budget=tr.get("lambda_budget", 0.0),
         budget_target=tr.get("budget_target"),
-        width_penalty=tr.get("width_penalty", 1.0)).to(device)
+        width_penalty=tr.get("width_penalty", 1.0),
+        lambda_det=tr.get("lambda_det", 1.0)).to(device)
 
     ds = BDD100KDataset(cfg["data"]["root"], split=tr.get("train_split", "tri_train"),
                         train=True)

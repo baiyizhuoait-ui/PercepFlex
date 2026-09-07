@@ -1,0 +1,8 @@
+Probe C config audit - only train.lambda_det may differ
+=======================================================
+rw_z16     <- r2u_z16     lambda_det=0.2
+   diffs vs base: [('train.lambda_det', None, 0.2)]
+rw_z32     <- r2u_z32     lambda_det=0.2
+   diffs vs base: [('train.lambda_det', None, 0.2)]
+
+RESULT: PASS

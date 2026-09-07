@@ -1,7 +1,7 @@
 """Multi-task total loss with budget constraint (taskbook §9).
 
     L_total = L_task + lambda_budget * L_budget
-    L_task  = L_det + lambda_da * L_da + lambda_lane * L_lane
+    L_task  = lambda_det * L_det + lambda_da * L_da + lambda_lane * L_lane
 
 L_budget constrains the expected computation of the dynamic model: it pushes the
 router's expected widths toward a target envelope, so the model actually learns
@@ -23,10 +23,12 @@ def seg_ce_loss(logits, mask, fg_weight=10.0):
 class MultiTaskLoss(nn.Module):
     def __init__(self, anchors, nc=1, lambda_da=1.0, lambda_lane=1.0,
                  lambda_budget=0.0, budget_target=None, budget_type="expected_width",
+                 lambda_det=1.0,
                  width_penalty=1.0, img_size=640):
         super().__init__()
         from losses.yolo_loss import YOLOLoss
         self.det_loss = YOLOLoss(anchors, nc=nc, img_size=img_size)
+        self.lambda_det = lambda_det
         self.lambda_da = lambda_da
         self.lambda_lane = lambda_lane
         self.lambda_budget = lambda_budget
@@ -54,7 +56,7 @@ class MultiTaskLoss(nn.Module):
         l_lane = seg_ce_loss(lane_logits, lane_mask)
         losses["da"], losses["lane"] = l_da, l_lane
 
-        l_task = l_det + self.lambda_da * l_da + self.lambda_lane * l_lane
+        l_task = self.lambda_det * l_det + self.lambda_da * l_da + self.lambda_lane * l_lane
         losses["task"] = l_task
 
         # ---- difficulty supervision (DifficultyRouter) ----
