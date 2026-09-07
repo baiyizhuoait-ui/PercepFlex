@@ -1,0 +1,46 @@
+Probe A confirmation at 20 epochs: r3tp_z16 vs r2_z16 (both E-base, seed 0)
+============================================================================
+
+IMPORTANT: the detection path is architecturally identical in the two cells.
+task_proj sets DetFromZ's det_ch (static_model.py L35) rather than adding a
+module, and R2 already used det_ch=32. The +5184 params are all on the lane
+branch. So any detection movement travelled through the shared Z.
+
+  params   0.2014M -> 0.2066M (+2.6%)
+  GFLOPs   1.0796 -> 1.1452 (+6.1%)
+
+metric          r2_z16   r3tp_z16      delta   x noise   read
+----------------------------------------------------------------------------
+mAP50           0.3543     0.3420    -0.0123    -1.68x   unresolved
+mAP50_95        0.1273     0.1192    -0.0081    -2.53x   READ LOSS
+da_mIoU         0.8488     0.8556    +0.0068     0.48x   within noise
+da_fg           0.7612     0.7712    +0.0100     0.50x   within noise
+lane_mIoU       0.5847     0.5870    +0.0023     1.10x   unresolved
+lane_fg         0.1943     0.1980    +0.0037     1.16x   unresolved
+
+P1 re-read (lane gains from its own 16->32 projection)
+----------------------------------------------------------------------------
+  4ep : +0.0008 = 0.25x noise
+  20ep: +0.0037 = 1.16x noise   (threshold: >= 2.00x)
+  -> FAIL at 2x; sits between 1x and 2x, so UNRESOLVED rather than null
+
+P4 re-read (detection control, expected to be inert)
+----------------------------------------------------------------------------
+  mAP50     4ep +0.0019 (0.26x)   ->   20ep -0.0123 (-1.68x)
+  mAP50_95  4ep -0.0003 (-0.09x)   ->   20ep -0.0081 (-2.53x)
+  -> VIOLATED at 20ep. Detection was inert at 4ep and is not inert once
+     converged, despite an identical detection path.
+
+Verdict
+----------------------------------------------------------------------------
+  A = NO, confirmed at 20 epochs, and now for a stronger reason than at 4ep.
+  Per-task projection buys lane +1.16x noise (unresolved) and costs detection
+  -1.68x on mAP50 and -2.53x on mAP50_95 (both beyond the 2x threshold). The
+  4ep null was therefore not a power artefact: extending the cell did not
+  rescue the prediction, it revealed a cost that 4ep was hiding.
+
+  New observation, and the reason this is not merely a bigger null: a change
+  confined to the lane branch moved detection by more than 2x noise. The three
+  tasks are strongly coupled through Z. That is independent evidence for the
+  premise of probe C (gradient composition on Z is load-bearing), and it means
+  probe A should not be read as 'the tasks are independent'.
