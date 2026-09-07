@@ -1,0 +1,12 @@
+cell,params_M,flops_G,mAP50,da_mIoU,lane_mIoU,status
+esmall_z16,0.1013,0.7218,0.2687,0.8423,0.5818,non-dominated
+esmall_z32,0.1135,0.8522,0.2810,0.8456,0.5841,non-dominated
+midL_z32,0.1860,1.1603,0.3152,0.8532,0.5862,non-dominated
+esmall_z128,0.1867,1.6350,0.2639,0.8490,0.5855,dominated
+ebase_z16,0.1889,1.0597,0.3204,0.8564,0.5867,non-dominated
+ebase_z32,0.2027,1.1973,0.3222,0.8527,0.5875,non-dominated
+midM_z32,0.2852,1.5249,0.3462,0.8572,0.5900,non-dominated
+ebase_z128,0.2858,2.0231,0.3161,0.8522,0.5877,dominated
+elarge_z16,0.2915,1.4279,0.3585,0.8589,0.5878,non-dominated
+elarge_z32,0.3068,1.5709,0.3494,0.8546,0.5893,non-dominated
+elarge_z128,0.3984,2.4292,0.3436,0.8575,0.5925,non-dominated

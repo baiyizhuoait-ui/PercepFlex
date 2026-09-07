@@ -1,0 +1,13 @@
+hypothesis,statement,experiment,expected_evidence,status,decision
+"H1","R0 shows no detection->Z effect mainly because detection bypasses Z","R0 vs R2 paired","detection z-sensitivity rises from ~0 (R0) to >noise (R2)",pending,
+"H2","Once detection is forced through Z, mAP becomes clearly Z-sensitive","R2 z16/z32/z128","monotone or clearly separated mAP50 across z",pending,
+"H3","z=16 is already sufficient for DA","R2 z sweep","DA spread across z stays inside the noise floor",pending,
+"H4","Lane's Z demand is real, not R0-specific training noise","R2 z sweep","lane_fg rises with z again, reproducing the Phase 3B trend",pending,
+"H5","Encoder-heavy still beats Z-heavy under a genuine shared bottleneck","R2 budget probe","wider encoder + narrow Z beats narrow encoder + wide Z",pending,
+"H6","Compressing encoder features into Z causes irreversible information loss","R2 vs R0 at equal z","R2 detection below R0 detection at every z",pending,
+"H7","R2 performance depends as much on reconstruction design as on Z width","reconstruction A/B","two reconstructions differ at fixed z=16",pending,
+"H8","A single Z can serve all three tasks","R2 z128 vs R0","R2 approaches R0 on all three tasks at wide z",pending,
+"H9","Tasks need different granularity, so one uniform Z is suboptimal","split-Z / adapter probe","task-specific projection beats direct heads at fixed z",pending,
+"H10","Task gradients conflict at Z and shape how it is used","gradient diagnostic","negative cosine between task gradients w.r.t. Z",pending,
+"H6b","Extra Z capacity is allocated but not used","effective-rank diagnostic","effective rank of z128 close to that of z16",pending,
+"H7b","Bottleneck placement matters more than width","bottleneck placement probe","moving compression point changes results at fixed z",pending,
