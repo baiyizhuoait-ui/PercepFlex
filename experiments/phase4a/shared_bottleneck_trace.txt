@@ -1,0 +1,148 @@
+====================================================================================================
+PHASE 4A · SHARED-BOTTLENECK PROVENANCE TRACE
+====================================================================================================
+
+Method: intervention, not inspection. For each model we run three forwards
+on the same input: baseline; Z replaced by N(0,1) noise with the encoder
+features kept real; encoder F2/F3/F4 replaced by N(0,1) noise with Z kept real.
+A head is Z-only iff it MOVES under the z-override and is INERT under the
+feats-override.
+
+----------------------------------------------------------------------------------------------------
+  R0  z=16   det_from_z=False
+----------------------------------------------------------------------------------------------------
+    Z              : shape (1, 16, 80, 80)   (1/8 of input)
+    encoder feats  : F2 (1, 64, 80, 80) (1/8)   F3 (1, 96, 40, 40) (1/16)   F4 (1, 128, 20, 20) (1/32)
+    det pyramid    : F2/F3/F4 read directly from the encoder
+
+    head     override                   max|delta|      threshold   reads?
+    detection Z -> noise                  0.000e+00          1e-06   NOT Z
+    detection encoder feats -> noise      2.349e+02          1e-06   BYPASS (reads feats)
+    DA       Z -> noise                  3.572e-01          1e-06   Z
+    DA       encoder feats -> noise      0.000e+00          1e-06   clean
+    lane     Z -> noise                  3.010e-01          1e-06   Z
+    lane     encoder feats -> noise      0.000e+00          1e-06   clean
+
+    provenance verdict: detection=BYPASS Z (reads encoder only)  DA=Z-only  lane=Z-only
+    STRICT SHARED BOTTLENECK: NO
+
+    params: encoder=147776  representation=4640  det_head=8406  da_head=14016  lane_head=14016
+    params total 188854
+    MACs   : encoder=325.670M  representation=9.830M  det_head=16.589M  da_head=88.883M  lane_head=88.883M
+    MACs total 529.856 M  (= 1.060 GFLOPs)
+
+----------------------------------------------------------------------------------------------------
+  R2  z=16   det_from_z=True
+----------------------------------------------------------------------------------------------------
+    Z              : shape (1, 16, 80, 80)   (1/8 of input)
+    encoder feats  : F2 (1, 64, 80, 80) (1/8)   F3 (1, 96, 40, 40) (1/16)   F4 (1, 128, 20, 20) (1/32)
+    det pyramid    : Z(1/8) -> down -> 1/16 -> down -> 1/32  [built BY DOWNSAMPLING Z]
+
+    head     override                   max|delta|      threshold   reads?
+    detection Z -> noise                  3.684e+01          1e-06   Z
+    detection encoder feats -> noise      0.000e+00          1e-06   clean
+    DA       Z -> noise                  5.269e-01          1e-06   Z
+    DA       encoder feats -> noise      0.000e+00          1e-06   clean
+    lane     Z -> noise                  3.950e-01          1e-06   Z
+    lane     encoder feats -> noise      0.000e+00          1e-06   clean
+
+    provenance verdict: detection=Z-only  DA=Z-only  lane=Z-only
+    STRICT SHARED BOTTLENECK: YES
+
+    params: encoder=147776  representation=4640  det_head=20918  da_head=14016  lane_head=14016
+    params total 201366
+    MACs   : encoder=325.670M  representation=9.830M  det_head=26.547M  da_head=88.883M  lane_head=88.883M
+    MACs total 539.814 M  (= 1.080 GFLOPs)
+
+----------------------------------------------------------------------------------------------------
+  R0  z=32   det_from_z=False
+----------------------------------------------------------------------------------------------------
+    Z              : shape (1, 32, 80, 80)   (1/8 of input)
+    encoder feats  : F2 (1, 64, 80, 80) (1/8)   F3 (1, 96, 40, 40) (1/16)   F4 (1, 128, 20, 20) (1/32)
+    det pyramid    : F2/F3/F4 read directly from the encoder
+
+    head     override                   max|delta|      threshold   reads?
+    detection Z -> noise                  0.000e+00          1e-06   NOT Z
+    detection encoder feats -> noise      2.648e+02          1e-06   BYPASS (reads feats)
+    DA       Z -> noise                  4.304e-01          1e-06   Z
+    DA       encoder feats -> noise      0.000e+00          1e-06   clean
+    lane     Z -> noise                  2.509e-01          1e-06   Z
+    lane     encoder feats -> noise      0.000e+00          1e-06   clean
+
+    provenance verdict: detection=BYPASS Z (reads encoder only)  DA=Z-only  lane=Z-only
+    STRICT SHARED BOTTLENECK: NO
+
+    params: encoder=147776  representation=9280  det_head=8406  da_head=18624  lane_head=18624
+    params total 202710
+    MACs   : encoder=325.670M  representation=19.661M  det_head=16.589M  da_head=118.374M  lane_head=118.374M
+    MACs total 598.669 M  (= 1.197 GFLOPs)
+
+----------------------------------------------------------------------------------------------------
+  R2  z=32   det_from_z=True
+----------------------------------------------------------------------------------------------------
+    Z              : shape (1, 32, 80, 80)   (1/8 of input)
+    encoder feats  : F2 (1, 64, 80, 80) (1/8)   F3 (1, 96, 40, 40) (1/16)   F4 (1, 128, 20, 20) (1/32)
+    det pyramid    : Z(1/8) -> down -> 1/16 -> down -> 1/32  [built BY DOWNSAMPLING Z]
+
+    head     override                   max|delta|      threshold   reads?
+    detection Z -> noise                  3.250e+01          1e-06   Z
+    detection encoder feats -> noise      0.000e+00          1e-06   clean
+    DA       Z -> noise                  2.798e-01          1e-06   Z
+    DA       encoder feats -> noise      0.000e+00          1e-06   clean
+    lane     Z -> noise                  3.185e-01          1e-06   Z
+    lane     encoder feats -> noise      0.000e+00          1e-06   clean
+
+    provenance verdict: detection=Z-only  DA=Z-only  lane=Z-only
+    STRICT SHARED BOTTLENECK: YES
+
+    params: encoder=147776  representation=9280  det_head=21430  da_head=18624  lane_head=18624
+    params total 215734
+    MACs   : encoder=325.670M  representation=19.661M  det_head=29.824M  da_head=118.374M  lane_head=118.374M
+    MACs total 611.904 M  (= 1.224 GFLOPs)
+
+----------------------------------------------------------------------------------------------------
+  R0  z=128   det_from_z=False
+----------------------------------------------------------------------------------------------------
+    Z              : shape (1, 128, 80, 80)   (1/8 of input)
+    encoder feats  : F2 (1, 64, 80, 80) (1/8)   F3 (1, 96, 40, 40) (1/16)   F4 (1, 128, 20, 20) (1/32)
+    det pyramid    : F2/F3/F4 read directly from the encoder
+
+    head     override                   max|delta|      threshold   reads?
+    detection Z -> noise                  0.000e+00          1e-06   NOT Z
+    detection encoder feats -> noise      2.210e+02          1e-06   BYPASS (reads feats)
+    DA       Z -> noise                  4.247e-01          1e-06   Z
+    DA       encoder feats -> noise      0.000e+00          1e-06   clean
+    lane     Z -> noise                  3.567e-01          1e-06   Z
+    lane     encoder feats -> noise      0.000e+00          1e-06   clean
+
+    provenance verdict: detection=BYPASS Z (reads encoder only)  DA=Z-only  lane=Z-only
+    STRICT SHARED BOTTLENECK: NO
+
+    params: encoder=147776  representation=37120  det_head=8406  da_head=46272  lane_head=46272
+    params total 285846
+    MACs   : encoder=325.670M  representation=78.643M  det_head=16.589M  da_head=295.322M  lane_head=295.322M
+    MACs total 1011.546 M  (= 2.023 GFLOPs)
+
+----------------------------------------------------------------------------------------------------
+  R2  z=128   det_from_z=True
+----------------------------------------------------------------------------------------------------
+    Z              : shape (1, 128, 80, 80)   (1/8 of input)
+    encoder feats  : F2 (1, 64, 80, 80) (1/8)   F3 (1, 96, 40, 40) (1/16)   F4 (1, 128, 20, 20) (1/32)
+    det pyramid    : Z(1/8) -> down -> 1/16 -> down -> 1/32  [built BY DOWNSAMPLING Z]
+
+    head     override                   max|delta|      threshold   reads?
+    detection Z -> noise                  2.954e+01          1e-06   Z
+    detection encoder feats -> noise      0.000e+00          1e-06   clean
+    DA       Z -> noise                  4.234e-01          1e-06   Z
+    DA       encoder feats -> noise      0.000e+00          1e-06   clean
+    lane     Z -> noise                  3.100e-01          1e-06   Z
+    lane     encoder feats -> noise      0.000e+00          1e-06   clean
+
+    provenance verdict: detection=Z-only  DA=Z-only  lane=Z-only
+    STRICT SHARED BOTTLENECK: YES
+
+    params: encoder=147776  representation=37120  det_head=24502  da_head=46272  lane_head=46272
+    params total 301942
+    MACs   : encoder=325.670M  representation=78.643M  det_head=49.485M  da_head=295.322M  lane_head=295.322M
+    MACs total 1044.442 M  (= 2.089 GFLOPs)
+

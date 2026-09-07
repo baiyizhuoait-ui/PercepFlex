@@ -1,0 +1,102 @@
+====================================================================================================
+PHASE 4A - STEP 0 · EXISTING EVIDENCE SUMMARY
+====================================================================================================
+generated from result CSVs; no value in this file is hand-entered
+  R0 cells (3A z16 + 3B z32/z128) : 9
+  Phase 3C new cells              : 2
+
+----------------------------------------------------------------------------------------------------
+### 1. CONFIRMED FACTS
+----------------------------------------------------------------------------------------------------
+
+F1 · Encoder capacity is the dominant factor for detection (Phase 3A).
+    Holding z=16 / 20ep / seed0, widening the encoder moves mAP50 monotonically:
+      esmall   params 0.1013  flops 0.7218  mAP50 0.2687  mAP50_95 0.0890
+      ebase    params 0.1889  flops 1.0597  mAP50 0.3204  mAP50_95 0.1149
+      elarge   params 0.2915  flops 1.4279  mAP50 0.3585  mAP50_95 0.1356
+    -> 18/18 encoder main effects across the 3 z columns x 6 metrics are monotone.
+
+F2 · The Z effect is task-specific, not uniform (Phase 3B).
+    Interaction term  [m(E,z)-m(E,z16)] - [m(E-small,z)-m(E-small,z16)]:
+      detection  -0.0088  (negative: a wider Z HURTS the strongest encoder)
+      DA         -0.0100  (inside noise)
+      lane       +0.0012  (inside noise; the lane gain is a Z MAIN EFFECT, not an interaction)
+    Z main effect by encoder, z16 -> z128, lane_fg:
+      esmall   +0.0070
+      ebase    +0.0032
+      elarge   +0.0085
+
+F3 · Under a fixed parameter budget, capacity belongs in the encoder (Phase 3C).
+      Budget-L  ebase_z16  vs esmall_z128 : dParams +1.18%%  dFLOPs -35.2%%  dmAP50 +0.0565 (7.7x noise)
+      Budget-M  elarge_z16 vs ebase_z128  : dParams +1.99%%  dFLOPs -29.4%%  dmAP50 +0.0424 (5.8x noise)
+    DA is inside noise at every layer. Lane: inside noise at Budget-L; the
+    BALANCED cell (not Z-heavy) leads at Budget-M by 1.05-1.16x noise -> unresolved.
+
+F4 · R0's detection head structurally bypasses Z.
+    static_model.py: det_from_z defaults False, so DynamicDetHead reads the
+    encoder's [F2,F3,F4] directly. Only DA and Lane consume Z.
+    -> every Z conclusion so far was measured on a model where detection
+       never had a Z-dependent information path.
+
+F5 · R2 adds little cost over R0 at the same z (Phase 2-B parameter audit).
+      z      R0 params  R2 params      delta   delta %
+      16        188854     201366     +12512   +6.6%
+      32        202710     215734     +13024   +6.4%
+      128       285846     301942     +16096   +5.6%
+    -> the extra cost sits entirely in the detection head (reconstruction),
+       not in the encoder or in Z. R0 vs R2 at equal z is therefore a
+       near-like-for-like comparison (~+6%), not a capacity change.
+
+F6 · No usable R2 accuracy result exists yet.
+    experiments/phase2b/r1r2_results.csv holds a header only; no R2 run was
+    ever evaluated. Phase 4A must train R2 from scratch.
+
+----------------------------------------------------------------------------------------------------
+### 2. THE R0 STRUCTURAL LIMITATION (why Phase 4A exists)
+----------------------------------------------------------------------------------------------------
+
+  R0:   Encoder -> Detection
+        Encoder -> Z -> DA
+        Encoder -> Z -> Lane
+
+  Detection never reads Z. So an observed 'Z does not matter for detection'
+  is consistent with AT LEAST these distinct explanations, which R0 cannot separate:
+
+    A  detection is genuinely saturated at z=16
+    B  detection bypasses Z, so the experiment never tested it   <-- R0 artifact
+    C  the encoder, not Z, is the binding constraint
+    D  the Z -> detection reconstruction is too weak
+    E  Z carries too little spatial information (1/8, rebuilt from F2/F3/F4)
+    F  task gradients conflict and suppress Z utilisation
+    G  one shared Z is simply the wrong interface for these three tasks
+
+  R2 removes explanation B by construction. The rest are still open and are
+  what the diagnostics in STEP 5 are for.
+
+----------------------------------------------------------------------------------------------------
+### 3. OPEN QUESTIONS PHASE 4A MUST SETTLE
+----------------------------------------------------------------------------------------------------
+  Q1  Does detection become Z-sensitive once it is forced through Z? (H1, H2)
+  Q2  Is DA saturation real, or an artifact of the R0 information path? (H3)
+  Q3  Is lane's Z demand real and repeatable under a different routing? (H4)
+  Q4  Does encoder-heavy still beat Z-heavy under a genuine shared bottleneck? (H5)
+  Q5  Is the loss from compression irreversible, i.e. an information problem? (H6)
+  Q6  How much of any R2 result is reconstruction design rather than Z width? (H7)
+  Q7  Can one uniform Z serve detection + DA + lane at all? (H8, H9)
+  Q8  Do the three tasks fight over Z through their gradients? (H10)
+
+----------------------------------------------------------------------------------------------------
+### 4. WHAT PHASE 4A WILL MEASURE (per your section 3)
+----------------------------------------------------------------------------------------------------
+
+  Primary (20ep, seed 0, E-base encoder, protocol identical to R0):
+    R2-z16, R2-z32, R2-z128
+  Paired against the EXISTING R0 runs at the same encoder and z:
+    R0 ebase_z16   params 0.1889  flops 1.0597  mAP50 0.3204  da 0.8564  lane 0.5867  [exists, reuse]
+    R0 ebase_z32   params 0.2027  flops 1.1973  mAP50 0.3222  da 0.8527  lane 0.5875  [exists, reuse]
+    R0 ebase_z128  params 0.2858  flops 2.0231  mAP50 0.3161  da 0.8522  lane 0.5877  [exists, reuse]
+
+  Encoder is pinned to E-base because it is the only encoder with a complete
+  20ep R0 triple at z16/z32/z128, which is exactly what a paired R0-vs-R2
+  comparison needs. If R2 shows no Z sensitivity, one E-large probe is the
+  designated test for explanation C (encoder is the binding constraint).

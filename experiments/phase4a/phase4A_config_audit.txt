@@ -1,0 +1,36 @@
+====================================================================================================
+PHASE 4A - R2 CONFIG GENERATION + AUDIT
+====================================================================================================
+each R2 config is derived from the R0 config that already ran at the same
+encoder and z; the ONLY intended change is the detection information path
+
+----------------------------------------------------------------------------------------------------
+  z=16   configs/phase3a_ebase_z16.yaml -> configs/phase4a_r2_z16.yaml
+    fields changed      : model.detection.det_ch, model.detection.from_z, model.detection.z_proj
+    unexpected changes  : none
+    z_channels          : 16   (unchanged)
+    encoder             : stem 16  stages [32, 64, 96, 128]  blocks [2, 2, 2]  (unchanged)
+    epochs / bs / lr    : 20 / 16 / 1e-3   (unchanged)
+    VERDICT: PASS
+
+----------------------------------------------------------------------------------------------------
+  z=32   configs/phase3b_ebase_z32.yaml -> configs/phase4a_r2_z32.yaml
+    fields changed      : model.detection.det_ch, model.detection.from_z, model.detection.z_proj
+    unexpected changes  : none
+    z_channels          : 32   (unchanged)
+    encoder             : stem 16  stages [32, 64, 96, 128]  blocks [2, 2, 2]  (unchanged)
+    epochs / bs / lr    : 20 / 16 / 1e-3   (unchanged)
+    VERDICT: PASS
+
+----------------------------------------------------------------------------------------------------
+  z=128   configs/phase3b_ebase_z128.yaml -> configs/phase4a_r2_z128.yaml
+    fields changed      : model.detection.det_ch, model.detection.from_z, model.detection.z_proj
+    unexpected changes  : none
+    z_channels          : 128   (unchanged)
+    encoder             : stem 16  stages [32, 64, 96, 128]  blocks [2, 2, 2]  (unchanged)
+    epochs / bs / lr    : 20 / 16 / 1e-3   (unchanged)
+    VERDICT: PASS
+
+====================================================================================================
+R2 CONFIG AUDIT: PASS - only the detection information path differs
+====================================================================================================
