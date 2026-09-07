@@ -1,0 +1,122 @@
+====================================================================================================
+PHASE 4A · R0 vs R2 PAIRED ANALYSIS
+====================================================================================================
+encoder pinned: ebase    protocol: 20ep / seed 0 / bs 16 / lr 1e-3 / 640x640
+R0 rows reused from existing CSVs; R0 is never retrained.
+Noise floor is an EXTERNAL reference (Phase 2-C, 3 seeds, 4 epochs).
+Phase 4A is single-seed and does NOT estimate its own variance.
+
+R0 cells found: z16, z32, z128
+R2 cells found: z16, z32, z128
+
+----------------------------------------------------------------------------------------------------
+### A. SIDE BY SIDE AT EQUAL z
+----------------------------------------------------------------------------------------------------
+
+  z     var    params    flops       mAP50   mAP50_95    da_mIoU      da_fg  lane_mIoU    lane_fg
+  16    R0     0.1889   1.0597      0.3204     0.1149     0.8564     0.7723     0.5867     0.1973
+  16    R2     0.2014   1.0796      0.3543     0.1273     0.8488     0.7612     0.5847     0.1943
+  32    R0     0.2027   1.1973      0.3222     0.1158     0.8527     0.7670     0.5875     0.1992
+  32    R2     0.2157   1.2238      0.3553     0.1248     0.8573     0.7736     0.5875     0.1992
+  128   R0     0.2858   2.0231      0.3161     0.1129     0.8522     0.7663     0.5877     0.2005
+  128   R2     0.3019   2.0889      0.3714     0.1355     0.8518     0.7656     0.5885     0.2015
+
+----------------------------------------------------------------------------------------------------
+### B. R2 - R0 AT EQUAL z  (cost of forcing detection through Z)
+----------------------------------------------------------------------------------------------------
+
+  z        dParams     dFLOPs        mAP50    mAP50_95     da_mIoU       da_fg   lane_mIoU     lane_fg
+  16       +0.0125    +0.0199     +0.0339*    +0.0124*    -0.0076     -0.0111     -0.0020     -0.0030 
+  32       +0.0130    +0.0265     +0.0331*    +0.0090*    +0.0046     +0.0066     +0.0000     +0.0000 
+  128      +0.0161    +0.0658     +0.0553*    +0.0226*    -0.0004     -0.0007     +0.0008     +0.0010 
+  (* = beyond the noise floor)
+
+----------------------------------------------------------------------------------------------------
+### C. Z-SENSITIVITY: THE SAME CONTRAST INSIDE R0 AND INSIDE R2
+----------------------------------------------------------------------------------------------------
+
+  This is the test for 'bypass masking'. We do not compare absolute scores;
+  we compare how much each model MOVES when z goes 16 -> 32 -> 128.
+
+  metric     model      z16->z32    z16->z128        noise
+  mAP50      R0          +0.0018      -0.0043       0.0073
+  mAP50      R2          +0.0010      +0.0171       0.0073
+
+  mAP50_95   R0          +0.0009      -0.0020       0.0032
+  mAP50_95   R2          -0.0025      +0.0082       0.0032
+
+  da_mIoU    R0          -0.0037      -0.0042       0.0142
+  da_mIoU    R2          +0.0085      +0.0030       0.0142
+
+  da_fg      R0          -0.0053      -0.0060       0.0202
+  da_fg      R2          +0.0124      +0.0044       0.0202
+
+  lane_mIoU  R0          +0.0008      +0.0010       0.0021
+  lane_mIoU  R2          +0.0028      +0.0038       0.0021
+
+  lane_fg    R0          +0.0019      +0.0032       0.0032
+  lane_fg    R2          +0.0049      +0.0072       0.0032
+
+
+  reading it as multiples of the noise floor:
+
+  metric     model    |z16->z32|/n  |z16->z128|/n
+  mAP50      R0               0.25           0.59
+  mAP50      R2               0.14           2.34
+
+  mAP50_95   R0               0.28           0.63
+  mAP50_95   R2               0.78           2.56
+
+  da_mIoU    R0               0.26           0.30
+  da_mIoU    R2               0.60           0.21
+
+  da_fg      R0               0.26           0.30
+  da_fg      R2               0.61           0.22
+
+  lane_mIoU  R0               0.38           0.48
+  lane_mIoU  R2               1.33           1.81
+
+  lane_fg    R0               0.59           1.00
+  lane_fg    R2               1.53           2.25
+
+----------------------------------------------------------------------------------------------------
+### D. DID DETECTION BECOME Z-SENSITIVE?  (H1 / H2)
+----------------------------------------------------------------------------------------------------
+
+  R0  largest detection |z16->z128| = 0.63 x noise
+  R2  largest detection |z16->z128| = 2.56 x noise
+
+  ==> H1 SUPPORTED: detection is more Z-sensitive in R2 than in R0.
+      The earlier 'Z does not matter for detection' was at least partly
+      the R0 bypass, not a property of detection itself.
+
+----------------------------------------------------------------------------------------------------
+### E. PER-TASK Z DEMAND UNDER R2  (H3 DA, H4 lane)
+----------------------------------------------------------------------------------------------------
+
+  detection
+    mAP50      z16->z32 +0.0010   z16->z128 +0.0171   -> beyond noise, monotone-ish
+    mAP50_95   z16->z32 -0.0025   z16->z128 +0.0082   -> beyond noise, non-monotone
+
+  DA
+    da_mIoU    z16->z32 +0.0085   z16->z128 +0.0030   -> inside noise, non-monotone
+    da_fg      z16->z32 +0.0124   z16->z128 +0.0044   -> inside noise, non-monotone
+
+  lane
+    lane_mIoU  z16->z32 +0.0028   z16->z128 +0.0038   -> beyond noise, monotone-ish
+    lane_fg    z16->z32 +0.0049   z16->z128 +0.0072   -> beyond noise, monotone-ish
+
+----------------------------------------------------------------------------------------------------
+### F. WHICH EXPLANATIONS ARE STILL OPEN
+----------------------------------------------------------------------------------------------------
+
+  R2 removes explanation B (bypass) by construction. The others are NOT
+  settled by this table and need the STEP 5 diagnostics:
+
+    A  task genuinely saturated at z=16
+    C  the encoder, not Z, is the binding constraint
+    D  the Z -> detection reconstruction is too weak
+    E  Z carries too little spatial information
+    F  task gradients conflict and suppress Z utilisation
+    G  one shared Z is the wrong interface
+

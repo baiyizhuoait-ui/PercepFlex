@@ -55,9 +55,9 @@ CELLS = [
     ("r0", "r0_z16",  "configs/phase3a_ebase_z16.yaml",  "experiments/phase3a/exp3A_ebase_z16/checkpoint.pt"),
     ("r0", "r0_z32",  "configs/phase3b_ebase_z32.yaml",  "experiments/phase3b/exp3B_ebase_z32/checkpoint.pt"),
     ("r0", "r0_z128", "configs/phase3b_ebase_z128.yaml", "experiments/phase3b/exp3B_ebase_z128/checkpoint.pt"),
-    ("r2", "r2_z16",  "configs/phase4a_r2_z16.yaml",     "experiments/phase4a/exp4A_r2_z16/checkpoint.pt"),
-    ("r2", "r2_z32",  "configs/phase4a_r2_z32.yaml",     "experiments/phase4a/exp4A_r2_z32/checkpoint.pt"),
-    ("r2", "r2_z128", "configs/phase4a_r2_z128.yaml",    "experiments/phase4a/exp4A_r2_z128/checkpoint.pt"),
+    ("r2", "r2_z16",  "configs/phase4a_r2_z16.yaml",  "experiments/phase4a/exp4A_r2_z16_e20/checkpoint.pt"),
+    ("r2", "r2_z32",  "configs/phase4a_r2_z32.yaml",  "experiments/phase4a/exp4A_r2_z32_e20/checkpoint.pt"),
+    ("r2", "r2_z128", "configs/phase4a_r2_z128.yaml", "experiments/phase4a/exp4A_r2_z128_e20/checkpoint.pt"),
 ]
 
 TASKS = ["det", "da", "lane"]
