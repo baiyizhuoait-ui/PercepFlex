@@ -312,3 +312,86 @@ det   detection gradient share (probe C)     -13x mAP50 for +0.27x DA; rejected
   They are all published. The contribution is the measurement - the
   numbers attached to the per-task profile and the decision rules that
   attached them.
+
+---
+
+## 4B-3. Detection — the binding constraint was on the supervision side
+
+Added after `danc_z16` (4 epochs) was measured. All of the diagnosis below was
+made **without training anything**; the training run only tested the
+prediction.
+
+### What the zero-training diagnostics found
+
+- **Assignment coverage.** Under this project's own rule
+  (`0.5 < box_px / anchor_px < 2.0` on both axes, the ratio is stride-free),
+  **48.5% of GT boxes receive no positive assignment at all** (49.6% of small
+  boxes). Re-clustering the anchors with IoU-k-means on `tri_train` drops that
+  to 3.7%.
+- **Honesty guard.** By the community standard (YOLOv5 AutoAnchor, ratio
+  threshold 4.0, target BPR > 0.98) the same anchors give only **0.4%**
+  zero-match, i.e. they are *adequate*. The hole is produced by the
+  interaction of a weak prior with this project's stricter threshold. Both
+  numbers are reported; quoting only one would overstate or hide the finding.
+- **Prior quality.** Default 9 anchors: mean best IoU 0.407, 15.0% of boxes
+  below 0.30, and **aspect-flipped with respect to the data** (anchors are
+  h/w = 2.5-3.0 tall; BDD100K small vehicles are h/w = 0.85 near-square).
+  k-means 9: mean best IoU 0.680, 1.1% below 0.30.
+
+### What the intervention showed (D1 / D4 / D5)
+
+| cell | mAP50 | mAP50_95 | da_fg | lane_fg | params | GFLOPs |
+|---|---|---|---|---|---|---|
+| `r2u_z16` (baseline, committed) | 0.2411 | 0.0728 | 0.7146 | 0.1765 | 0.2014 M | 1.0796 |
+| `danc_z16` (anchors only) | **0.3954** | **0.1491** | 0.7219 | 0.1756→0.1764 | 0.2014 M | 1.0796 |
+
+- **D1: +0.1543 mAP50 = 10.57x noise** (noise 0.0146). mAP50_95 doubles.
+- **D4:** lane_fg -0.02x noise, da_fg +0.18x noise — the change stayed
+  detection-only, as required.
+- **D5:** identical params and FLOPs. The win is genuinely free.
+
+A zero-cost, zero-parameter change buying 10x noise is categorically different
+from every capacity-side intervention tried in this project (Z width, encoder
+capacity, lane resolution). It says the detection number was being held down by
+**how the task was supervised**, not by what the model could represent.
+
+### The mechanism is NOT the one predicted (D2)
+
+The preregistration predicted the gain would land on small-object recall.
+Measured with `scripts/phase5_det_size_recall.py` over all 108,363 GT boxes:
+
+| bucket | n_gt | base recall@.5 | danc recall@.5 | base AP@.5 | danc AP@.5 | share of weighted AP gain |
+|---|---|---|---|---|---|---|
+| small (<32 px) | 67,566 | 0.6217 | 0.6486 | 0.1326 | 0.1496 | **14.4%** |
+| medium (32-96 px) | 29,559 | 0.8366 | 0.9334 | 0.2315 | 0.4263 | **72.1%** |
+| large (>=96 px) | 11,238 | 0.9132 | 0.9588 | 0.2919 | 0.3879 | 13.5% |
+
+Small recall does rise (+0.0269), so **D2 formally passes** by the rule as
+written. But **72% of the gain is on medium objects and only 14% on small** —
+the boxes that were supposedly never supervised are not where the improvement
+landed. The honest label is *formally confirmed, substantively weak*.
+Interpretation: the dominant channel is **assignment/box quality**, not the
+small-object coverage hole. This is consistent with ATSS (L6), which finds that
+how positives are defined dominates everything else, and with the anchor-shape
+counter-evidence in L6 (aspect-ratio changes wash out because regression pulls
+boxes back onto the GT).
+
+Two consequences carried forward:
+
+1. **H20 (grid resolution binds) is now a priori less likely.** The sub-cell
+   statistic motivated a stride-4 level for small objects; if small objects are
+   not where the gain is, a stride-4 level should buy little. `dp2a_z16` is the
+   test and is read mechanically by D3.
+2. **Previous detection numbers are confounded.** Every earlier phase measured
+   detection with the default anchors. Any conclusion that used detection as
+   its most-sensitive metric (Phase 3A encoder monotonicity, Phase 3C budget
+   allocation) was measured through a partially broken supervision channel. The
+   direction of those conclusions is not necessarily wrong — the bias was
+   constant across cells — but their *effect sizes* are not trustworthy, and
+   this is stated here rather than quietly carried forward.
+
+### Cost note
+
+`dp2a` (stride-4 level) costs +594 params. The literature baselines quoted in
+L6 pay +29% GFLOPs for a P2 head; this model's head is small enough that the
+cost is a few percent.

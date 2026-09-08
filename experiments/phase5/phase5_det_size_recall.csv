@@ -1,0 +1,15 @@
+cell,bucket_by,bucket,n_gt,recall@0.5,AP@0.5
+r2u_z16,side,small,67566,0.6217,0.1326
+r2u_z16,side,medium,29559,0.8366,0.2315
+r2u_z16,side,large,11238,0.9132,0.2919
+r2u_z16,area,small,74605,0.6269,0.1491
+r2u_z16,area,medium,25805,0.8802,0.2501
+r2u_z16,area,large,7953,0.9453,0.2979
+r2u_z16,all,all,108363,0.7106,-1
+danc_z16,side,small,67566,0.6486,0.1496
+danc_z16,side,medium,29559,0.9334,0.4263
+danc_z16,side,large,11238,0.9588,0.3879
+danc_z16,area,small,74605,0.666,0.1731
+danc_z16,area,medium,25805,0.9601,0.4812
+danc_z16,area,large,7953,0.9711,0.3649
+danc_z16,all,all,108363,0.7584,-1
