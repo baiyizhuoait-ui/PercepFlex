@@ -22,9 +22,13 @@ class DetectHead(nn.Module):
         self.na = num_anchors
         self.nl = 3
         if anchors is None:
-            anchors = [[[4, 12], [7, 19], [11, 28]],
-                       [[17, 40], [25, 58], [38, 89]],
-                       [[62, 136], [88, 206], [124, 412]]]
+            # R0 default = IoU-k-means set (2026-09-08), kept in sync with
+            # models/representation/det_from_z.py DEFAULT_ANCHORS_3S so R0 and
+            # R2 never silently diverge. Old default (aspect-flipped, ~48.5% of
+            # GT with zero positive assignment) is documented there.
+            anchors = [[[9, 8], [18, 15], [32, 24]],
+                       [[49, 38], [80, 52], [65, 102]],
+                       [[124, 82], [166, 136], [237, 214]]]
         self.anchors = torch.tensor(anchors).float().view(self.nl, self.na, 2)
         self.anchor_grid = self.anchors.clone().view(self.nl, 1, self.na, 1, 1, 2)
         self.stride = torch.tensor([8, 16, 32])

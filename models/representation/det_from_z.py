@@ -40,9 +40,21 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # Must match models/heads/det_head.py defaults (R0) and the anchors fed to YOLOLoss.
-DEFAULT_ANCHORS_3S = [[[4, 12], [7, 19], [11, 28]],
-                      [[17, 40], [25, 58], [38, 89]],
-                      [[62, 136], [88, 206], [124, 412]]]
+#
+# 2026-09-08: switched the code default to the IoU-k-means anchor set that won
+# +0.1543 mAP50 (10.57x noise, zero params, zero FLOPs) in the Phase 4B-3 danc
+# cell. The OLD default (below) was aspect-flipped vs the data (tall h/w 2.5-3.0
+# vs the near-square 0.85 median) and left ~48.5% of GT boxes with zero positive
+# assignment under the project rule; every phase2/3/4 cell that omitted anchors
+# silently used it, so those historical detection effect sizes are read against
+# a supervision-handicapped baseline. danc/dp2a/dp2b configs still write anchors
+# explicitly and are unaffected by this constant.
+#
+# OLD (pre-2026-09-08) default for reference:
+#   [[[4,12],[7,19],[11,28]], [[17,40],[25,58],[38,89]], [[62,136],[88,206],[124,412]]]
+DEFAULT_ANCHORS_3S = [[[9, 8], [18, 15], [32, 24]],
+                      [[49, 38], [80, 52], [65, 102]],
+                      [[124, 82], [166, 136], [237, 214]]]
 
 
 class _DWResBlock(nn.Module):
