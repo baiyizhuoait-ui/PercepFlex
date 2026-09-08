@@ -1,0 +1,29 @@
+{
+  "model": "OursStatic-experiments/phase2/A_budget_0.5M/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 5.386,
+  "eval_fps": 185.66,
+  "mAP50": 0.2846,
+  "mAP50_95": 0.0964,
+  "det_n_gt": 108363,
+  "det_n_pred": 2667020,
+  "da_pixel_acc": 0.9404,
+  "da_fg_iou": 0.7384,
+  "da_mIoU": 0.8334,
+  "lane_pixel_acc": 0.976,
+  "lane_fg_iou": 0.1915,
+  "lane_mIoU": 0.5837,
+  "lane_line_acc": 0.8327,
+  "parameters": 423958,
+  "flops": 2460774400.0,
+  "model_size_mb": 1.696,
+  "avg_latency_ms": 4.801,
+  "p50_latency_ms": 4.333,
+  "p95_latency_ms": 6.943,
+  "fps": 208.31,
+  "gpu_memory_mib": 41.2
+}

@@ -1,0 +1,6 @@
+{
+  "stage": "A",
+  "params": 285846,
+  "epochs": 20,
+  "final_avg_loss": 0.21149703377343296
+}

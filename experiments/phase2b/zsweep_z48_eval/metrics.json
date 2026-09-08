@@ -1,0 +1,29 @@
+{
+  "model": "OursStatic-experiments/phase2b/zsweep_z48/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 5.885,
+  "eval_fps": 169.93,
+  "mAP50": 0.236,
+  "mAP50_95": 0.0762,
+  "det_n_gt": 108363,
+  "det_n_pred": 2738920,
+  "da_pixel_acc": 0.9402,
+  "da_fg_iou": 0.7374,
+  "da_mIoU": 0.8328,
+  "lane_pixel_acc": 0.9746,
+  "lane_fg_iou": 0.1799,
+  "lane_mIoU": 0.5772,
+  "lane_line_acc": 0.8251,
+  "parameters": 216566,
+  "flops": 1334963200.0,
+  "model_size_mb": 0.866,
+  "avg_latency_ms": 2.664,
+  "p50_latency_ms": 2.684,
+  "p95_latency_ms": 2.731,
+  "fps": 375.41,
+  "gpu_memory_mib": 30.6
+}

@@ -1,0 +1,29 @@
+{
+  "model": "OursStatic-experiments/phase2b/smoke/r0z16/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 6.059,
+  "eval_fps": 165.04,
+  "mAP50": 0.0001,
+  "mAP50_95": 0.0,
+  "det_n_gt": 648,
+  "det_n_pred": 18000,
+  "da_pixel_acc": 0.815,
+  "da_fg_iou": 0.0,
+  "da_mIoU": 0.4075,
+  "lane_pixel_acc": 0.9918,
+  "lane_fg_iou": 0.0,
+  "lane_mIoU": 0.4959,
+  "lane_line_acc": 0.5,
+  "parameters": 188854,
+  "flops": 1059712000.0,
+  "model_size_mb": 0.755,
+  "avg_latency_ms": 2.528,
+  "p50_latency_ms": 2.495,
+  "p95_latency_ms": 2.664,
+  "fps": 395.54,
+  "gpu_memory_mib": 30.5
+}
