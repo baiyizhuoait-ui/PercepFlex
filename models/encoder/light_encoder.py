@@ -88,10 +88,13 @@ class LightEncoder(nn.Module):
             layers.append(DWSBlock(cout, cout))
         return nn.Sequential(*layers)
 
-    def forward(self, x):
-        x = self.stem(x)      # 1/2
-        x = self.s1(x)        # 1/4
-        f2 = self.s2(x)       # 1/8
+    def forward(self, x, highres=False):
+        """highres=True also returns the discarded 1/2 and 1/4 maps."""
+        x0 = self.stem(x)     # 1/2
+        f1 = self.s1(x0)      # 1/4
+        f2 = self.s2(f1)      # 1/8
         f3 = self.s3(f2)      # 1/16
         f4 = self.s4(f3)      # 1/32
+        if highres:
+            return [f2, f3, f4], {"f0": x0, "f1": f1}
         return [f2, f3, f4]

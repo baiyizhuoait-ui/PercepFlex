@@ -1,0 +1,16 @@
+Phase 5 lane probe: configs vs phase4a_r2_z16 baseline
+======================================================================
+
+l14up_z16
+  overrides: {'lane_res': 4, 'lane_use_f1': False}
+  diff  /model/segmentation/lane_res: {} -> 4
+  diff  /model/segmentation/lane_use_f1: {} -> False
+
+l14f1_z16
+  overrides: {'lane_res': 4, 'lane_use_f1': True}
+  diff  /model/segmentation/lane_res: {} -> 4
+  diff  /model/segmentation/lane_use_f1: {} -> True
+
+lch64_z16
+  overrides: {'lane_hidden': 64}
+  diff  /model/segmentation/lane_hidden: {} -> 64

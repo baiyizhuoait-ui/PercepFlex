@@ -66,10 +66,21 @@ class StaticMultiTaskModel(nn.Module):
             _w_da = zc
             _w_lane = zc
         self.da_head = DynamicSegHead(_w_da, _hidden)
-        self.lane_head = DynamicSegHead(_w_lane, _hidden)
+        self.lane_head = DynamicSegHead(_w_lane, seg_cfg.get("lane_hidden", _hidden))
+        # Phase 5: optional higher-resolution lane branch. Off by default.
+        self.lane_res = int(seg_cfg.get("lane_res", 8))
+        self.lane_use_f1 = bool(seg_cfg.get("lane_use_f1", False))
+        self.need_highres = self.lane_res != 8 and self.lane_use_f1
+        if self.lane_use_f1:
+            self.lane_lat = nn.Conv2d(enc_cfg["stages"][0], _w_lane, 1,
+                                      bias=False)
 
     def forward(self, x, return_z=False):
-        feats = self.encoder(x)
+        enc_out = self.encoder(x, highres=self.need_highres)
+        if self.need_highres:
+            feats, extra = enc_out
+        else:
+            feats, extra = enc_out, None
         z = self.representation(feats)["z"]
         hw = x.shape[2:]
         if self.det_from_z:
@@ -78,10 +89,18 @@ class StaticMultiTaskModel(nn.Module):
             det = self.det_head([feats[0], feats[1], feats[2]])
         if self.task_proj:
             da = self.da_head(self.da_proj(z), hw)
-            lane = self.lane_head(self.lane_proj(z), hw)
+            lane_in = self.lane_proj(z)
         else:
             da = self.da_head(z, hw)
-            lane = self.lane_head(z, hw)
+            lane_in = z
+        if self.lane_res != 8:
+            s = 8 // self.lane_res
+            lane_in = nn.functional.interpolate(
+                lane_in, size=(lane_in.shape[-2] * s, lane_in.shape[-1] * s),
+                mode="bilinear", align_corners=False)
+            if self.lane_use_f1:
+                lane_in = lane_in + self.lane_lat(extra["f1"])
+        lane = self.lane_head(lane_in, hw)
         if return_z:
             return det, da, lane, z
         return det, da, lane

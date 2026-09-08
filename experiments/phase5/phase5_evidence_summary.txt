@@ -1,0 +1,144 @@
+==============================================================================
+PHASE 5 PRIOR EVIDENCE  (assembled from committed CSVs, not from memory)
+==============================================================================
+
+External noise floor (Phase 2-C, 3 seeds @ 4 epochs) -- used as the
+readability threshold for every delta in Phase 5:
+    mAP50        0.0073
+    mAP50_95     0.0032
+    da_mIoU      0.0142
+    da_fg        0.0202
+    lane_mIoU    0.0021
+    lane_fg      0.0032
+
+NOTE: this floor is EXTERNAL. Phase 5 diagnostics are single-seed and
+estimate no variance of their own, so only effects above ~2x this floor
+are treated as readable.
+
+------------------------------------------------------------------------------
+A. FIXED-BUDGET ALLOCATION (Phase 3C) -- where capacity should go
+------------------------------------------------------------------------------
+budget     cell           role             params   GFLOPs    mAP50  lane_fg
+Budget-L   ebase_z16      encoder-heavy    0.1889   1.0597   0.3204   0.1973
+Budget-L   midL_z32       balanced         0.1860   1.1603   0.3152   0.1972
+Budget-L   esmall_z128    Z-heavy          0.1867   1.6350   0.2639   0.1955
+Budget-M   elarge_z16     encoder-heavy    0.2915   1.4279   0.3585   0.2000
+Budget-M   midM_z32       balanced         0.2852   1.5249   0.3462   0.2037
+Budget-M   ebase_z128     Z-heavy          0.2858   2.0231   0.3161   0.2005
+
+Read: at a FIXED parameter budget, encoder-heavy beats Z-heavy on
+detection by 5.8-7.7x noise while using 29-35% FEWER FLOPs. DA is inside
+noise in every allocation. Lane shows no reliable preference.
+
+------------------------------------------------------------------------------
+B. R0 vs R2 AT 20 EPOCHS (Phase 4A) -- the bypass and its removal
+------------------------------------------------------------------------------
+cell           params   GFLOPs    mAP50  mAP50_95  da_mIoU    da_fg lane_mIoU  lane_fg
+r2_z32         0.2157   1.2238   0.3553    0.1248   0.8573   0.7736    0.5875   0.1992
+r2_z128        0.3019   2.0889   0.3714    0.1355   0.8518   0.7656    0.5885   0.2015
+r2_z16         0.2014   1.0796   0.3543    0.1273   0.8488   0.7612    0.5847   0.1943
+
+Established facts carried into Phase 5 as PRIOR (do not re-derive):
+  * In R0 the detection head bypasses Z entirely: ||dL_det/dZ|| is exactly
+    0.0000 at every width. R0's 'Z does not matter for detection' is an
+    artefact of that bypass, not a property of Z.
+  * Forcing detection through Z (R2) flips the SIGN of its Z-sensitivity:
+    -0.0043 mAP50 in R0 (0.59x noise) becomes +0.0171 (2.34x noise) in R2.
+  * Effective rank of Z grows SUB-linearly: 42.5% of channels used at z16,
+    37.1% at z32, 24.9% at z128, with zero dead channels. Widening Z buys
+    correlated channels, not independent ones.
+
+------------------------------------------------------------------------------
+C. GRADIENT COMPOSITION ON Z (Phase 4A STEP 5, 8 batches)
+------------------------------------------------------------------------------
+cell        gnorm_det   gnorm_da gnorm_lane   sh_det  cos(det,da)
+r0_z16        0.00000    0.00525    0.00619    0.000          nan
+r0_z32        0.00000    0.00490    0.00401    0.000          nan
+r0_z128       0.00000    0.00419    0.00675    0.000          nan
+r2_z16        0.03080    0.00587    0.00540    0.732     -0.00171
+r2_z32        0.02499    0.00322    0.00427    0.769      0.00071
+r2_z128       0.02459    0.00468    0.00350    0.750     -0.00015
+
+Read: detection owns 73-77% of the gradient pull on Z while every pairwise
+cosine is ~0. This is magnitude imbalance WITHOUT conflict, which is the
+regime GradNorm argues is sufficient for one task to monopolise a shared
+trunk. It was tested directly as probe C and REJECTED (see F).
+
+------------------------------------------------------------------------------
+D. EFFECTIVE RANK / INFORMATION UTILISATION
+------------------------------------------------------------------------------
+  Phase 4A
+  cell            z      erank       frac     dead
+  r0_z16         16       6.04      0.378        0
+  r0_z32         32       9.62      0.300        0
+  r0_z128       128      35.76      0.279        0
+  r2_z16         16       6.79      0.425        0
+  r2_z32         32      11.88      0.371        0
+  r2_z128       128      31.93      0.249        0
+  Probe C (lambda_det=0.2)
+  cell            z      erank       frac     dead
+  rw_z16         16       7.85      0.491        0
+  rw_z32         32      13.43      0.420        0
+
+Read: rebalancing the gradient (probe C) RAISED effective rank (z16 6.79
+-> 7.85, z32 11.88 -> 13.43). Z was used more and none of it reached the
+segmentation tasks. More utilisation is not the same as more useful
+information for a given task.
+
+------------------------------------------------------------------------------
+E. ERROR GEOMETRY, 300 VAL IMAGES, ZERO TRAINING
+------------------------------------------------------------------------------
+Model-free ceilings (no network involved):
+    lane 1/8 resolution ceiling   0.1853
+    DA   1/8 resolution ceiling   0.8753
+    lane GT erode1 survival       0.0107   (1-2 px wide targets)
+    DA   GT erode1 survival       0.9558   (blob-like targets)
+
+cell       lane_ceil   lane_fg   da_ceil     da_fg   pred/gt    recall
+r2_z16        0.1853    0.1843    0.8753    0.7555      3.37     0.689
+r2_z128       0.1853    0.1882    0.8753    0.7647      3.40     0.710
+r0_z16        0.1853    0.1845    0.8753    0.7699      3.23     0.671
+
+Boundary tolerance curve (lane fg IoU / recall at slack k px):
+    cell            k=0      k=1      k=2      k=4      k=8
+    r2_z16        0.184    0.382    0.460    0.424    0.294
+    r2_z128       0.188    0.394    0.472    0.431    0.297
+    r0_z16        0.184    0.380    0.453    0.414    0.285
+
+DA by vertical third (top = far field / horizon):
+    cell             top       mid    bottom
+    r2_z16        0.3933    0.7628    0.6378
+    r2_z128       0.3073    0.7773    0.6453
+    r0_z16        0.6377    0.7778    0.6454
+
+Read: lane's output is statistically indistinguishable from a crude 1/8
+block quantisation of its own ground truth (ceiling 0.1853 vs achieved
+0.1843/0.1882/0.1845 -- differences smaller than one noise unit). The
+model paints 3.37x the true lane area: recall 0.689 with precision ~0.20.
+DA is 0.11 BELOW its own ceiling, so it is not ceiling-bound, and its
+failure is concentrated in the far field where R0 beats R2 by 0.24-0.33.
+
+------------------------------------------------------------------------------
+F. ALREADY EXCLUDED -- treat as PRIOR, do not repeat
+------------------------------------------------------------------------------
+  1. Wider shared Z (Phase 3B/3C). z16->z128 buys lane +2.25x noise and DA
+     nothing, at +93% FLOPs. Effective rank falls from 42.5% to 24.9%.
+  2. Per-task projection width (probe A, 4ep AND 20ep). Lane gain 0.25x
+     noise at 4ep, 1.16x at 20ep, while detection LOST 2.53x noise even
+     though only the lane branch was touched -- so the tasks are coupled
+     through Z. Verdict: NO.
+  3. Gradient rebalancing (probe C, 20ep, two widths). lambda_det=0.2
+     passed its manipulation check (weighted det share ~0.75 -> 0.33/0.47)
+     and cost -13.07x noise mAP50 for +0.27x noise DA. Verdict: REJECTED.
+  4. Dilated reconstruction (probe B). Dilation was worse than equal-
+     parameter plain depth by 3.64x noise. Verdict: NO.
+  5. Reconstruction depth (20ep confirmation). The +4.47x noise 4ep gain
+     VANISHED at 20ep (-0.10x / -0.38x). Verdict: 4-EPOCH ARTEFACT.
+
+  Methodological consequence, now a standing rule: 4-epoch readings have
+  twice failed to survive 20 epochs in this project (probe A's detection
+  control went from +0.26x at 4ep to -2.53x at 20ep). A 4-epoch probe may
+  be used to FALSIFY a large predicted effect; it may not be used to
+  ESTABLISH one.
+
+==============================================================================
