@@ -55,8 +55,9 @@ CELLS = [
 # checkpoint] rows to append them, so the probe is measured with the
 # identical geometry code as the Phase 4A cells.
 _extra = os.environ.get("PHASE5_EG_CELLS")
-if _extra:
-    import json as _json
+if _extra and os.environ.get("PHASE5_EG_REPLACE") == "1":
+    CELLS = [tuple(x) for x in _json.loads(_extra)]
+elif _extra:
     CELLS = CELLS + [tuple(x) for x in _json.loads(_extra)]
 
 RES = 8
