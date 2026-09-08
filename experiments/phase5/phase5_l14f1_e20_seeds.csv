@@ -1,0 +1,4 @@
+variant,cell,z,encoder,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,peak_gpu_mem_mib,final_train_loss,train_wall_min,seed,source,git_commit
+r2,r2u_z16,16,ebase,4,0.2014,1.0796,407.38,0.2411,0.0728,0.8169,0.7146,0.5761,0.1765,2666,0.2505,26,0,reused:phase4a-sanity,63fa17bacbbf34778c6353364e6652e2f462688e
+r2,l14f1_z16,16,ebase,20,0.2019,1.6391,406.70,0.3553,0.1268,0.8546,0.7698,0.5954,0.2136,2811,0.2115,146,1,trained,a185e48effde347c30b13bc6eebe9a1d27f1907d
+r2,l14f1_z16,16,ebase,20,0.2019,1.6391,375.50,0.3600,0.1294,0.8565,0.7726,0.5999,0.2212,2630,0.2119,146,2,trained,e74adc2991dc19baf9e44e96dea5a5b38894d0c8

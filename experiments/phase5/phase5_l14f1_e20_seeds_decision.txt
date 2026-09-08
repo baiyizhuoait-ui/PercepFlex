@@ -1,0 +1,36 @@
+Phase 5 STEP 7c - seed replication decision
+==============================================================
+
+Rule fixed before the runs (docs/PHASE5_SEED_REPLICATION_REGISTRATION.md,
+commit a185e48). It is applied here, not renegotiated.
+
+baseline: committed r2_z16 e20 lane_fg = 0.1943 (not rerun)
+noise (1x, 20 epochs)                  = 0.0128
+CONFIRMED bar (2x)                     = 0.0256
+WEAK floor  (1x)                       = 0.0128
+
+ seed  lane_fg    d_lane  x_noise   mAP50   da_fg  source
+    0   0.2192   +0.0249     1.95  0.3612  0.7678  phase5_l14f1_e20.csv
+    1   0.2136   +0.0193     1.51  0.3553  0.7698  phase5_l14f1_e20_seeds.csv
+    2   0.2212   +0.0269     2.10  0.3600  0.7726  phase5_l14f1_e20_seeds.csv
+
+n seeds      = 3
+d_mean       = +0.0237  (1.85x noise)
+d_sd         = 0.0039
+d_sem        = 0.0023
+mean vs 0    = 10.42 SEM
+mean vs bar  = -0.84 SEM
+
+VERDICT: WEAK SUPPORT
+
+H5b stays WEAK SUPPORT. The effect is real in direction and clearly
+non-zero, but its mean sits below the pre-set 2x bar. Treat it as a
+small effect: do not build the final architecture on it alone, and
+do not report it as a confirmed bottleneck finding without the bar
+being restated. Every seed landed above the 1x floor, so the
+direction is stable; the magnitude is the open part.
+
+Seeds used, in full, without selection:
+  seed 0: lane_fg 0.2192 (from phase5_l14f1_e20.csv)
+  seed 1: lane_fg 0.2136 (from phase5_l14f1_e20_seeds.csv)
+  seed 2: lane_fg 0.2212 (from phase5_l14f1_e20_seeds.csv)

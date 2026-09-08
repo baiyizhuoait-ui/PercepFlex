@@ -170,6 +170,22 @@ high-resolution output grid (deep-upsampled + lateral) rather than
 reading early features - a Phase 6 architecture candidate, not a
 Phase 4B experiment.
 
+**STEP 7c seed replication (rule registered in a185e48 before the runs).**
+
+    seed  lane_fg   d_lane   x_noise   mAP50   da_fg
+    0     0.2192   +0.0249    1.95   0.3612  0.7678
+    1     0.2136   +0.0193    1.51   0.3553  0.7698
+    2     0.2212   +0.0269    2.10   0.3600  0.7726
+    mean            +0.0237    1.85   sd 0.0039  sem 0.0023
+
+VERDICT: **WEAK SUPPORT**. The bar (2x = +0.0256) is missed by 0.84 SEM.
+But the replication bought a sharper answer than pass/fail: the effect is
+**not seed noise**. d_mean sits 10.42 SEM away from zero and every one of
+the three seeds clears the 1x floor. The honest reading is a real, small
+effect whose magnitude happens to line up with an arbitrary 2x threshold -
+not a 4-epoch reading inflated by luck. H5b stays provisional and nothing
+is built on it alone.
+
 ### 1.2 Drivable area
 
 | property | value | source |
