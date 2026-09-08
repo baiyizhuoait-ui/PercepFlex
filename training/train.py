@@ -340,7 +340,8 @@ def main():
         lambda_det=tr.get("lambda_det", 1.0)).to(device)
 
     ds = BDD100KDataset(cfg["data"]["root"], split=tr.get("train_split", "tri_train"),
-                        train=True)
+                        train=True,
+                        lane_train_widen=tr.get("lane_train_widen"))
     if args.num_images:
         ds.names = ds.names[:args.num_images]
         if getattr(ds, "_det_by_name", None):

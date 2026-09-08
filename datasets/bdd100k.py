@@ -48,13 +48,22 @@ class BDD100KDataset(Dataset):
 
     def __init__(self, data_root, split="tri_val", img_size=640,
                  with_det=True, with_da=True, with_lane=True,
-                 det_categories=DET_CATEGORIES, train=False):
+                 det_categories=DET_CATEGORIES, train=False,
+                 lane_train_widen=None):
+        """lane_train_widen: if not None and train=True, morphologically widen
+        the lane label to ~this total width (px, in the ORIGINAL full-res mask,
+        before letterbox) at load time. The validation/eval path always uses the
+        raw ~2px label. This is the ENet-SAD / HybridNets / TriLiteNet
+        convention: train on widened lines so the loss has an addressable
+        target, evaluate on the thin ground truth. None (default) = unchanged
+        behaviour (train and eval both on raw labels)."""
         self.data_root = data_root
         self.split = split
         self.img_size = img_size
         self.with_det, self.with_da, self.with_lane = with_det, with_da, with_lane
         self.det_categories = set(det_categories)
         self.train = train
+        self.lane_train_widen = lane_train_widen
 
         split_file = os.path.join(data_root, "splits", f"{split}.txt")
         with open(split_file) as f:
@@ -136,6 +145,13 @@ class BDD100KDataset(Dataset):
             item["da_mask"] = torch.from_numpy(m.astype(np.float32)).unsqueeze(0)
         if self.with_lane:
             m = self._load_mask("lanes", name)
+            if self.train and self.lane_train_widen:
+                # widen the thin lane line to ~lane_train_widen px total width
+                # on the native (pre-letterbox) mask; 1px -> ~k px needs a k-1
+                # structuring element. cv2.dilate needs a binary mask.
+                k = max(3, int(self.lane_train_widen))
+                kern = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k, k))
+                m = cv2.dilate(m, kern, iterations=1)
             m, _, _ = letterbox(m, (self.img_size, self.img_size), color=0)
             if hflip:
                 m = m[:, ::-1]
