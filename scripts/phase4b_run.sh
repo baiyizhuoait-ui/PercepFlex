@@ -108,7 +108,7 @@ for CELL in "${CELLS[@]}"; do
     continue
   fi
 
-  TAG="exp4B_${CELL}_e${EP}"
+  if [ "$SEED" != "0" ]; then TAG="exp4B_${CELL}_e${EP}_s${SEED}"; else TAG="exp4B_${CELL}_e${EP}"; fi
   TR="$OUT/$TAG"; EVL="$OUT/${TAG}_eval"
   CKPT="$TR/checkpoint.pt"; MP="$EVL/metrics.json"; TLOG="$TR/training_log.txt"
   mkdir -p "$TR" "$EVL"
