@@ -22,6 +22,7 @@ experiments/*/*.csv
 !experiments/phase3b/*.csv
 !experiments/phase3c/*.csv
 !experiments/phase4a/*.csv
+!experiments/phase5/*.csv
 
 # Baseline repos keep their own .git; ignore their weight files
 baselines/*/pretrained/
