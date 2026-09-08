@@ -73,12 +73,19 @@ class StaticMultiTaskModel(nn.Module):
         # Phase 5: optional higher-resolution lane branch. Off by default.
         self.lane_res = int(seg_cfg.get("lane_res", 8))
         self.lane_use_f1 = bool(seg_cfg.get("lane_use_f1", False))
+        # Phase 4B-6: optional higher-resolution DA branch (mirror of lane). Off by default.
+        self.da_res = int(seg_cfg.get("da_res", 8))
+        self.da_use_f1 = bool(seg_cfg.get("da_use_f1", False))
         # Phase 4B-3: p2="f1" also needs the encoder's native 1/4 map.
-        self.need_highres = bool(self.lane_res != 8 and self.lane_use_f1) \
-            or self.det_p2 == "f1"
+        self.need_highres = (bool(self.lane_res != 8 and self.lane_use_f1)
+                             or self.det_p2 == "f1"
+                             or bool(self.da_res != 8 and self.da_use_f1))
         if self.lane_use_f1:
             self.lane_lat = nn.Conv2d(enc_cfg["stages"][0], _w_lane, 1,
                                       bias=False)
+        if self.da_use_f1:
+            self.da_lat = nn.Conv2d(enc_cfg["stages"][0], _w_da, 1,
+                                    bias=False)
 
     def forward(self, x, return_z=False):
         enc_out = self.encoder(x, highres=self.need_highres)
@@ -94,11 +101,19 @@ class StaticMultiTaskModel(nn.Module):
         else:
             det = self.det_head([feats[0], feats[1], feats[2]])
         if self.task_proj:
-            da = self.da_head(self.da_proj(z), hw)
+            da_in = self.da_proj(z)
             lane_in = self.lane_proj(z)
         else:
-            da = self.da_head(z, hw)
+            da_in = z
             lane_in = z
+        if self.da_res != 8:
+            s = 8 // self.da_res
+            da_in = nn.functional.interpolate(
+                da_in, size=(da_in.shape[-2] * s, da_in.shape[-1] * s),
+                mode="bilinear", align_corners=False)
+            if self.da_use_f1:
+                da_in = da_in + self.da_lat(extra["f1"])
+        da = self.da_head(da_in, hw)
         if self.lane_res != 8:
             s = 8 // self.lane_res
             lane_in = nn.functional.interpolate(
