@@ -1,12 +1,14 @@
-# Phase-2-B Task 2(c) R2 — Detection reads Compact Z.
-# R1 (z_proj=false): det consumes Z directly.  R2 (z_proj=true): det consumes Z after a
-# 1x1 projection (the minimal information-allocation path under test).
-# Compared against R0 (configs/phase2b_zsweep_z64.yaml, det from multi-scale encoder).
-# Fixed Stage-A protocol: 4ep, bs16, AdamW lr1e-3, cosine, tri_train full, seed0.
+# Phase-2-B Task 2(c) — r2 @ z=64
+# Detection reads Compact Z. R2 = through a 1x1 projection; R1 = Z used raw.
+# Encoder FIXED at 0.235M geometry; ONLY representation.z_channels varies.
+# det_ch FIXED at 32 so head capacity does not confound the Z sweep.
+# z=64 doubles R0's saturation point. Tests whether detection pushed through Z simply needs more capacity than the segmentation heads.
+# R0 reference at this z: 0.230M, da_mIoU 0.8258, mAP50 0.2424
+# Fixed Stage-A protocol: 4ep, bs16, AdamW lr1e-3, cosine, tri_train, seed0.
 model:
   encoder: {stem: 16, stages: [32, 64, 96, 128], blocks: [2, 2, 2]}
   representation: {z_channels: 64}
-  detection: {nc: 1, from_z: true, z_proj: true}
+  detection: {nc: 1, from_z: true, z_proj: true, det_ch: 32}
   segmentation: {hidden: 32}
 input_size: [640, 640]
 train:

@@ -1,13 +1,13 @@
-# Phase-2-B Task 2(c) — r2 @ z=32
+# Phase-2-B Task 2(c) — r2 @ z=128
 # Detection reads Compact Z. R2 = through a 1x1 projection; R1 = Z used raw.
 # Encoder FIXED at 0.235M geometry; ONLY representation.z_channels varies.
 # det_ch FIXED at 32 so head capacity does not confound the Z sweep.
-# z=32 is the R0 saturation point: DA/lane stop improving above it. This run asks whether the capacity that suffices for DA/lane also suffices for detection.
-# R0 reference at this z: 0.203M, da_mIoU 0.8317, mAP50 0.2421
+# z=128 is 4x the R0 saturation point. Upper-mid bracket for the detection capacity requirement.
+# R0 reference at this z: 0.286M, da_mIoU 0.8318, mAP50 0.2403
 # Fixed Stage-A protocol: 4ep, bs16, AdamW lr1e-3, cosine, tri_train, seed0.
 model:
   encoder: {stem: 16, stages: [32, 64, 96, 128], blocks: [2, 2, 2]}
-  representation: {z_channels: 32}
+  representation: {z_channels: 128}
   detection: {nc: 1, from_z: true, z_proj: true, det_ch: 32}
   segmentation: {hidden: 32}
 input_size: [640, 640]
