@@ -1,0 +1,44 @@
+[ours] using config /home/mycode/ai_study/trac/experiments/phase4a/exp4B_r3tp_z32_e4/config.yaml
+[ours] loaded experiments/phase4a/exp4B_r3tp_z32_e4/checkpoint.pt: 262 keys missing=0 unexpected=0
+[profile] params=0.212M flops=1.171G lat=2.41ms fps=415.2 mem=30.5MiB
+  [1000/10000] fwd 6.0ms/img elapsed 25s
+  [2000/10000] fwd 6.3ms/img elapsed 53s
+  [3000/10000] fwd 6.3ms/img elapsed 80s
+  [4000/10000] fwd 6.2ms/img elapsed 107s
+  [5000/10000] fwd 6.2ms/img elapsed 134s
+  [6000/10000] fwd 6.2ms/img elapsed 161s
+  [7000/10000] fwd 6.2ms/img elapsed 188s
+  [8000/10000] fwd 6.2ms/img elapsed 214s
+  [9000/10000] fwd 6.2ms/img elapsed 243s
+  [10000/10000] fwd 6.2ms/img elapsed 270s
+[eval] 10000 images, forward 6.2ms/img (CUDA-synced), total 270s
+{
+  "model": "OursStatic-experiments/phase4a/exp4B_r3tp_z32_e4/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 6.189,
+  "eval_fps": 161.57,
+  "mAP50": 0.2544,
+  "mAP50_95": 0.079,
+  "det_n_gt": 108363,
+  "det_n_pred": 2773451,
+  "da_pixel_acc": 0.9305,
+  "da_fg_iou": 0.7084,
+  "da_mIoU": 0.8124,
+  "lane_pixel_acc": 0.975,
+  "lane_fg_iou": 0.1789,
+  "lane_mIoU": 0.5769,
+  "lane_line_acc": 0.8183,
+  "parameters": 211670,
+  "flops": 1171379200.0,
+  "model_size_mb": 0.847,
+  "avg_latency_ms": 2.408,
+  "p50_latency_ms": 2.395,
+  "p95_latency_ms": 2.487,
+  "fps": 415.2,
+  "gpu_memory_mib": 30.5
+}
+saved -> experiments/phase4a/exp4B_r3tp_z32_e4_eval/metrics.json

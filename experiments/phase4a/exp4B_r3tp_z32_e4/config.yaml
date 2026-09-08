@@ -1,0 +1,43 @@
+data:
+  root: data/bdd100k
+input_size:
+- 640
+- 640
+model:
+  detection:
+    det_ch: 32
+    from_z: true
+    nc: 1
+    z_proj: true
+  encoder:
+    blocks:
+    - 2
+    - 2
+    - 2
+    stages:
+    - 32
+    - 64
+    - 96
+    - 128
+    stem: 16
+  representation:
+    z_channels: 32
+  segmentation:
+    hidden: 32
+  task_proj:
+    da: 16
+    det: 32
+    enabled: true
+    lane: 32
+train:
+  batch_size: 16
+  epochs: 4
+  grad_clip: 10.0
+  lambda_budget: 0.0
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lr: 1e-3
+  num_workers: 2
+  stage: A
+  train_split: tri_train
+  weight_decay: 5e-4
