@@ -1,0 +1,22 @@
+task,bottleneck,status,evidence_one_line
+detection,Detection is encoder/channel limited,OPEN,"Phase3A: E-small/E-base/E-large monotone on 6/6 metrics, detection most sensitive. Phase3C fixed-budget: encoder-heavy >"
+detection,Detection is spatial-resolution limited,OPEN,"R0 det reads F2/F3/F4 at 1/8,1/16,1/32; R2 forces det through a single 1/8 Z and detection IMPROVES (+0.0339 mAP50 at z1"
+detection,Detection is receptive-field/context limited,OPEN,"Probe B: dilation (2,4) reconstruction was WORSE than equal-parameter plain depth by 3.64x noise at 4ep; the plain-depth"
+detection,"Detection is bottlenecked by the R2 reconstruction pathway (Z -> 3 scales), not ",OPEN,"R0->R2 gap is +0.0339 mAP50 ALREADY at z16 (narrowest Z), so most of the change is not Z width. R2 also grows the det he"
+lane,Lane is limited by the OUTPUT RESOLUTION at which its head operates (head runs o,OPEN,Model-free 1/8 ceiling (maxpool-by-8 then upsample) = 0.1853; trained models achieve lane fg IoU 0.1843/0.1882/0.1845 - 
+lane,Lane is limited by the ABSENCE of 1/4 INFORMATION (Z is fused only from F2/F3/F4,OPEN,"Encoder s1 emits a 1/4 feature map (160x160, 32 ch) but LightEncoder.forward does not return it; Z is built exclusively "
+lane,There is a MINIMUM SUFFICIENT resolution: 1/4 is enough and 1/2 buys nothing ext,CONDITIONAL,"Section 8 of the Phase 5 brief: find the threshold, not the maximum."
+lane,Lane is channel-capacity limited,OPEN,z16/z32/z128 lane_fg = 0.1943/0.1992/0.2015 (z16->z128 = +0.0072 = 2.25x noise). Effective rank at z128 is 24.9% (31.93/
+lane,Lane is supervision/loss limited,OPEN,"Lane positives are ~2089 px per 640x640 image = 0.51% of pixels. Model recall is already 0.689, i.e. it FINDS lanes and "
+lane,Lane is annotation/evaluation limited (the metric itself has a low ceiling),REJECTED as stated,Lane stroke 3.98 px train / 3.97 px val at 1280x720 (ratio 0.997) = 1.99 px at model input. Perfectly localised predicto
+DA,DA is channel-capacity limited,REJECTED (as dominant),"z16/z32/z128 da_fg = 0.7612/0.7736/0.7656, non-monotone. Phase3C: da_mIoU inside noise across all allocations (0.8490-0."
+DA,DA is spatial-resolution limited,REJECTED,"1/8 -> 1/4 block-fill reference for DA is 0.8753 -> 0.9410, so resolution offers 0.07-0.13. But r0_z16 scores 0.7699 aga"
+DA,DA is far-field semantic/context limited,REJECTED as dominant,"After cropping to the letterbox content rows 140-500 and using equal-mass bands, far / mid / near DA agree within noise "
+DA,"The far-field deficit is an annotation/evaluation artefact, not a semantic bottl",SUPPORTED,Ground truth has 0.0% of its drivable area in the top third of the 640 canvas; content occupies rows 140-500. The 'far-f
+DA,DA is loss/supervision limited (far-field gradient is diluted),OPEN,"Far field occupies a small fraction of image area, so even a large per-pixel error there may contribute little to the DA"
+all,Task gradient conflict is the dominant limitation,REJECTED,All pairwise cosines on Z are ~0 (|cos| < 0.06 at every width). Probe C: forcing near-parity of gradient magnitude cost 
+all,The shared representation itself is the dominant limitation,PARTIALLY SUPPORTED,"Probes A (per-task width), B (reconstruction receptive field and depth), C (gradient share) and Phase 3B/3C (wider Z) al"
+all,Different tasks have fundamentally different bottleneck types,OPEN,"Detection scales with encoder capacity (Phase3A monotone, Phase3C encoder-heavy wins); lane sits exactly on a model-free"
+lane,Lane's resolution bottleneck is threshold-like rather than gradual,OPEN,"Section 8 of the brief. The 1/8 ceiling is met exactly, which is what a hard geometric threshold looks like rather than "
+lane,"Lane has TWO stacked bottlenecks: quantisation (precision, the head cannot paint",OPEN,"r0_z16: precision 0.2049, recall 0.6706, painted/GT area 3.55x, fg IoU 0.1845, against a 1/8 block-fill reference of 0.1"
+DA,DA is limited by region-level semantic identification (which regions count as dr,OPEN,r0_z16 DA: fg IoU 0.7699 vs a 1/8 block-fill reference of 0.8801 (delta -0.11); recall 0.9841 saturated; precision 0.779
