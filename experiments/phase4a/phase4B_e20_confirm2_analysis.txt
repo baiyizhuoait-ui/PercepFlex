@@ -1,0 +1,68 @@
+==============================================================================
+PROBE B 20-EPOCH CONFIRMATION  (r2p_z16 plain depth, r2d_z16 dilated)
+==============================================================================
+
+  cell        params     mAP50  mAP50_95   da_mIoU     da_fg lane_mIoU   lane_fg
+  r2_z16      0.2014    0.3543    0.1273    0.8488    0.7612    0.5847    0.1943
+  r2p_z16     0.2042    0.3536    0.1261    0.8543    0.7693    0.5863    0.1967
+  r2d_z16     0.2042    0.3474    0.1263    0.8481    0.7601    0.5870    0.1977
+
+vs the r2_z16 baseline (20ep, seed 0), in units of the external noise floor:
+
+  r2p_z16 - r2_z16
+    mAP50         -0.0007     -0.10x  noise
+    mAP50_95      -0.0012     -0.38x  noise
+    da_mIoU       +0.0055     +0.39x  noise
+    da_fg         +0.0081     +0.40x  noise
+    lane_mIoU     +0.0016     +0.76x  noise
+    lane_fg       +0.0024     +0.75x  noise
+
+  r2d_z16 - r2_z16
+    mAP50         -0.0069     -0.95x  noise
+    mAP50_95      -0.0010     -0.31x  noise
+    da_mIoU       -0.0007     -0.05x  noise
+    da_fg         -0.0011     -0.05x  noise
+    lane_mIoU     +0.0023     +1.10x  unresolved
+    lane_fg       +0.0034     +1.06x  unresolved
+
+------------------------------------------------------------------------------
+B1  r2p_z16 beats r2_z16 by >=2x noise on mAP50 or mAP50_95
+    mAP50    -0.10x noise
+    mAP50_95 -0.38x noise
+    B1 = FAIL
+
+B2  r2p_z16 beats r2d_z16 by >=2x noise
+    mAP50    +0.85x noise
+    mAP50_95 -0.06x noise
+    B2 = FAIL
+
+B3  lane does not pay >=2x noise for it
+    lane_mIoU  +0.76x noise
+    lane_fg    +0.75x noise
+    B3 = PASS
+
+------------------------------------------------------------------------------
+PRE-REGISTERED DECISION RULE
+    B1 and B2  -> depth confirmed, adopt plain-depth reconstruction
+    B1 only    -> depth confirmed, dilation moot
+    B1 fails   -> 4ep ARTEFACT; reconstruction depth is not a lever
+    B1=False B2=False B3=True  -->  4ep ARTEFACT - reconstruction depth is not a lever
+
+WHAT THIS MEANS MECHANISTICALLY
+The 4-epoch result was +4.47x noise; at 20 epochs the same model is
+-0.10x on mAP50 and -0.38x on mAP50_95. The gain did not shrink -
+it vanished. That is the signature of a CONVERGENCE-SPEED effect, not a
+capacity effect: the deeper reconstruction reaches the same place sooner,
+and the 1x1 baseline catches up by epoch 20. Every cell in this arm is
+statistically indistinguishable at convergence.
+
+This is the second time a 4-epoch reading has failed to survive 20
+epochs in this project (probe A: detection control +0.26x at 4ep,
+-2.53x at 20ep). 4-epoch probes are not usable for architecture
+decisions here, only for cheap falsification of large predicted effects.
+
+Standing result from probe B that is NOT affected: Q2's sign reversal at
+4 epochs was large (3.64x) but the 20-epoch dilated cell is still the
+lowest of the three on mAP50 (-0.95x vs baseline). Dilation is not
+rescued by convergence; it is simply not resolvable at this noise level.
+

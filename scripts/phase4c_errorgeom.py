@@ -117,7 +117,7 @@ def main():
         sd = torch.load(ck, map_location="cpu")["model_state"]
         model.load_state_dict(sd, strict=False)
 
-        ds = BDD100KDataset(cfg["data"]["root"], split="val")
+        ds = BDD100KDataset(cfg["data"]["root"], split="tri_val")
         dl = torch.utils.data.DataLoader(
             ds, batch_size=args.bs, shuffle=False, num_workers=2,
             collate_fn=collate_train, drop_last=True)

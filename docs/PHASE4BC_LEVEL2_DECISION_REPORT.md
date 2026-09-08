@@ -18,7 +18,7 @@ called readable; 1x-2x is recorded as unresolved.
 |---|---|---|---|---|
 | **A** | does each task need its own projection width off the shared Z? | 20 | **NO** | lane +1.16x noise, detection -2.53x |
 | **B** | is the reconstruction's *receptive field* the constraint? | 4 | **NO** | dilation costs 3.64x noise vs plain depth |
-| **B'** | does reconstruction *depth* help? (unpredicted) | 4 | **POSITIVE, pending 20ep** | mAP50 +4.47x noise for +1.43% params |
+| **B'** | does reconstruction *depth* help? (unpredicted) | 20 | **NO - 4ep artefact** | +4.47x at 4ep becomes **-0.10x** at 20ep |
 | **C** | is detection's gradient dominance starving the seg tasks? | 20 | **REJECTED** | give up 13.07x noise mAP50, buy 0.27x DA |
 
 All three probes were designed to find a task-specific capacity lever. All three
@@ -229,38 +229,107 @@ These are hypotheses, not results. Listed in the order I would test them.
 ### Still open
 
 - H7b, bottleneck *placement* (never tested)
-- whether the reconstruction depth gain survives 20 epochs (running)
-- whether the depth gain and the z-width gain add or overlap (`r2p_z32`)
-- whether lane is resolution-limited (next, zero training)
+- whether lane can be rescued by features at 1/4 or 1/2 - the one intervention
+  the error-geometry result actually motivates, and it exits the shared-Z design
+- whether R2's far-field DA regression versus R0 replicates (exploratory, 6c)
+- DA's residual 0.11 gap to its own resolution ceiling - far-field cases, likely
+  depth ambiguity rather than capacity
+
+*Resolved since this list was first written:* reconstruction depth (6a, artefact)
+and "is lane resolution-limited" (6b, yes).
 
 ---
 
-## 6. Pending: 20-epoch confirmation
+## 6. Resolution: 20-epoch confirmation and the error-geometry diagnostic
 
-`r2p_z16` then `r2d_z16` at 20 epochs, seed 0, queued before this report was
-written; pre-registration in `docs/PHASE4B_E20_CONFIRM_PREREGISTRATION.md`.
+### 6a. The +4.47x was a 4-epoch artefact
 
-- **B1** `r2p_z16` beats `r2_z16` by >= 2x noise on mAP50 or mAP50_95
-- **B2** `r2p_z16` beats `r2d_z16` by >= 2x noise
-- **B3** lane does not pay >= 2x noise for it
+| cell | params | mAP50 | mAP50_95 | da_mIoU | da_fg | lane_mIoU | lane_fg |
+|---|---|---|---|---|---|---|---|
+| `r2_z16` | 201366 | 0.3543 | 0.1273 | 0.8488 | 0.7612 | 0.5847 | 0.1943 |
+| `r2p_z16` | 204246 | 0.3536 | 0.1261 | 0.8543 | 0.7693 | 0.5863 | 0.1967 |
+| `r2d_z16` | 204246 | 0.3474 | 0.1263 | 0.8481 | 0.7601 | 0.5870 | 0.1977 |
 
-B1 and B2 -> adopt plain-depth reconstruction as the new R2 baseline and close
-the dilation direction. B1 only -> same, dilation moot. **B1 fails -> the
-+4.47x was a 4-epoch artefact** of the same kind probe A produced, and this
-branch closes.
+- **B1 FAIL** - -0.10x noise on mAP50, -0.38x on mAP50_95.
+- **B2 FAIL** - r2p over r2d is +0.85x, unresolved.
+- **B3 PASS** - lane +0.76x / +0.75x, no cost.
 
-If B1 holds, the obvious next cell is `r2p_z32` (does depth stack with z
-width?). It is not launched and will get its own pre-registration first.
+Registered outcome: **4ep ARTEFACT. Reconstruction depth is not a lever.**
 
-### Queued: lane/DA error geometry (zero training)
+The gain did not shrink, it vanished, which identifies the mechanism: this was a
+**convergence-speed effect, not a capacity effect**. The deeper reconstruction
+gets to the same place sooner and the 1x1 baseline catches up by epoch 20. All
+three cells are indistinguishable at convergence. This is now the second time a
+4-epoch reading has failed to survive 20 epochs in this project (probe A:
+detection control +0.26x at 4ep, -2.53x at 20ep), so the rule is upgraded from a
+caveat to a standing protocol: **4-epoch probes here may falsify a large
+predicted effect, they may not establish one.**
 
-If lane is limited by spatial resolution rather than capacity, its errors should
-be *boundary* errors. Evaluating the existing R2 checkpoints with a
-boundary-tolerance curve - lane IoU against a dilated ground truth at 1, 2, 4, 8
-input pixels - distinguishes that from missing-lane errors without training
-anything. A steep curve says resolution; a flat curve says the head is failing
-to find lanes at all. Same idea for DA, bucketed by image region. This is the
-cheapest available test of the leading hypothesis in section 5.
+Not affected: the dilated cell is still the lowest of the three on mAP50
+(-0.95x). Dilation is not rescued by convergence, it is just not resolvable at
+this noise level.
+
+### 6b. Lane is resolution-bound, and the number is unambiguous
+
+Zero-training error geometry on 300 val images, 640x640 output. Three
+measurements, the first of which involves no model at all.
+
+| quantity | value | meaning |
+|---|---|---|
+| `lane_res_ceiling_1over8` | **0.1853** | fg IoU of a naive max-pool-by-8-then-upsample of the **ground truth** |
+| achieved lane fg IoU | 0.1843 / 0.1882 / 0.1845 | r2_z16 / r2_z128 / r0_z16 |
+| `lane_erode1_ratio` | **0.0107** | only 1.1% of lane pixels survive a 1px erosion - lane lines are 1-2 px wide |
+| `lane_pred_over_gt_area` | **3.37x** | the model paints 3.4x more lane pixels than exist |
+| `lane_recall@0` | 0.689 | it still covers 69% of the true lane pixels |
+| lane fg IoU @ tol 0 / 1 / 2 px | 0.184 / 0.382 / **0.460** | 2 px of slack more than doubles IoU |
+
+**The model's lane output is statistically indistinguishable from a crude 1/8
+block representation of the ground truth** (difference 0.001-0.003, i.e. inside
+one noise unit of 0.0032). Everything this project has added - wider Z, per-task
+projections, balanced gradients, a deeper reconstruction - has moved lane fg IoU
+by amounts smaller than the gap to that naive ceiling.
+
+The mechanism is visible in the area ratio. At 1/8 the minimum addressable unit
+is an 8x8 block = 64 input pixels, while a lane line is 1-2 px wide. To cover a
+line the model must light up whole blocks, so it predicts 3.4x the true area:
+recall 0.689 but precision only ~0.20. IoU 0.184 follows arithmetically. The
+model finds the lanes; it cannot place them. This is a **geometric** limit and
+no amount of Z capacity addresses it.
+
+### 6c. DA is a different story, and part of it was hidden
+
+| quantity | r2_z16 | r2_z128 | r0_z16 |
+|---|---|---|---|
+| `da_res_ceiling_1over8` | 0.8753 | 0.8753 | 0.8753 |
+| achieved da fg IoU | 0.7555 | 0.7647 | 0.7699 |
+| `da_erode1_ratio` | 0.9558 | 0.9558 | 0.9558 |
+| DA IoU, top third (far) | **0.3933** | **0.3073** | **0.6377** |
+| DA IoU, middle third | 0.7628 | 0.7773 | 0.7778 |
+| DA IoU, bottom third (near) | 0.6378 | 0.6453 | 0.6454 |
+
+DA is blob-like (96% survives erosion) and sits **0.11 below** its own 1/8
+resolution ceiling - so unlike lane it is *not* resolution-bound, and there is
+real headroom that resolution alone would permit.
+
+The band breakdown surfaces something the aggregate metric hides, and it is
+exploratory rather than pre-registered so it is stated as an observation: the
+top third of the image (far field / horizon) is where DA fails, and **R0 does
+substantially better there than R2** (0.638 vs 0.393 at z16, 0.307 at z128).
+Routing detection through the shared Z appears to have cost the far-field
+drivable area roughly 0.24-0.33 IoU while leaving the aggregate da_mIoU looking
+flat. If that survives a second seed it is a real cost of the R2 design that
+Phase 4A's headline numbers did not capture.
+
+### 6d. What this changes
+
+The leading hypothesis in section 5 is confirmed for lane and refuted for DA.
+Lane's ceiling is geometric; the intervention that would address it is giving
+the lane head features at 1/4 or 1/2, which is outside the shared-Z premise
+entirely. DA has genuine headroom and its residual errors are far-field.
+
+**Net state of Level 2: every lever tested on the shared Z has failed, and the
+one remaining explanation for the segmentation tasks is not about Z at all.**
+That is a complete answer to the Level 2 question, and it is a negative one.
 
 ---
 
