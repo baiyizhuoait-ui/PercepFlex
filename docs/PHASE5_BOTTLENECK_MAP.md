@@ -72,10 +72,16 @@ continuity"), and SCNN's slice-by-slice message passing addresses
 - Incompatible per-class widths: all 11-14 lane classes measure 3.3-4.1 px;
   the heterogeneity is semantic, not geometric.
 
-**Decision of the probe and its standing caveat.** Pending: see
-`phase5_lane_probe_decision.txt`. Two prior findings in this project
-reversed between 4 and 20 epochs, so a 4-epoch pass authorises the
-20-epoch run, it does not establish H5b.
+**Decision of the probe and its standing caveat.** First of three cells
+read: `l14up_z16` (head at 1/4 with bilinear upsample, no new information)
+lands at **lane_fg 0.1894**, +0.0129 over the 0.1765 baseline (2.02x
+noise), with the L4 control intact (det 0.2523, +0.77x noise; DA
+0.8265, +0.82x noise). That is the smallest possible H5a intervention
+("upsample the same information") and it already crosses the 1/8
+block-fill reference of 0.1853. `l14f1_z16` (1/4 + 1/4 lateral) and
+`lch64_z16` (equal-FLOP channel control) are still running. The prereg
+verdict, including the 4-epoch caveat, fires when the second cell is
+present - see `phase5_lane_probe_decision.txt`.
 
 ### 1.2 Drivable area
 
@@ -161,9 +167,10 @@ candidate.
 
 ```
 task  intervention                          gain / cost / status
-lane  1/4 head, no new information           gain ?+0.01 lane_fg; +0.5 GFLOPs; probe running
-lane  1/4 head + 1/4 lateral                 ceiling ~ 0.20-0.26; +0.5 GFLOPs; probe running
-lane  channels 32 -> 64 at 1/8               +0.04 params; equal-FLOP control; probe running
+lane  1/4 head, no new information           lane_fg 0.1765 -> 0.1894 (+0.0129, 2.02x noise);
+                                             +0.534 GFLOPs; L4 control passes (1 of 3)
+lane  1/4 head + 1/4 lateral                 expected gain from the lateral; probe running
+lane  channels 32 -> 64 at 1/8               equal-FLOP control; probe running
 lane  edge-aware / continuity (YOLOPX PSA)   outside the scope of the Phase 5 budget; Phase 4B
 DA    finer head / more channels             rejected: 0.11 below the 1/8 bar
 DA    edge-aware aux supervision             outside the scope; Phase 4B (conditional)
