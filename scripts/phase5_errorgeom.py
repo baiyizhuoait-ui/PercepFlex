@@ -35,7 +35,9 @@ sys.path.insert(0, ROOT)
 from datasets.bdd100k import BDD100KDataset, collate                  # noqa: E402
 from models.static_model import StaticMultiTaskModel                  # noqa: E402
 
-OUT = os.path.join(ROOT, "experiments", "phase5", "phase5_error_geometry.csv")
+OUT = os.environ.get("PHASE5_EG_OUT"
+                     ) or os.path.join(ROOT, "experiments", "phase5",
+                                       "phase5_error_geometry.csv")
 TOLS = [0, 1, 2, 4, 8]
 CELLS = [
     ("r0", "r0_z16",  "configs/phase3a_ebase_z16.yaml",
@@ -47,6 +49,16 @@ CELLS = [
     ("r2", "r2_z128", "configs/phase4a_r2_z128.yaml",
      "experiments/phase4a/exp4A_r2_z128_e20/checkpoint.pt"),
 ]
+
+# Phase 5 STEP 7: the lane probe cells are scored through this same code
+# path. Set PHASE5_EG_CELLS to a JSON list of [variant, cell, config,
+# checkpoint] rows to append them, so the probe is measured with the
+# identical geometry code as the Phase 4A cells.
+_extra = os.environ.get("PHASE5_EG_CELLS")
+if _extra:
+    import json as _json
+    CELLS = CELLS + [tuple(x) for x in _json.loads(_extra)]
+
 RES = 8
 
 
