@@ -116,6 +116,27 @@ quantisation half (precision ~0.20 everywhere) is untouched, as
 predicted: 2 px strokes still cannot be drawn thinner than the head
 allows.
 
+**20-epoch confirmation (registered in f775718 before the run).**
+Eval metric: lane_fg 0.2192 vs committed baseline 0.1943 = +0.0249 =
+1.95x noise -> **WEAK SUPPORT** per the pre-set bar (CONFIRMED needed
+2x = +0.0256; missed by 0.0007). Controls clean: det +0.24x, DA
++0.08x. Same-budget error geometry (both e20, identical code):
+
+    metric          r2_z16 e20   l14f1 e20    delta
+    EG fg_iou       0.1843       0.2074       +0.0231
+    vs block-fill   -0.0012      +0.0220      FIRST model above it
+    precision       0.2036       0.2294       +0.0258
+    recall          0.6886       0.7034       +0.0148
+    pred/gt area    3.73x        3.41x        tighter
+    fg_iou tol1     0.3821       0.4122       +0.0301
+
+At 4 epochs the gain was recall-only; at 20 both recall and precision
+rose and the model clears the 1/8 block-fill reference for the first
+time. Direction and rough magnitude survived (probe A precedent did
+not recur). The eval-metric verdict stays WEAK because the rule was
+fixed in advance - the honest next question is whether 1.95x is seed
+noise (2 more seeds, ~5h GPU) or a true effect just under the bar.
+
 ### 1.2 Drivable area
 
 | property | value | source |
