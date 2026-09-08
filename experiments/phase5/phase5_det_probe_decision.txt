@@ -20,11 +20,15 @@ D2 (mechanism): the gain must land on small-object recall.
   D2 substantive: the dominant bucket is 'medium', not 'small' -> the predicted small-object channel is NOT the main mechanism. Report as formally-confirmed / substantively-weak.
 
 D3 (H20): dp2a - danc >= 1x noise (0.0146) -> grid resolution binds
-  dp2a_z16: NOT RUN
+  dp2a - danc: gain -0.0447 = -3.06x noise -> FAIL (<1x noise)
+  dp2a vs baseline: gain +0.1096 = +7.51x noise -> PASS (>2x noise)
+  dp2a params=0.2020M flops=1.1091G (baseline 0.2014M / 1.0796G)
 
 D4 (control): lane_fg and da_fg move < 2x noise in every cell
   danc_z16 lane_fg: -0.0001 = -0.02x noise -> PASS
   danc_z16 da_fg: +0.0073 = +0.18x noise -> PASS
+  dp2a_z16 lane_fg: -0.0022 = -0.34x noise -> PASS
+  dp2a_z16 da_fg: +0.0085 = +0.21x noise -> PASS
 
 D5 (cost): danc params/FLOPs equal to baseline
   dparams=0.0000M dflops=0.0000G -> PASS

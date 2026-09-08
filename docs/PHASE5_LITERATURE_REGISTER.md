@@ -236,3 +236,54 @@ shallow features - the same semantics-from-deep / resolution-from-grid
 principle the 4B-2 lane probe found independently. Our head is far smaller than
 those baselines, so the FLOP cost of a stride-4 level here is expected to be a
 few percent, not 29%.
+
+---
+
+## L7. Stride-4 (P2) detection heads (added for H21, before any dp2b run)
+
+Registered before running the separating cell, so it constrains how a dp2b
+result may be read.
+
+**The default expectation is that P2 helps.** Three independent small-object
+papers report gains from a stride-4 head: YOLOv12 + P2 on VisDrone takes mAP50
+0.63 -> 0.69 with small-scale AP 0.58 -> 0.63 (and large-scale AP *drops*
+0.86 -> 0.80); MSC-YOLO adds P2 to YOLOv7 for +1.6 mAP50; CAA-YOLO reports
+small-target recall +6.67% over YOLOv5. In every one of these the P2 branch is
+fed by **backbone stage-2 features** - genuine stride-4 semantics from the
+encoder, not an upsample of something deeper.
+
+**But P2 going net-negative is also documented, and the mechanism is named.**
+CAA-YOLO (Sensors 22(10):3782, infrared ships) states that adding P2 *lowered*
+AP-large relative to plain YOLOv5, and attributes it to the bottom P2 layer
+injecting noise that the PAN path then propagates into the top levels. The
+YOLOv11-P2-CBAM rust paper makes the same point from the other direction:
+"using the P2 layer alone causes the model to become conservative due to noise
+interference (lowered Recall)", which CBAM then repairs (+2.3% recall). A
+systematic YOLOv8 UAV evaluation adds the general caveat: "simply adding a
+high-resolution pyramid level yields diminishing returns because standard
+feature fusion structures merely sum or concatenate features - without
+properly enhancing and spatially aligning these features prior to fusion, the
+network struggles to construct a discriminative representation", and places
+P2 below resolution and capacity in a Resolution > Capacity > Architecture
+hierarchy.
+
+**Why this matters for reading our own numbers.** `dp2a` fed P2 from a
+bilinearly upsampled **z=16 bottleneck** - it is close to the exact
+configuration the literature flags as noise injection without enhancement: a
+high-resolution grid carrying no new shallow semantics. Its -0.0447 mAP50 is
+therefore *consistent with a documented failure mode*, not an anomaly, and it
+does **not** license the conclusion "grid density is useless". Two readings
+remain open and `dp2a` cannot separate them:
+
+1. grid density is genuinely not binding for detection at this scale, or
+2. it is binding but only when the stride-4 level carries real shallow
+   features, which `dp2a` never provided.
+
+**Prediction carried into the dp2b (p2=f1) reading.** A 1x1 lateral off encoder
+f1 supplies the missing shallow semantics, so if reading (2) is true dp2b
+should recover at least part of the -0.0447. If dp2b *also* fails, the
+literature predicts the residual cause is unsuppressed shallow noise rather
+than grid density - and the honest move is then to stop adding pyramid levels
+(CAA-YOLO needed an attention module on top, which is out of scope for a
+bottleneck study and would be a new architecture direction, not a diagnosis).
+Either way, one negative dp2b result closes the detection line: do not iterate.

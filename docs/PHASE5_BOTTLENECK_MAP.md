@@ -395,3 +395,53 @@ Two consequences carried forward:
 `dp2a` (stride-4 level) costs +594 params. The literature baselines quoted in
 L6 pay +29% GFLOPs for a P2 head; this model's head is small enough that the
 cost is a few percent.
+
+### 4B-3 D3: adding a stride-4 detection level makes detection WORSE (H20 REJECTED, confounded)
+
+`dp2a_z16` prepends a stride-4 level to the detection head, taking the 3-level
+anchor set to 4 levels (k-means 12 instead of 9). Result, read mechanically by
+`scripts/phase5_det_decide.py`:
+
+| cell | mAP50 | mAP50_95 | params | GFLOPs | vs baseline | vs danc |
+|---|---|---|---|---|---|---|
+| r2u_z16 (baseline) | 0.2411 | 0.0728 | 0.2014M | 1.0796 | - | - |
+| danc_z16 (anchors only) | 0.3954 | 0.1491 | 0.2014M | 1.0796 | +0.1543 | - |
+| **dp2a_z16 (+ stride-4)** | **0.3507** | **0.1267** | 0.2020M | 1.1091 | +0.1096 | **-0.0447** |
+
+D3 required dp2a - danc >= +0.0146. It is **-0.0447 = -3.06x noise: FAIL**.
+So on top of a correct anchor prior, grid resolution does not bind - or at
+least this intervention does not find it. H20 is REJECTED as written.
+
+**The cell is confounded and the confound is stated here rather than hidden.**
+The stride-4 level in `dp2a` is fed from Z bilinearly upsampled to 1/4, and Z
+is a **16-channel bottleneck**. The cell therefore varies two things at once:
+grid density (25200 -> 102000 anchors) and whether the stride-4 level carries
+any real shallow semantics (it does not - 8x upsampling of a 16-channel code
+is close to a blank high-resolution grid). It cannot separate them. The
+separating cell is `dp2b` (p2=f1, a 1x1 lateral off encoder stage-0 f1,
++1618 params), registered as **H21** and not yet run.
+
+**Why the negative result is not surprising** (literature registered as L7
+before any dp2b run): CAA-YOLO reports that adding P2 *lowered* large-object AP
+because the bottom layer injects noise that PAN propagates upward; the
+YOLOv11-P2-CBAM paper reports that P2 alone lowers recall through noise
+interference. Both feed P2 from real backbone features, so a P2 fed from an
+upsampled bottleneck sits even further into the documented failure mode.
+
+**Consequence for the detection line.** Detection is now explained on the
+supervision side: a zero-parameter anchor re-fit bought +0.1543 mAP50, while
+the first capacity-shaped intervention on top of it lost 0.0447. ATSS (L6)
+predicts the anchor repair is one-shot and should not be iterated. The
+detection line therefore has exactly one open cell (dp2b/H21), and a negative
+dp2b closes it.
+
+### 4B-3 status board
+
+| verdict | content | outcome |
+|---|---|---|
+| D1 (primary, H19) | danc mAP50 gain >= 2x noise | **PASS** +0.1543 = 10.57x |
+| D2 (mechanism) | gain lands on small-object recall | **FORMALLY CONFIRMED, SUBSTANTIVELY WEAK** - small +0.0269 (14.4% of weighted AP gain), medium 72.1% |
+| D3 (H20) | dp2a - danc >= 1x noise | **FAIL** -0.0447 = -3.06x (confounded, see above) |
+| D4 (control) | lane_fg / da_fg move < 2x noise | **PASS** all four comparisons <= 0.34x |
+| D5 (cost) | danc params/FLOPs unchanged | **PASS** 0 params, 0 FLOPs |
+| E1 (20ep) | danc_20 mAP50 >= 0.3835 vs committed 0.3543 | **RUNNING** (registered before launch) |
