@@ -99,6 +99,23 @@ H5b to OPEN, probe A precedent). Standing caveat binds: two prior
 4-epoch findings reversed at 20 epochs; nothing here is established
 until that run lands.
 
+**Probe error geometry (content region, e4 checkpoints, internally
+comparable - the STEP 3 baseline row is a 20-epoch model and must not be
+subtracted from these):**
+
+    cell        fg_iou  prec   recall  area    k=1    k=2
+    l14up_z16   0.1756  0.2073 0.5765  3.09x   0.3429 0.3875
+    l14f1_z16   0.1807  0.2019 0.6396  3.62x   0.3585 0.4016
+    lch64_z16   0.1626  0.1881 0.5898  3.46x   0.3290 0.3932
+
+The 1/4 lateral buys RECALL (+0.063 over upsample-only) at flat
+precision - it finds lane pixels the 1/8 head cannot see, it does not
+localise them better (precision unchanged, area inflates 3.09x ->
+3.62x). This is the continuity half of H17 showing a pulse; the
+quantisation half (precision ~0.20 everywhere) is untouched, as
+predicted: 2 px strokes still cannot be drawn thinner than the head
+allows.
+
 ### 1.2 Drivable area
 
 | property | value | source |
