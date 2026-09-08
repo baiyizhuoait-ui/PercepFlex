@@ -137,6 +137,39 @@ not recur). The eval-metric verdict stays WEAK because the rule was
 fixed in advance - the honest next question is whether 1.95x is seed
 noise (2 more seeds, ~5h GPU) or a true effect just under the bar.
 
+**4B-2 feature provenance (linear probe on the frozen e20 baseline
+encoder, 150 tri_val images, cell-level IoU at the 1/8 grid):**
+
+    probe level      lane     da
+    enc_1/4          0.0786   0.2925
+    enc_1/8          0.1136   0.3439
+    enc_1/16         0.1904   0.5060
+    enc_1/32         0.2129   0.7538
+    enc_1/4 native   0.0450   0.2634
+
+Counter-intuitive and decisive: lane location is LINEARLY MORE
+decodable from the deep maps than from the 1/4 map - the naive story
+("the information is already in f1 and the head fails to read it") is
+wrong. Lane location is a global, context-level property (long thin
+structures spanning the image); deep features with large receptive
+fields carry it; local 1/4 texture barely does (native probe 0.0450).
+DA shows the same monotone shape with 1/32 at 0.7538 - independent
+confirmation of H18 (DA is region-level semantic).
+
+Refined mechanism for the l14f1 gain: the encoder already knows WHERE
+lanes are (deep maps, through Z); what the 1/8 output grid cannot do
+is DRAW them at ~2 px width. The 1/4 lateral supplies drawing
+resolution, not lane knowledge. This matches the 20-epoch EG: the
+block-fill reference crossed with precision AND recall both up.
+
+Caveat: a linear probe UNDERESTIMATES information in early features
+(it cannot form nonlinear edge-grouping). The claim recorded here is
+deliberately narrow: lane location is not LINEARLY present in the 1/4
+map. Direction this opens: a lane head that reads deep context at a
+high-resolution output grid (deep-upsampled + lateral) rather than
+reading early features - a Phase 6 architecture candidate, not a
+Phase 4B experiment.
+
 ### 1.2 Drivable area
 
 | property | value | source |

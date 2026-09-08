@@ -1,0 +1,11 @@
+level,task,frozen_cell_iou
+enc_1over4,lane,0.0786
+enc_1over8,lane,0.1136
+enc_1over16,lane,0.1904
+enc_1over32,lane,0.2129
+enc_1over4_native,lane,0.045
+enc_1over4,da,0.2925
+enc_1over8,da,0.3439
+enc_1over16,da,0.506
+enc_1over32,da,0.7538
+enc_1over4_native,da,0.2634
