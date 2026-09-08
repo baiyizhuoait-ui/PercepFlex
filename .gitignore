@@ -6,8 +6,10 @@ data/
 
 # Experiments outputs (checkpoint/metrics kept under experiments/exp_XXX/ are
 # large; keep config.yaml + metrics.json tracked, ignore weights/logs)
-experiments/*/checkpoint.pt
-experiments/*/training_log.txt
+# ignore weights/logs at ANY depth (the old `experiments/*/...` only matched one
+# level and missed experiments/phaseX/expY/training_log.txt -> bloated commits)
+experiments/**/checkpoint.pt
+experiments/**/training_log.txt
 experiments/*/*.csv
 
 # ...but the aggregated sweep RESULT TABLES are the deliverable of Phase 2-B:
@@ -49,6 +51,21 @@ experiments/expF_single_teacher/kd_cache/
 !trained_models/
 !weights/*.pth
 !trained_models/*.pt
+
+# Verbose run-log captures (stdout of train/eval/launcher, NOT deliverable data).
+# Keep eval_stdout.log (small, provenance of reported metric) + metrics.json + config.yaml.
+**/train_stdout.log
+**/*_foreground.log
+**/*_runner.log
+**/*_monitor.log
+**/*_launch.log
+**/zsweep_*.log
+**/r1r2_*.log
+**/expA_*.log
+**/expD_*.log
+**/exp4C_*.log
+**/*_diag.log
+**/status.txt
 
 # baseline 公共仓库内容由服务器自行 clone，不纳入本仓库
 baselines/
