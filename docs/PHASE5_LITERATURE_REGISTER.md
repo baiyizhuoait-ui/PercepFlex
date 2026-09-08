@@ -287,3 +287,66 @@ than grid density - and the honest move is then to stop adding pyramid levels
 (CAA-YOLO needed an attention module on top, which is out of scope for a
 bottleneck study and would be a new architecture direction, not a diagnosis).
 Either way, one negative dp2b result closes the detection line: do not iterate.
+
+---
+
+## L8. Ultra-lightweight BDD100K multi-task baselines (desktop paper set, read 2026-09-08)
+
+Source: `~/Desktop/YOLOP-base分析/` — 21 papers plus a 9-model comparison
+report. Used here for one purpose: **calibrating whether our model is where it
+should be at 0.2M params**, which decides whether the remaining work is
+bottleneck discovery or recipe repair.
+
+Reported on BDD100K val, all single-class detection (nc=1, same as ours — the
+project dataset file notes YOLOP and TriLiteNet official are nc=1, so these
+numbers are directly comparable to our mAP50):
+
+| model | params | GFLOPs | mAP50 | DA mIoU | Lane IoU |
+|---|---|---|---|---|---|
+| TriLiteNet tiny | 0.15M | 0.55 | 49.6 | 88.5 | 24.2 |
+| TriLiteNet base | 2.35M | 7.72 | 72.3 | 92.4 | 29.8 |
+| YOLOP | 7.9M | 9.38 | 76.5 | 91.5 | 26.2 |
+| HybridNets | 12.83M | 15.6 | 77.3 | 90.5 | 31.6 |
+| **ours (0.20M, 1.08G)** | 0.2014M | 1.08 | **39.5** | **82.3** | **17.4** |
+
+**The uncomfortable comparison is TriLiteNet tiny**: 0.15M params and *half* our
+FLOPs, yet +10.1 mAP50, +6.2 DA mIoU and +6.8 lane IoU. Caveat that must be
+carried with it: TriLiteNet trains **200 epochs, batch 16, AdamW, warm-up +
+cosine, with EMA** at 640x384, while our cells are 4/20 epochs at 640x640
+without EMA. TriLiteNet's own ablation puts **EMA alone at +4.9 mAP**. So part
+of the gap is training budget, which Phase 3C already showed dominates in this
+project — the gap cannot be read as pure architecture inferiority.
+
+Four design facts from these papers that bear on our open questions:
+
+1. **TriLiteNet has no P2.** Detection head is P3/P4/P5 (stride 8/16/32),
+   anchor-based, with k-means "auto anchor", 3 per level. It beats us by 10 mAP
+   without a stride-4 level. This is the prior registered against H21/dp2b.
+2. **Its segmentation heads output at FULL resolution.** Input is C3 (1/8), then
+   transposed conv + conv with skip connections up to 1/1. HybridNets likewise
+   fuses five neck levels at **W/4 (stride 4)**, adds P2, then restores to
+   (W, H, 3). Both therefore do exactly what Phase 4B-2's linear probe pointed
+   to independently: **deep features, high-resolution output grid**. Our heads
+   output at 1/8.
+3. **HybridNets feeds P2 to the SEGMENTATION branch, not the detection head.**
+   With lane IoU 31.6 — the best of the set. The high-resolution level is spent
+   on segmentation, not on boxes.
+4. **Lane labels are widened for training, not for evaluation.** HybridNets
+   follows ENet-SAD: training masks widened to 8 px, validation left at 2 px,
+   lanes merged to centre lines. TriLiteNet: train 8 px, val 2 px. **We train
+   and evaluate on the same raw ~2 px mask** (datasets/bdd100k.py binarises
+   `0 < m < 255`). This is a supervision-side difference we have never tested,
+   on the one task we have proven is geometrically starved.
+
+And one loss-side fact: **Tversky loss is the single largest contributor to lane
+IoU in TwinLiteNet+ (removing it costs -3.1)**. Our segmentation loss is plain
+weighted cross-entropy (`losses/multitask_loss.py: seg_ce_loss(fg_weight=10)`).
+Note the distinction that matters: Phase 4A probe C already tested *loss
+re-weighting* (lambda_det=0.2) and it was rejected. Changing the loss *form*
+(Tversky/Focal vs CE) has not been tested and is a different intervention.
+
+**Consequence.** Three of the four gaps above (label widening, Tversky loss,
+full-resolution segmentation heads) are supervision- or recipe-side, not
+capacity-side — the same category that just produced the +0.1543 anchor win on
+detection. That is the single most important thing this paper set changed about
+my reading of the project.

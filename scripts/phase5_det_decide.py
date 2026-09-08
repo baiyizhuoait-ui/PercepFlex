@@ -162,10 +162,27 @@ def main():
         lines.append(f"  dp2a params={rd['params_M']}M flops={rd['flops_G']}G "
                      f"(baseline {base['params_M']}M / {base['flops_G']}G)")
 
+    # ---- D3b sequential (H21): same comparison with a REAL stride-4 lateral ----
+    lines.append("")
+    lines.append("D3b (H21): dp2b - danc >= 1x noise (0.0146) -> grid resolution "
+                 "binds once the stride-4 level carries real shallow features")
+    gb, rb = delta("dp2b_z16", "mAP50")
+    if gb is None or r1 is None:
+        lines.append("  dp2b_z16: NOT RUN")
+    else:
+        lines.append("  " + verdict(gb - g1, NOISE["mAP50"], "dp2b - danc"))
+        lines.append("  " + verdict(gb, NOISE["mAP50"], "dp2b vs baseline"))
+        d_ba = (gb - g1) - (gd - g1) if gd is not None else None
+        if d_ba is not None:
+            lines.append(f"  dp2b - dp2a: {d_ba:+.4f} = {d_ba/NOISE['mAP50']:+.2f}x noise "
+                         "(the confound itself: real f1 lateral vs upsampled Z)")
+        lines.append(f"  dp2b params={rb['params_M']}M flops={rb['flops_G']}G "
+                     f"(baseline {base['params_M']}M / {base['flops_G']}G)")
+
     # ---- D4 control ----
     lines.append("")
     lines.append("D4 (control): lane_fg and da_fg move < 2x noise in every cell")
-    for cell in ("danc_z16", "dp2a_z16"):
+    for cell in ("danc_z16", "dp2a_z16", "dp2b_z16"):
         for key in ("lane_fg", "da_fg"):
             g, r = delta(cell, key)
             if g is None:
