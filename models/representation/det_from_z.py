@@ -90,21 +90,32 @@ class DetFromZ(nn.Module):
     """
 
     def __init__(self, zc, nc=1, proj=True, det_ch=32, anchors=None, num_anchors=3,
-                 rec="1x1", rec_blocks=2, rec_rates=(2, 4)):
+                 rec="1x1", rec_blocks=2, rec_rates=(2, 4),
+                 p2="none", p2_ch=None):
         super().__init__()
         self.zc = zc
         self.nc = nc
         self.no = nc + 5
         self.na = num_anchors
-        self.nl = 3
+        # Phase 4B-3: p2 != "none" prepends a stride-4 level.
+        self.p2 = p2
+        self.nl = 4 if p2 != "none" else 3
         self.det_ch = det_ch
 
         if anchors is None:
             anchors = DEFAULT_ANCHORS_3S
+        assert len(anchors) == self.nl, (
+            f"{self.nl} detection levels need {self.nl} anchor groups, "
+            f"got {len(anchors)}")
         self.anchors = torch.tensor(anchors).float().view(self.nl, self.na, 2)
         self.anchor_grid = self.anchors.clone().view(self.nl, 1, self.na, 1, 1, 2)
-        # Z is at 1/8 => pyramid strides 8/16/32.
-        self.stride = torch.tensor([8, 16, 32])
+        # Z is at 1/8 => pyramid strides 8/16/32; with p2 the stride-4
+        # level is prepended, so it must come first in every list.
+        self.stride = torch.tensor([4, 8, 16, 32] if self.nl == 4
+                                   else [8, 16, 32])
+        if p2 == "f1":
+            assert p2_ch is not None, "p2=\"f1\" needs p2_ch"
+            self.lat = nn.Conv2d(p2_ch, det_ch, 1, bias=False)
 
         # --- entry projection (R2 only; R1 keeps Identity => Z used raw) ---
         if proj:
@@ -159,12 +170,29 @@ class DetFromZ(nn.Module):
             b.data[:, 5:] += math.log(0.6 / (self.nc - 0.99))
             m.bias = torch.nn.Parameter(b.view(-1))
 
-    def forward(self, z, hw=None):
-        """z: (B, zc, H/8, W/8). Returns the same formats as R0's DetectHead."""
+    def forward(self, z, hw=None, extra=None):
+        """z: (B, zc, H/8, W/8). Returns the same formats as R0's DetectHead.
+
+        extra: the encoder's {"f0": 1/2, "f1": 1/4} dict, required only
+        when p2 == "f1" (the native 1/4 lateral).
+        """
         x0 = self.rec_op(self.proj(z))   # 1/8, after the reconstruction
         x1 = self.down1(x0)        # 1/16
         x2 = self.down2(x1)        # 1/32
         feats = [x0, x1, x2]
+        if self.p2 != "none":
+            # Bilinear upsample carries NO new information: it is the
+            # grid-resolution arm, the exact parallel of the lane probe's
+            # l14up cell. "f1" additionally adds the encoder's real 1/4 map.
+            p = F.interpolate(x0, scale_factor=2, mode="bilinear",
+                              align_corners=False)
+            if self.p2 == "f1":
+                f1 = extra["f1"]
+                if p.shape[-2:] != f1.shape[-2:]:
+                    p = F.interpolate(p, size=f1.shape[-2:], mode="bilinear",
+                                      align_corners=False)
+                p = p + self.lat(f1)
+            feats = [p] + feats
 
         if self.training:
             raw = []

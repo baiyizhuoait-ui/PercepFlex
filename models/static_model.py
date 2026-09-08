@@ -36,6 +36,7 @@ class StaticMultiTaskModel(nn.Module):
         if det_cfg.get("from_z", False):
             # R1/R2: detection reads Compact Z (optionally via a 1x1 projection).
             from models.representation.det_from_z import DetFromZ
+            self.det_p2 = det_cfg.get("p2", "none")
             self.det_head = DetFromZ(zc, nc=det_cfg.get("nc", 1),
                                      proj=det_cfg.get("z_proj", True),
                                      det_ch=det_cfg.get("det_ch", 32),
@@ -43,7 +44,9 @@ class StaticMultiTaskModel(nn.Module):
                                      rec=det_cfg.get("rec", "1x1"),
                                      rec_blocks=det_cfg.get("rec_blocks", 2),
                                      rec_rates=tuple(det_cfg.get(
-                                         "rec_rates", [2, 4])))
+                                         "rec_rates", [2, 4])),
+                                     p2=self.det_p2,
+                                     p2_ch=enc_cfg["stages"][0])
             self.det_from_z = True
         else:
             self.det_head = DynamicDetHead(
@@ -70,7 +73,9 @@ class StaticMultiTaskModel(nn.Module):
         # Phase 5: optional higher-resolution lane branch. Off by default.
         self.lane_res = int(seg_cfg.get("lane_res", 8))
         self.lane_use_f1 = bool(seg_cfg.get("lane_use_f1", False))
-        self.need_highres = self.lane_res != 8 and self.lane_use_f1
+        # Phase 4B-3: p2="f1" also needs the encoder's native 1/4 map.
+        self.need_highres = bool(self.lane_res != 8 and self.lane_use_f1) \
+            or self.det_p2 == "f1"
         if self.lane_use_f1:
             self.lane_lat = nn.Conv2d(enc_cfg["stages"][0], _w_lane, 1,
                                       bias=False)
@@ -84,7 +89,8 @@ class StaticMultiTaskModel(nn.Module):
         z = self.representation(feats)["z"]
         hw = x.shape[2:]
         if self.det_from_z:
-            det = self.det_head(z, hw)
+            det = self.det_head(z, hw,
+                                extra=extra if self.det_p2 == "f1" else None)
         else:
             det = self.det_head([feats[0], feats[1], feats[2]])
         if self.task_proj:

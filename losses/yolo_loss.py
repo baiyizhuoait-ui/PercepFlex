@@ -27,7 +27,11 @@ def bbox_iou(box1, box2, xywh=True, eps=1e-7):
 
 
 class YOLOLoss(nn.Module):
-    def __init__(self, anchors, nc=1, img_size=640, strides=(8, 16, 32)):
+    def __init__(self, anchors, nc=1, img_size=640, strides=None):
+        # strides=None -> derive from the anchor count, so a 4-level
+        # (P2) head gets (4, 8, 16, 32) without touching any caller.
+        if strides is None:
+            strides = (4, 8, 16, 32) if anchors.shape[0] == 4 else (8, 16, 32)
         super().__init__()
         self.nc = nc
         self.na = anchors.shape[1]
