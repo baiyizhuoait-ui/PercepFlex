@@ -72,16 +72,32 @@ continuity"), and SCNN's slice-by-slice message passing addresses
 - Incompatible per-class widths: all 11-14 lane classes measure 3.3-4.1 px;
   the heterogeneity is semantic, not geometric.
 
-**Decision of the probe and its standing caveat.** First of three cells
-read: `l14up_z16` (head at 1/4 with bilinear upsample, no new information)
-lands at **lane_fg 0.1894**, +0.0129 over the 0.1765 baseline (2.02x
-noise), with the L4 control intact (det 0.2523, +0.77x noise; DA
-0.8265, +0.82x noise). That is the smallest possible H5a intervention
-("upsample the same information") and it already crosses the 1/8
-block-fill reference of 0.1853. `l14f1_z16` (1/4 + 1/4 lateral) and
-`lch64_z16` (equal-FLOP channel control) are still running. The prereg
-verdict, including the 4-epoch caveat, fires when the second cell is
-present - see `phase5_lane_probe_decision.txt`.
+**Decision of the probe (L1-L4, all PASS) and its standing caveat.**
+All three cells are in (`phase5_lane_probe_decision.txt`):
+
+    cell        lane_fg   d_lane  x_noise   mAP50   da_fg
+    r2u_z16      0.1765   +0.0000   0.00   0.2411  0.7146
+    l14up_z16    0.1894   +0.0129   2.02   0.2523  0.7283
+    l14f1_z16    0.1916   +0.0151   2.36   0.2402  0.7370
+    lch64_z16    0.1778   +0.0013   0.20   0.2373  0.7292
+
+- L1 (primary): l14f1 crosses the pre-set threshold 0.1829. PASS.
+- L2: l14up (upsample-only, no new information) gains 2.02x noise -
+  operating-point resolution alone moves lane. PASS.
+- L3 (spatial vs channel per FLOP): l14f1 +0.0270 lane_fg/GFLOP vs
+  lch64 +0.0031 - 8.7x. PASS: lane is spatially constrained, not
+  channel-constrained at Z=16.
+- L4: det and DA controls all inside 1x noise. PASS.
+
+Verdict: **H5b SUPPORTED (provisional)** - the lane bottleneck is the
+absence of 1/4-resolution information. H6 (channel capacity) is
+subordinate: 64 channels at 1/8 buy 0.20x noise. ACTION per prereg:
+l14f1_z16 extended to 20 epochs under a rule registered before the run
+(`PHASE5_E20_CONFIRM_REGISTRATION.md`: >= 2x noise vs the committed
+r2_z16 e20 baseline 0.1943 confirms H5b; 1x-2x is weak; < 1x reverts
+H5b to OPEN, probe A precedent). Standing caveat binds: two prior
+4-epoch findings reversed at 20 epochs; nothing here is established
+until that run lands.
 
 ### 1.2 Drivable area
 
