@@ -1,0 +1,204 @@
+# Phase 5 - Bottleneck Map
+
+This is the deliverable that answers Phase 5's question: "what is each task
+bottlenecked by, and is it task-specific, reproducible, causal?".
+
+The map is built from four layers, each one independently checkable against
+the artefacts in `experiments/phase5/`:
+
+  L1  Model-free geometric and structural measurements. No model involved;
+      the ceiling and the structure of the labels are measured directly.
+      Source: `phase5_resolution.csv`, `phase5_da_analysis.csv`,
+      `phase5_detection_analysis.csv`, `phase5_error_geometry.csv`,
+      `phase5_label_geometry.csv`.
+
+  L2  Pre-registered diagnostic interventions. Where the cheap measurement
+      could not separate two hypotheses, an intervention was designed with
+      the prediction, control and falsification written down BEFORE the
+      number was read. Source: `phase5_hypothesis_matrix.csv`,
+      `docs/PHASE5_LANE_PROBE_PREREGISTRATION.md`,
+      `docs/PHASE5_LITERATURE_REGISTER.md`.
+
+  L3  The probe (intervention experiment). A single reading cannot establish
+      a finding in this project (two prior 4-epoch readings reversed at
+      20). Where the probe is the source, the standing caveat is repeated.
+      Source: `phase5_lane_probe_results.csv`,
+      `phase5_lane_probe_errorgeom.csv`,
+      `phase5_lane_probe_decision.txt`.
+
+  L4  Phase 4B - remaining-factor exclusion. Anything Phase 5 could not
+      separate is queued for an ordered set of probes, each with its own
+      literature check. Source: `docs/PHASE4B_PLAN.md`.
+
+## 1. Per-task bottleneck profile
+
+### 1.1 Lane
+
+| property | value | source |
+|---|---|---|
+| target stroke width (model input) | 1.99 px | label geometry, n=287 val |
+| target stroke width (train vs val) | 3.98 / 3.97 px (ratio 0.997) | label geometry |
+| 1/8 block-fill reference | 0.1853 | resolution ladder |
+| 1/4 block-fill reference | 0.3220 | resolution ladder |
+| 1/2 block-fill reference | 0.5721 | resolution ladder |
+| 4 px perfectly-localised predictor | 0.97 | label geometry |
+| baseline r2u_z16: prec / rec / IoU / area | 0.2049 / 0.6706 / 0.1845 / 3.55x | error geometry, r0 |
+| published BDD100K SOTA range | 26.5-28.8 (YOLOP, A-YOLOM(s), YOLOPv3) | literature register |
+
+**Bottleneck: the operating grid, 1/8.**
+
+Two pieces of evidence. First, the model sits statistically on the 1/8
+block-fill ceiling across all three training regimes (r0 / r2 z16 / r2
+z128). Second, painting the lane at 1/4 would jump the ceiling to 0.3220
+and at 1/2 to 0.5721 - and the SOTA models that score 26.5-28.8 operate
+their lane head finer than 1/8, putting the realistic target for a 1/4 head
+at 0.20-0.26 (not 0.3220, which is the oracle bound).
+
+**Second-order bottleneck: continuity, captured in H17.** Precision 0.2049
+> 1/8 block-fill 0.1854 means the model is slightly more parsimonious than
+the trivial strategy; recall 0.6706 means it pays for that parsimony by
+missing a third of the target. The 1/4 probe splits these: if precision
+rises while recall stays at 0.67, the residual is a separate (continuity)
+problem - exactly the regime YOLOPX's Polarized Self-Attention module is
+designed for ("long-range spatial dependencies critical for lane line
+continuity"), and SCNN's slice-by-slice message passing addresses
+("particularly effective for capturing long and narrow structures").
+
+**What is ruled out.**
+- Channel capacity at 1/8 (H6): the lch64 cell at equal FLOP.
+- Annotation width mismatch between splits (H8 in its train/val form):
+  train and val strokes agree to 0.3%, and a correctly sized perfectly
+  localised stroke scores 0.97 against the label.
+- Incompatible per-class widths: all 11-14 lane classes measure 3.3-4.1 px;
+  the heterogeneity is semantic, not geometric.
+
+**Decision of the probe and its standing caveat.** Pending: see
+`phase5_lane_probe_decision.txt`. Two prior findings in this project
+reversed between 4 and 20 epochs, so a 4-epoch pass authorises the
+20-epoch run, it does not establish H5b.
+
+### 1.2 Drivable area
+
+| property | value | source |
+|---|---|---|
+| 1/8 block-fill reference | 0.8801 | resolution ladder |
+| 1/4 block-fill reference | 0.9410 | resolution ladder |
+| baseline r0_z16: fg / prec / rec / area | 0.7699 / 0.7795 / 0.9841 / 1.319x | error geometry |
+| 1 px boundary band share | 2.4% | label geometry |
+| 1/8 cell (16 native px) boundary band share | 28.4% | label geometry |
+| far / mid / near band gap (post letterbox crop) | within noise | DA bands, Step 2 |
+| tolerance curve tol0 -> tol8 | 0.7699 -> 0.7951 (+0.025) | error geometry |
+
+**Bottleneck: region-level semantic identification (H18), not resolution
+and not boundary localisation.**
+
+The model is 0.11 **below** its own 1/8 block-fill reference (0.7699 vs
+0.8801). It cannot reach the score of the trivial strategy "paint every
+touched 1/8 cell". Raising the bar (a finer head) cannot be the fix for a
+model that has not reached the existing bar.
+
+Recall is saturated at 0.9841; missing regions is not the failure.
+Tolerance curve is flat - a 8 px slack only adds 0.025. A thin misaligned
+rim is not the failure either; the boundary band at the model's real
+granularity holds only 28.4% of the foreground.
+
+That leaves over-inclusion: distinct regions that the model paints as
+drivable but the label does not, e.g. opposite lanes beyond a median,
+turn pockets, road-like shoulders. Phase 4B STEP 4 (anatomy of false
+positives) measures this directly and is the next step before any training.
+
+**What is ruled out.**
+- Resolution (H10): the model has not reached the resolution-defined bar.
+- Channel capacity (H9): same argument.
+- Far-field semantics (H11): the earlier apparent far-field collapse was
+  a letterbox-padding artefact. After cropping to the content rows
+  140-500, far / mid / near bands agree within noise and R0 is not better
+  than R2 in the far band (H11-alt SUPPORTED).
+- Boundary refinement as the operative fix (not formally hypothesised
+  but the obvious next guess): the flat tolerance curve says a thin
+  rim is not the failure.
+
+### 1.3 Detection
+
+| property | value | source |
+|---|---|---|
+| small / medium / large recall | 0.64-0.69 / 0.90 / 0.95 | detection analysis |
+| crowding effect on recall | none | detection analysis |
+| effect of Z 16 -> 128 on small recall | +0.0235 | detection analysis |
+| effective rank of Z (z16 / z32 / z128) | 42.5% / 37.1% / 24.9% | Phase 4A |
+| gradient-magnitude imbalance (det / total) | 73-77% | Phase 4A, probe C |
+| baseline mAP50 / mAP50_95 (r0_z16, 4ep) | 0.2411 / 0.0728 | error geometry |
+
+**Bottleneck: small-object feature resolution, not capacity.**
+
+The largest gap in the diagnostic is between small and medium recall
+(+0.21-0.26). Crowding is irrelevant. Z width is a weak lever (+0.0235
+on small for a ~10x increase in shared capacity). Effective rank goes
+**down** with Z width, against the "more capacity" reading.
+
+The most documented published lever is a P2 (1/4) detection head, which the
+R0 head here does not have - it reads encoder F2/F3/F4 directly, but the
+finest is 1/8. RSO-YOLO on BDD100K: P2 head +4.6 mAP50 / +1.8 mAP50:95,
+the largest single-module gain in their ablation. MST-YOLO on BDD100K:
+APsmall 0.124 -> 0.209, ARsmall 0.251 -> 0.423. YOLOPv3 argues
+multi-task driving perception "fail[s] to fully leverage multi-scale
+high-resolution features... not conducive for the network to detect small
+objects that are prevalent in intelligent driving scenarios". The
+intervention is published, well-quantified, and the strongest remaining
+candidate.
+
+**What is ruled out.**
+- Z capacity (H1): a 4x increase in shared width buys only +0.0235 small
+  recall and reduces effective rank.
+- Gradient conflict (H13): probe C rebalanced detection to 20% weight and
+  saw -13x noise of mAP50 for +0.27x of DA. Whatever caps DA, it is not
+  detection's gradient share.
+- Crowding (H3): not a factor.
+- Receptive field (H3): probe B at 4-epoch showed no effect and 20-epoch
+  showed -0.10x; H3 is closed.
+
+## 2. Per-task intervention matrix
+
+```
+task  intervention                          gain / cost / status
+lane  1/4 head, no new information           gain ?+0.01 lane_fg; +0.5 GFLOPs; probe running
+lane  1/4 head + 1/4 lateral                 ceiling ~ 0.20-0.26; +0.5 GFLOPs; probe running
+lane  channels 32 -> 64 at 1/8               +0.04 params; equal-FLOP control; probe running
+lane  edge-aware / continuity (YOLOPX PSA)   outside the scope of the Phase 5 budget; Phase 4B
+DA    finer head / more channels             rejected: 0.11 below the 1/8 bar
+DA    edge-aware aux supervision             outside the scope; Phase 4B (conditional)
+DA    boundary refinement (AURASeg-style)    not applicable: flat tolerance, not a thin rim
+DA    semantic / context                     Phase 4B STEP 4
+det   P2 (1/4) detection head                MST-YOLO +68% ARsmall; RSO-YOLO +4.6 mAP50; Phase 4B
+det   Z width 16 -> 128                      +0.0235 small recall, -17.5% effective rank; not worth it
+det   detection gradient share (probe C)     -13x mAP50 for +0.27x DA; rejected
+```
+
+## 3. Where the answer still cannot be read
+
+1. The 1/4 lane probe is the cleanest experiment Phase 5 has. Two of the
+   three cells are still training. The 4-epoch verdict is provisional; the
+   20-epoch confirmation must follow any 4-epoch pass.
+2. DA's region-level semantic hypothesis (H18) is the only DA factor that
+   survives; it is not yet measured. 4B-4 will measure it (size, distance
+   to GT, border-touching).
+3. Detection has the largest published lever (P2 head) and the smallest
+   project-side data: ARsmall by category and by Z is recorded, but
+   whether the 1/4 head here buys what the literature reports is a
+   separate experiment (4B-3), to be registered before running.
+4. Lane continuity (H17) is opened by the precision/recall split; the
+   experiment to test it (SCNN message passing, YOLOPX PSA) lies outside
+   the Phase 5 budget. It is logged as a follow-up.
+
+## 4. What this is not
+
+- It is not a "winner" architecture. The Phase 5 brief forbids it
+  ("最终架构只能后置").
+- It is not a paper that says "lane is X, DA is Y, det is Z". Every
+  "is" in this map is "the cheapest available measurement says, and the
+  next probe will test". Where the probe has not yet run, the verdict
+  row is blank.
+- It is not a contribution that any of the three interventions is novel.
+  They are all published. The contribution is the measurement - the
+  numbers attached to the per-task profile and the decision rules that
+  attached them.
