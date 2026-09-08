@@ -39,7 +39,13 @@ class YOLOLoss(nn.Module):
         self.anchors = anchors  # (nl, na, 2) in input pixels
         self.strides = torch.tensor(strides, dtype=torch.float)
         self.img_size = img_size
-        self.balance = [4.0, 1.0, 0.4]
+        # Per-level loss weights. YOLOv5's own rule: 3 levels -> [4.0, 1.0, 0.4],
+        # anything else -> [4.0, 1.0, 0.25, 0.06, 0.02] truncated to nl. Kept
+        # identical for the 3-level case so every committed 3-level run (baseline,
+        # danc) is bit-reproducible; the 4-level (P2) head gets the standard
+        # extension instead of an invented set.
+        self.balance = {3: [4.0, 1.0, 0.4]}.get(
+            self.nl, [4.0, 1.0, 0.25, 0.06, 0.02])[: self.nl]
 
     def forward(self, preds, targets, img_size=None):
         """preds: list of nl tensors (B, na, ny, nx, no); targets: (nt, 5) cls,xywh(norm)."""
