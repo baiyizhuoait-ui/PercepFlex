@@ -1,0 +1,33 @@
+Phase 5 lane probe - pre-registered decision
+========================================================================
+Baseline cell: r2u_z16 (Phase 4A STEP 2 sanity, 4 epochs, not retrained)
+Noise floor (2x Phase 2-C external): lane_fg 0.0128, mAP50 0.0292, da_fg 0.0808
+
+cell        lane_fg   d_lane  x_noise    mAP50     da_fg    GFLOPs
+r2u_z16      0.1765  +0.0000     0.00   0.2411   0.7146    1.0796
+l14up_z16    0.1894  +0.0129     2.02   0.2523   0.7283    1.6129
+l14f1_z16    0.1916  +0.0151     2.36   0.2402   0.7370    1.6391
+lch64_z16    0.1778  +0.0013     0.20   0.2373   0.7292    1.4933
+
+L4 control (detection and DA must not move more than 2x noise):
+  l14up_z16  d_mAP50=+0.0112 (0.77x noise)  d_da_fg=+0.0137 (0.34x noise)  ok
+  l14f1_z16  d_mAP50=-0.0009 (-0.06x noise)  d_da_fg=+0.0224 (0.55x noise)  ok
+  lch64_z16  d_mAP50=-0.0038 (-0.26x noise)  d_da_fg=+0.0146 (0.36x noise)  ok
+
+L1 (H5b, primary): l14f1 lane_fg >= 0.1829 -> PASS (0.1916, +0.0151)
+L2 (H5a):          l14up gain >= 1x noise (0.0064) and < L1 gain -> PASS (+0.0129)
+
+L3 (spatial vs channel, per unit compute):
+  l14f1: gain +0.0151 / 0.5595 GFLOPs = +0.0270 per GFLOP
+  lch64: gain +0.0013 / 0.4137 GFLOPs = +0.0031 per GFLOP
+  -> PASS: lane is spatially constrained
+
+Decision (rule fixed in the pre-registration)
+------------------------------------------------------------------------
+L1 and L3 -> H5b SUPPORTED.
+ACTION: extend l14f1_z16 to 20 epochs. Do not run the 1/2 rung.
+
+Standing caveat, restated because it binds this reading:
+two 4-epoch findings in this project reversed by 20 epochs (probe A detection
+control +0.26x -> -2.53x; reconstruction depth +4.47x -> -0.10x). A PASS here
+authorises the 20-epoch run. It does not establish H5b.
