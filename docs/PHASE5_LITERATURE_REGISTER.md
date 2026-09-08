@@ -185,3 +185,54 @@ Yes, and this is worth stating plainly because it bounds what can be claimed.
 4. Everywhere: report lane fg-IoU with the CULane-widening / BDD100K
    train-8px-test-2px caveat attached, or the number will be read as worse than
    it is.
+
+---
+
+## L6. Detection supervision side (added for Phase 4B-3, before reading D1-D3)
+
+Registered *before* the anchor cells were decided, so it can constrain the
+reading of the numbers rather than rationalise them afterwards.
+
+**ATSS (Zhang et al., CVPR 2020, arXiv:1912.02424).** The essential difference
+between anchor-based and anchor-free detection is **how positive and negative
+training samples are defined**, not whether anchors exist and not whether
+regression starts from a box or a point. Swapping only the assignment rule
+moves RetinaNet 37.0 -> 37.8 AP and drops FCOS 37.8 -> 36.9. Two consequences
+that bear directly on this project:
+
+1. It predicts that a large mAP gain can come from the **assignment** side
+   without any change in capacity, parameters or FLOPs - which is exactly the
+   shape of the `danc` intervention (anchors only, 0 params, 0 FLOPs).
+2. It also predicts **diminishing returns**: with an adaptive assignment rule,
+   RetinaNet with 9 anchors per location and with 1 anchor per location perform
+   about the same ("tiling multiple anchors is not necessary"). So re-clustering
+   anchors is a one-shot repair, not a direction to iterate on. If a further
+   anchor-design sweep is ever proposed, ATSS says the expected gain is small
+   and the honest move is to change the assignment rule instead.
+
+**Counter-evidence on anchor shape specifically.** In an anchor-shape ablation
+(PLOS ONE 16(11):e0260609, zebrafish cell detection), adding a fourth aspect
+ratio did not improve final mAP - the authors attribute this to the box
+regression head eventually pulling predictions back onto the GT. That is a
+reason to be sceptical of the *aspect-ratio mismatch* story in isolation: it
+supports reading our gain as **assignment coverage** (48.5% of boxes had zero
+positive under the project rule) rather than as "the anchors were the wrong
+shape". The two are confounded in `danc` by construction; this register entry
+is the note that they are confounded.
+
+**Prediction carried into the D2 reading.** If the gain is assignment-driven
+rather than resolution-driven, mAP50 should rise more than small-object
+*recall*: recall@0.5 of small boxes is limited by whether a box is found at
+all, which is a resolution/capacity question, whereas mAP rewards the quality
+and ranking of the boxes that are found. D2 was written to catch exactly this:
+a rise in mAP50 with no rise in small recall is a mechanism-unconfirmed
+outcome, not a pass.
+
+**P2 / high-resolution detection head (carried from the 4B-3 preregistration).**
+RSO-YOLO (BDD100K): a P2 head gives +4.6 mAP50 for +29% GFLOPs and -44% FPS.
+MHD-Net: P2 plus dilated context, +2.6 mAP at negligible cost. SPTD-YOLO: P2
+must combine upsampled semantics with shallow detail rather than use raw
+shallow features - the same semantics-from-deep / resolution-from-grid
+principle the 4B-2 lane probe found independently. Our head is far smaller than
+those baselines, so the FLOP cost of a stride-4 level here is expected to be a
+few percent, not 29%.
