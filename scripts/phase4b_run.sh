@@ -88,9 +88,12 @@ cat > "$PROBE" <<'PYEOF'
 import sys, torch
 try:
     ck = torch.load(sys.argv[1], map_location="cpu", weights_only=False)
-    print(ck.get("epoch", "ERR"))
+    ep = ck.get("epoch", "ERR")
+    seed = ck.get("seed", "")
+    sha = ck.get("cfg_sha", "")
+    print(f"{ep} {seed} {sha}")
 except Exception:
-    print("ERR")
+    print("ERR ERR ERR")
 PYEOF
 
 for CELL in "${CELLS[@]}"; do
@@ -115,19 +118,57 @@ for CELL in "${CELLS[@]}"; do
 
   echo "===== [$(date '+%F %T')] ---- ${CELL} (${EP}ep) ---- =====" | tee -a "$RUNNER_LOG"
 
-  CK_EP=""
-  [ -f "$CKPT" ] && CK_EP=$("$PY" "$PROBE" "$CKPT" 2>/dev/null)
+  CK_EP=""; CK_SEED=""; CK_SHA=""
+  if [ -f "$CKPT" ]; then
+    read -r CK_EP CK_SEED CK_SHA < <("$PY" "$PROBE" "$CKPT" 2>/dev/null)
+  fi
+  CFG_SHA=$(sha256sum "$CFG" | awk '{print $1}')
 
+  SRC="trained"
   WALL_MIN="NA"
   if [ -f "$MP" ]; then
     echo "[resume] ${TAG} metrics present - append without retraining" | tee -a "$RUNNER_LOG"
+    SRC="reused-metrics"
   elif [ -f "$CKPT" ] && [ "$CK_EP" = "$EP" ]; then
     echo "[resume] ${TAG} ckpt epoch=${CK_EP} matches target - eval only" | tee -a "$RUNNER_LOG"
     "$PY" evaluation/evaluate_baseline.py --baseline OursStatic --preset "$CKPT" --outdir "$EVL" \
       2>&1 | tee -a "$EVL.log" > "$EVL/eval_stdout.log"
+  elif [ -n "$CK_EP" ] && [ "$CK_EP" != "ERR" ] && [ "$CK_EP" -lt "$EP" ] 2>/dev/null; then
+    # checkpoint is from an EARLIER epoch than the target -> genuine RESUME
+    if [ "$CK_SEED" = "$SEED" ] && [ "$CK_SHA" = "$CFG_SHA" ]; then
+      echo "[resume] ${TAG} ckpt epoch=${CK_EP}<${EP}, same seed+config -> CONTINUE (no retrain)" | tee -a "$RUNNER_LOG"
+      SRC="resumed_from_ep${CK_EP}"
+      T0=$(date +%s)
+      echo "===== [$(date '+%F %T')] ${CELL} RESUME start (from ep${CK_EP} to ${EP}, seed=${SEED}) =====" | tee -a "$RUNNER_LOG"
+      "$PY" training/train.py --config "$CFG" --outdir "$TR" --epochs "$EP" --seed "$SEED" \
+        --resume "$CKPT" 2>&1 | tee -a "$TLOG" > "$TR/train_stdout.log"
+      T1=$(date +%s)
+      WALL_MIN=$(( (T1 - T0) / 60 ))
+      echo "===== [$(date '+%F %T')] ${CELL} RESUME done in ${WALL_MIN} min =====" | tee -a "$RUNNER_LOG"
+      if [ -f "$CKPT" ]; then
+        echo "===== [$(date '+%F %T')] ${CELL} EVAL =====" | tee -a "$RUNNER_LOG"
+        "$PY" evaluation/evaluate_baseline.py --baseline OursStatic --preset "$CKPT" --outdir "$EVL" \
+          2>&1 | tee -a "$EVL.log" > "$EVL/eval_stdout.log"
+      fi
+    else
+      echo "[resume] ${TAG} ckpt epoch=${CK_EP}<${EP} but seed/config MISMATCH (ck_seed=${CK_SEED} cfg=${CK_SHA:0:8} vs ${CFG_SHA:0:8}) - DISCARD, retrain" | tee -a "$RUNNER_LOG"
+      mv "$CKPT" "${CKPT}.partial_ep${CK_EP}"
+      T0=$(date +%s)
+      echo "===== [$(date '+%F %T')] ${CELL} TRAIN start (epochs=${EP} seed=${SEED}) =====" | tee -a "$RUNNER_LOG"
+      "$PY" training/train.py --config "$CFG" --outdir "$TR" --epochs "$EP" --seed "$SEED" \
+        2>&1 | tee -a "$TLOG" > "$TR/train_stdout.log"
+      T1=$(date +%s)
+      WALL_MIN=$(( (T1 - T0) / 60 ))
+      echo "===== [$(date '+%F %T')] ${CELL} TRAIN done in ${WALL_MIN} min =====" | tee -a "$RUNNER_LOG"
+      if [ -f "$CKPT" ]; then
+        echo "===== [$(date '+%F %T')] ${CELL} EVAL =====" | tee -a "$RUNNER_LOG"
+        "$PY" evaluation/evaluate_baseline.py --baseline OursStatic --preset "$CKPT" --outdir "$EVL" \
+          2>&1 | tee -a "$EVL.log" > "$EVL/eval_stdout.log"
+      fi
+    fi
   else
     if [ -f "$CKPT" ]; then
-      echo "[resume] ${TAG} ckpt epoch=${CK_EP} != ${EP} - DISCARD partial, retrain" | tee -a "$RUNNER_LOG"
+      echo "[resume] ${TAG} ckpt epoch=${CK_EP} unexpected - DISCARD partial, retrain" | tee -a "$RUNNER_LOG"
       mv "$CKPT" "${CKPT}.partial_ep${CK_EP}"
     fi
     T0=$(date +%s)
@@ -151,7 +192,7 @@ for CELL in "${CELLS[@]}"; do
     continue
   fi
 
-  CK_EP=$("$PY" "$PROBE" "$CKPT" 2>/dev/null)
+  CK_EP=$("$PY" "$PROBE" "$CKPT" 2>/dev/null | awk '{print $1}')
   if [ "$CK_EP" != "$EP" ]; then
     echo "[FAIL] ${TAG} checkpoint epoch=${CK_EP} != ${EP} - row flagged" | tee -a "$RUNNER_LOG"
   else
@@ -161,9 +202,9 @@ for CELL in "${CELLS[@]}"; do
   read -r PEAK_MEM FINAL_LOSS <<< "$(extract_train_stats "$TLOG")"
 
   "$PY" - "$VAR" "$CELL" "$Z" "$EP" "$SEED" "$COMMIT" "$CSV" "$MP" \
-        "$WALL_MIN" "$PEAK_MEM" "$FINAL_LOSS" <<'PYEOF'
+        "$WALL_MIN" "$PEAK_MEM" "$FINAL_LOSS" "$SRC" <<'PYEOF'
 import json, sys
-(var, cell, z, ep, seed, commit, csv, mp, wall, mem, floss) = sys.argv[1:12]
+(var, cell, z, ep, seed, commit, csv, mp, wall, mem, floss, src) = sys.argv[1:13]
 m = json.load(open(mp))
 g = lambda k, d=0.0: m.get(k, d)
 def num(v):
@@ -181,7 +222,7 @@ row = [var, cell, z, "ebase", ep,
        num(g("mAP50")), num(g("mAP50_95")),
        num(g("da_mIoU")), num(g("da_fg_iou")),
        num(g("lane_mIoU")), num(g("lane_fg_iou")),
-       str(mem), str(floss), str(wall), seed, "trained", commit]
+       str(mem), str(floss), str(wall), seed, src, commit]
 with open(csv, "a") as f:
     f.write(",".join(row) + "\n")
 print("APPENDED:", ",".join(row))

@@ -13,6 +13,7 @@ Usage:
     gpu_env/bin/python training/train.py --config configs/train_stageD.yaml --num-images 1000 --epochs 2
 """
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -245,6 +246,10 @@ def main():
     ap.add_argument("--epochs", type=int, default=0, help="override epochs")
     ap.add_argument("--seed", type=int, default=0, help="random seed")
     ap.add_argument("--init", default=None, help="checkpoint to initialize weights from")
+    ap.add_argument("--resume", default=None,
+                    help="resume training from a checkpoint (continue from its saved epoch; "
+                         "restores optimizer/scheduler/RNG so the result is identical to an "
+                         "uninterrupted run)")
     ap.add_argument("--outdir", default=None)
     ap.add_argument("--device", default=None, help="cuda[:N] or cpu (auto: cuda if available)")
     ap.add_argument("--allow-cpu", action="store_true",
@@ -259,6 +264,9 @@ def main():
 
     with open(args.config) as f:
         cfg = yaml.safe_load(f)
+    # config fingerprint: lets the launcher refuse to resume across a config change
+    _CFG_RAW = open(args.config, "rb").read()
+    _CFG_SHA = hashlib.sha256(_CFG_RAW).hexdigest()
     torch.manual_seed(args.seed)
     import numpy as _np
     _np.random.seed(args.seed)
@@ -391,15 +399,67 @@ def main():
                       weight_decay=float(tr.get("weight_decay", 5e-4)))
     sched = optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs * max(len(loader), 1))
 
-    for ep in range(1, epochs + 1):
+    # ---- resume from latest completed checkpoint (stop -> continue) ----
+    # Restores model weights, optimizer, LR scheduler and the full RNG state
+    # (torch default + CUDA + numpy + python + DataLoader generator) so that a
+    # run resumed after an interruption is BIT-FOR-BIT equivalent to a run that
+    # was never interrupted. This is what makes the pipeline stop-safe without
+    # compromising experimental rigor.
+    start_epoch = 1
+    if args.resume:
+        rp = args.resume if os.path.isabs(args.resume) else os.path.join(outdir, args.resume)
+        if os.path.exists(rp):
+            rck = torch.load(rp, map_location=device, weights_only=False)
+            ms = rck.get("model_state")
+            if ms is not None:
+                cur = model.state_dict()
+                compat = {k: v for k, v in ms.items()
+                          if k in cur and cur[k].shape == v.shape}
+                model.load_state_dict(compat, strict=False)
+            if "opt_state" in rck:
+                opt.load_state_dict(rck["opt_state"])
+            if "sched_state" in rck:
+                sched.load_state_dict(rck["sched_state"])
+            rng = rck.get("rng")
+            if rng:
+                if rng.get("torch") is not None:
+                    torch.set_rng_state(rng["torch"])
+                if rng.get("cuda") is not None and torch.cuda.is_available():
+                    torch.cuda.set_rng_state_all(rng["cuda"])
+                if rng.get("numpy") is not None:
+                    _np.random.set_state(rng["numpy"])
+                if rng.get("random") is not None:
+                    _rnd.setstate(rng["random"])
+                if rng.get("loader_gen") is not None:
+                    g.set_state(rng["loader_gen"])
+            start_epoch = int(rck.get("epoch", 0)) + 1
+            print(f"[train] RESUME from {rp}: start_epoch={start_epoch} "
+                  f"(saved epoch={rck.get('epoch')}, cfg_sha={rck.get('cfg_sha','?')[:8]})", flush=True)
+        else:
+            print(f"[train] --resume {rp} not found; training fresh from epoch 1", flush=True)
+
+    for ep in range(start_epoch, epochs + 1):
         avg = train_one_epoch(model, loader, loss_fn, opt, device, cfg, stage, ep,
                               log_path, max_steps=tr.get("max_steps"), kd=kd,
                               kd_offline=kd_offline,
                               print_every=max(args.log_every, 1))
         sched.step()
         ckpt = os.path.join(outdir, "checkpoint.pt")
-        torch.save({"epoch": ep, "model_state": model.state_dict(),
-                    "opt_state": opt.state_dict()}, ckpt)
+        torch.save({
+            "epoch": ep,
+            "model_state": model.state_dict(),
+            "opt_state": opt.state_dict(),
+            "sched_state": sched.state_dict(),
+            "seed": args.seed,
+            "cfg_sha": _CFG_SHA,
+            "rng": {
+                "torch": torch.get_rng_state(),
+                "cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
+                "numpy": _np.random.get_state(),
+                "random": _rnd.getstate(),
+                "loader_gen": g.get_state(),
+            },
+        }, ckpt)
         line = f"[stage {stage}] ep {ep} DONE avg_loss={avg.get('total',0):.4f} saved {ckpt}"
         print(line, flush=True)
         with open(log_path, "a") as f:

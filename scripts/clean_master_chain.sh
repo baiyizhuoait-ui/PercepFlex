@@ -5,23 +5,41 @@
 #
 # RESUME-SAFE: every step first checks whether its CSV row already exists
 # (cell + seed). If so it is SKIPPED, so a killed chain can be relaunched
-# without redoing completed steps or creating duplicate rows.
+# without redoing completed steps or creating duplicate rows. Furthermore the
+# underlying training (train.py + phase4b_run.sh) is now epoch-resume-safe: an
+# interrupted job continues from its latest completed epoch, not from scratch.
+#
+# STOP SAFELY: to halt the chain, NEVER `kill` the master process (that kills
+# the whole process group, including the running train.py). Instead:
+#     touch experiments/phase4a/STOP_CHAIN
+# The chain finishes the current step, then exits cleanly before the next one.
+# To abort a running train.py, kill ONLY its PID; relaunch this chain and the
+# resume logic picks up from the last completed epoch.
 #
 # NOTE: DataLoader num_workers child processes show full 'train.py' cmdlines;
-# they are NOT separate jobs. Never kill them. Only ever kill the run.sh PID.
+# they are NOT separate jobs. Never kill them.
 set -u
 cd /home/mycode/ai_study/trac
 RUN="bash scripts/phase4b_run.sh"
 LOG=experiments/phase4a/clean_master_chain.log
+STOP_FILE="experiments/phase4a/STOP_CHAIN"
+maybe_stop() {
+  if [ -f "$STOP_FILE" ]; then
+    log "STOP_CHAIN present - halting now (no process killed). Remove it to resume."
+    exit 0
+  fi
+}
 
-# row_exists <csv> <cell> [seed]  -> exit 0 if a completed row is present
+# row_exists <csv> <cell> [seed]  -> exit 0 if a COMPLETED row is present.
+# A failed/stale row (mAP50=NA or source=failed-no-metrics) does NOT count as
+# done: the step must (re)run. Only rows with real metrics block re-execution.
 row_exists() {
   local csv="$1" cell="$2" seed="${3:-}"
   [ -f "$csv" ] || return 1
   if [ -n "$seed" ]; then
-    awk -F, -v c="$cell" -v s="$seed" 'NR>1 && $2==c && $18==s {f=1} END{exit !f}' "$csv"
+    awk -F, -v c="$cell" -v s="$seed" 'NR>1 && $2==c && $18==s && $9!="NA" && $19!="failed-no-metrics" {f=1} END{exit !f}' "$csv"
   else
-    awk -F, -v c="$cell" 'NR>1 && $2==c {f=1} END{exit !f}' "$csv"
+    awk -F, -v c="$cell" 'NR>1 && $2==c && $9!="NA" && $19!="failed-no-metrics" {f=1} END{exit !f}' "$csv"
   fi
 }
 
@@ -30,6 +48,7 @@ log() { echo "[$(date '+%F %T')] $*" | tee -a "$LOG"; }
 log "START clean master chain (Plan B+, resume-safe)  seed plan: danc s1/s2 20ep, dp2b 4ep, lane8 20ep, da14 4ep"
 
 # STEP1: danc seed1 20ep -> e20 csv (k-means default validation, cross-seed)
+maybe_stop
 if row_exists experiments/phase5/phase5_det_e20_results.csv danc_z16 1; then
   log "STEP1 SKIP (danc_z16 seed1 already in e20 csv)"
 else
@@ -40,6 +59,7 @@ else
 fi
 
 # STEP2: danc seed2 20ep -> e20 csv
+maybe_stop
 if row_exists experiments/phase5/phase5_det_e20_results.csv danc_z16 2; then
   log "STEP2 SKIP (danc_z16 seed2 already in e20 csv)"
 else
@@ -50,6 +70,7 @@ else
 fi
 
 # STEP3: dp2b 4ep -> probe csv (D3b vs danc 4ep, H21 closure)
+maybe_stop
 if row_exists experiments/phase5/phase5_det_probe_results.csv dp2b_z16; then
   log "STEP3 SKIP (dp2b_z16 already in probe csv)"
 else
@@ -60,6 +81,7 @@ else
 fi
 
 # STEP4: lane8 20ep -> lane8 csv (4B-5 lane label widen 8px train / 2px eval)
+maybe_stop
 if row_exists experiments/phase5/phase5_lane8_e20.csv lane8_z16; then
   log "STEP4 SKIP (lane8_z16 already in lane8 csv)"
 else
@@ -70,6 +92,7 @@ else
 fi
 
 # STEP5: da14 4ep -> da14 csv (4B-6 DA head 1/4 + f1 skip, new code, validated CPU fwd/bwd)
+maybe_stop
 if row_exists experiments/phase5/phase5_da14_results.csv da14_z16; then
   log "STEP5 SKIP (da14_z16 already in da14 csv)"
 else
