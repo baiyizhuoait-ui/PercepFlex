@@ -79,14 +79,24 @@ def main():
     # ---- D1 primary (H19) ----
     lines.append("")
     lines.append("D1 (primary, H19): danc mAP50 gain >= 2x noise (0.0292)")
-    g1, r1 = delta("danc_z16", "mAP50")
-    if g1 is None:
+    # Seed-aware: report EVERY danc_z16 row (Plan B+ runs seed1 AND seed2 at 20ep
+    # for cross-seed stability; a single-row CSV is the legacy 4-epoch probe case).
+    danc_rows = by_cell.get("danc_z16", [])
+    d1_pass = False
+    if not danc_rows:
         lines.append("  danc_z16: NOT RUN")
-        d1_pass = False
-    else:
-        lines.append("  " + verdict(g1, NOISE["mAP50"], "danc mAP50"))
-        lines.append(f"  mAP50_95: {base['mAP50_95']} -> {r1['mAP50_95']}")
-        d1_pass = g1 >= 2 * NOISE["mAP50"]
+    for r1 in danc_rows:
+        seed = r1.get("seed", "?")
+        g1 = (f(r1, "mAP50") - f(base, "mAP50")) \
+            if (f(r1, "mAP50") is not None and f(base, "mAP50") is not None) else None
+        if g1 is None:
+            lines.append(f"  danc_z16 (seed={seed}): MISSING/empty row -> cannot score")
+            continue
+        lines.append("  " + verdict(g1, NOISE["mAP50"], f"danc mAP50 (seed={seed})"))
+        lines.append(f"  mAP50_95: {base['mAP50_95']} -> {r1['mAP50_95']} (seed={seed})")
+        if g1 >= 2 * NOISE["mAP50"]:
+            d1_pass = True
+    r1 = danc_rows[0] if danc_rows else None
 
     # ---- D2 mechanism ----
     lines.append("")
