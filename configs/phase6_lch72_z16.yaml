@@ -1,0 +1,35 @@
+# Phase 6 EXP-1 strict FLOPs-parity cell: more channels @ 1/8.
+# lane_hidden=72 -> 1.6336G total FLOPs vs l14f1 1.6391G (0.3% gap, well
+# inside the +/-5% budget-parity rule). Question: is spatial capacity @1/4
+# (l14f1) better than equal compute spent on channel capacity @1/8?
+# Target metric: lane_mIoU / lane_fg (anchors do not touch lane).
+model:
+  encoder:
+    stem: 16
+    stages: [32, 64, 96, 128]
+    blocks: [2, 2, 2]
+  representation:
+    z_channels: 16
+  detection:
+    nc: 1
+    from_z: true
+    z_proj: true
+    det_ch: 32
+  segmentation:
+    hidden: 32
+    lane_hidden: 72
+input_size: [640, 640]
+train:
+  stage: A
+  train_split: tri_train
+  batch_size: 16
+  num_workers: 2
+  epochs: 4
+  lr: 1e-3
+  weight_decay: 5e-4
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lambda_budget: 0.0
+  grad_clip: 10.0
+data:
+  root: data/bdd100k
