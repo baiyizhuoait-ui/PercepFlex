@@ -34,9 +34,13 @@ from models.static_model import StaticMultiTaskModel  # noqa: E402
 from models.adaptive_model import AdaptiveMultiTaskModel  # noqa: E402
 from losses.multitask_loss import MultiTaskLoss  # noqa: E402
 
-DEFAULT_ANCHORS = torch.tensor([[[4, 12], [7, 19], [11, 28]],
-                                [[17, 40], [25, 58], [38, 89]],
-                                [[62, 136], [88, 206], [124, 412]]])
+# 2026-09-09 FIX: sync the loss-side anchor default with the head-side default
+# (models/representation/det_from_z.DEFAULT_ANCHORS_3S, set by c8aca35). The old
+# aspect-flipped literal here caused loss/head anchor mismatch for every config
+# without explicit anchors -> lane8/da14 det mAP collapsed to ~0.01 while det
+# loss decreased normally. Single source of truth = import, not a copy.
+from models.representation.det_from_z import DEFAULT_ANCHORS_3S as _HEAD_ANCHORS_3S
+DEFAULT_ANCHORS = torch.tensor(_HEAD_ANCHORS_3S, dtype=torch.float32)
 
 
 def resolve_device(args):

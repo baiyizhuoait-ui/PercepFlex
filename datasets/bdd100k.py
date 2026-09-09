@@ -149,7 +149,9 @@ class BDD100KDataset(Dataset):
                 # widen the thin lane line to ~lane_train_widen px total width
                 # on the native (pre-letterbox) mask; 1px -> ~k px needs a k-1
                 # structuring element. cv2.dilate needs a binary mask.
-                k = max(3, int(self.lane_train_widen))
+                # preregistration: widen 1px -> ~8px TOTAL width; a k-1
+                # structuring element adds k-1 px per side. (was: k, giving 9px)
+                k = max(3, int(self.lane_train_widen) - 1)
                 kern = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (k, k))
                 m = cv2.dilate(m, kern, iterations=1)
             m, _, _ = letterbox(m, (self.img_size, self.img_size), color=0)
