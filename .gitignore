@@ -9,7 +9,7 @@ data/
 # ignore weights/logs at ANY depth (the old `experiments/*/...` only matched one
 # level and missed experiments/phaseX/expY/training_log.txt -> bloated commits)
 experiments/**/checkpoint.pt
-experiments/**/training_log.txt
+**/training_log.txt
 experiments/*/*.csv
 
 # ...but the aggregated sweep RESULT TABLES are the deliverable of Phase 2-B:
@@ -66,6 +66,12 @@ experiments/expF_single_teacher/kd_cache/
 **/exp4C_*.log
 **/*_diag.log
 **/status.txt
+
+# Ignore ALL run/verbose logs except the eval provenance log (deliverable).
+# This catches ad-hoc logs (ours_*.log, dyn*.log, finish.log, *_eval.log, ...)
+# that the specific patterns below might miss.
+**/*.log
+!**/eval_stdout.log
 
 # baseline 公共仓库内容由服务器自行 clone，不纳入本仓库
 baselines/
