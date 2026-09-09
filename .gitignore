@@ -69,3 +69,9 @@ experiments/expF_single_teacher/kd_cache/
 
 # baseline 公共仓库内容由服务器自行 clone，不纳入本仓库
 baselines/
+
+# Large derived cache / artifacts (never commit; GH001 rejects >100MB files)
+*.npz
+experiments/**/*.partial_*
+experiments/**/clean_master_chain.log
+
