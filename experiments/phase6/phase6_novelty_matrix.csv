@@ -1,0 +1,9 @@
+﻿candidate,literature_similarity,known_mechanism,new_combination,new_hypothesis,new_empirical_law,param_cost,expected_gain,risk,status
+k-means anchors (danc) as-is,HIGH - YOLOv3+ standard YOLOPv2 uses k-means anchors,YES,no,no,no,zero,already banked (+0.14 mAP50 20ep 2-seed),not novel alone,BANKED - not a paper claim
+capacity-supervision coupling (H-34),LOW-MED - ATSS/SimOTA ignore capacity interaction,PARTIAL (assignment known),no,YES - does assignment matter more as capacity shrinks,possible,zero,unknown - could reframe tiny-det training,4ep findings reversed twice before,EXP-03 first - PRIMARY
+task-conditional channel-vs-spatial allocation (EXP-01 H-35),MED - EfficientNet balances dims single-task; per-task binding order not found,no,YES,YES,YES if R4C- beats R8C+ at FLOPs parity,budget-parity by design,quantifiable gain-per-FLOP,1ep noise - needs 20ep confirmation,PRIMARY
+bottleneck-profile-derived asymmetric architecture (H-32/H-33),MED - YOLOPv2 asymmetric decoders heuristic,YES (asymmetry known),YES - profile-derived + budget-parity,YES,partial (gain-per-FLOP law),parity-enforced,moderate,drift into module-stacking,FIRST BRICK = danc+l14f1 combined probe
+dual-Z low/high (H-25),HIGH - FPN/HRNet family,YES,partial,no,no,+0.5-1.0 GFLOPs,unknown,cost + collision,DEFER round 2
+dynamic lane resolution per-image (H-27),MED-HIGH - DRNet NeurIPS21 spatial sampling ECCV20,YES (classification),YES - task-conditional MTL driving,no yet,none,oracle=0 net=high,unknown,oracle may show all images need 1/4,GATED on offline oracle study
+sparse 1/4 lane refinement (H-29),MED - foveated/sparse inference known,YES,YES - lane-region-conditioned MTL,partial,none,+0.1-0.3 GFLOPs,unknown,needs H-23 dense first,GATED on H-23
+spatial routing (H-26),HIGH - AdaShare ETR TaskPrompter,YES,partial,no,no,router params,unknown,weak evidence + high collision,DEPRIORITIZED

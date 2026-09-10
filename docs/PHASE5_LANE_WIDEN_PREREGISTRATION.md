@@ -1,11 +1,11 @@
-# 4B-5 lane label widening — preregistered before running
+# P4B-EXP-05 lane label widening — preregistered before running
 
 Registered 2026-09-08 23:2x, before `lane8_z16` was trained. Decision rules are
 fixed here; the verdict comes from the numbers, not from hindsight.
 
 ## Hypothesis (H-new, supervision side)
 
-Phase 4B-2 proved lane position is a *deep-map* property, and Phase 4A/5 error
+P4B-EXP-02 proved lane position is a *deep-map* property, and Phase 4A/5 error
 geometry proved lane is geometrically starved: our lane head trains and is
 evaluated on the same ~2px thin mask (datasets/bdd100k.py binarises
 `0 < m < 255`), while the model paints ~3.37x the true area (precision ~0.20).
@@ -38,7 +38,7 @@ outcomes are possible and both are informative.
 |---|---|---|
 | **D5-1** | `|lane8 - baseline| >= 2x noise (0.0128)` on lane_fg | effect exists; sign decides direction |
 | **D5-2** | if lane8 > baseline by 2x noise | SUPERVISION SUPPORTED: training on widened lines lifts thin-line IoU → a pure supervision gain at zero architecture cost; carry it as a default recipe change |
-| **D5-3** | if lane8 < baseline by 2x noise | widening HURTS our over-painting model → confirms the precision problem is architectural (no supervision fix recovers it); a candidate for the high-res output head (4B-6) |
+| **D5-3** | if lane8 < baseline by 2x noise | widening HURTS our over-painting model → confirms the precision problem is architectural (no supervision fix recovers it); a candidate for the high-res output head (P4B-EXP-06) |
 | **D5-4** | |lane8 - baseline| < 1x noise | widening is neutral at 20ep → not the binding supervision knob |
 | **D4b** | `|da_fg|`, `|mAP50|` move < 2x noise | control: a lane-only change must stay lane-only |
 
@@ -49,7 +49,7 @@ is consistent with every published BDD100K model — a direct hit on a task that
 has resisted every capacity-side lever. If D5-3 lands, it would be the first
 clean demonstration that lane's problem is *localisation on thin lines*, not
 missing supervision, which redirects to the high-resolution output head
-(4B-6). Either way a single 20ep run disambiguates two live hypotheses.
+(P4B-EXP-06). Either way a single 20ep run disambiguates two live hypotheses.
 
 No seed replication is registered yet: that is a follow-on only if the effect
 is large enough to matter, and the GPU budget for the night is shared with the

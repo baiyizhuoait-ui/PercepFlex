@@ -1,0 +1,33 @@
+{
+  "model": "OursStatic-experiments/phase6/exp6_e7_z16_old/checkpoint.pt",
+  "split": "tri_val",
+  "input_size": [
+    640,
+    640
+  ],
+  "eval_fwd_ms": 7.564,
+  "eval_fps": 132.2,
+  "mAP50": 0.3879,
+  "mAP50_95": 0.1471,
+  "det_n_gt": 108363,
+  "det_n_pred": 2964662,
+  "det_AP50_small": 0.1783,
+  "det_AP5095_small": 0.0467,
+  "det_recall50_small": 0.665,
+  "det_ngt_small": 74605,
+  "det_AP50_medium": 0.5464,
+  "det_AP5095_medium": 0.269,
+  "det_recall50_medium": 0.9553,
+  "det_ngt_medium": 25805,
+  "det_AP50_large": 0.3854,
+  "det_AP5095_large": 0.2137,
+  "det_recall50_large": 0.9668,
+  "det_ngt_large": 7953,
+  "da_pixel_acc": 0.9305,
+  "da_fg_iou": 0.7084,
+  "da_mIoU": 0.8124,
+  "lane_pixel_acc": 0.974,
+  "lane_fg_iou": 0.1722,
+  "lane_mIoU": 0.573,
+  "lane_line_acc": 0.8152
+}

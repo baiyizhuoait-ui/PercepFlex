@@ -11,7 +11,7 @@
 
 > 能否学习一个 Compact Driving Representation，并由 Task-Resource Router 按「任务 × 资源 × 表示」动态分配模型容量，让**同一个模型**在不同计算预算下运行？
 
-核心假设：**H1**（task-wise 动态分配优于统一宽度）、**H2**（紧凑表示保留三任务信息）、**H3**（单模型覆盖 Pareto 曲线）、**H4**（跨架构 teacher 蒸馏提升紧凑表示）。
+核心假设：**H-01**（task-wise 动态分配优于统一宽度）、**H-02**（紧凑表示保留三任务信息）、**H-03**（单模型覆盖 Pareto 曲线）、**H-04**（跨架构 teacher 蒸馏提升紧凑表示）。
 
 ---
 
@@ -44,7 +44,7 @@
 | Ours Static 0.25/0.5/1.0 | 0.78/0.92/1.47G | 0.234/0.254/0.261 | 0.805/0.867/0.854 | 0.125/0.194/0.184 | 129/131/141 |
 | Ours Dynamic（平均 0.90G） | 0.90G | 0.243 | 0.837 | 0.167 | 136 |
 
-**Phase 1 关键发现**：Dynamic ≈ Static 插值（H3 支持）；但 **H1 弱**（learned<random<fixed），
+**Phase 1 关键发现**：Dynamic ≈ Static 插值（H-03 支持）；但 **H-01 弱**（learned<random<fixed），
 oracle 上界只有 +0.0125 DA。→ 进入 Phase 1-B 深入验证。
 
 ---
@@ -59,7 +59,7 @@ oracle 上界只有 +0.0125 DA。→ 进入 Phase 1-B 深入验证。
 | Dynamic（A6-B2-C2-D2 管线，0.90G） | 0.1176±0.109 | 0.766±0.081 |
 
 **Case C 确认**：等平均 FLOPs 下独立训练的 Static 全面优于 Dynamic，且 Dynamic 训练高度不稳定
-（部分种子 router 对 DA 塌缩到 tiny → 头弱化）。**H1 不成立**。
+（部分种子 router 对 DA 塌缩到 tiny → 头弱化）。**H-01 不成立**。
 
 ### Experiment D：紧凑表示容量（0.23→2.0M，全量）
 
@@ -70,7 +70,7 @@ oracle 上界只有 +0.0125 DA。→ 进入 Phase 1-B 深入验证。
 | ours_1.0M | 0.959M | 0.295 | 0.852 | 0.194 |
 | ours_2.0M | 1.980M | 0.319 | 0.845 | 0.194 |
 
-**H2 支持**：0.23M 保留 2.0M 的 mAP 0.79× / DA 0.99× / Lane 0.90×；容量敏感性 **Detection > Lane > DA**
+**H-02 支持**：0.23M 保留 2.0M 的 mAP 0.79× / DA 0.99× / Lane 0.90×；容量敏感性 **Detection > Lane > DA**
 （DA 在 0.5M 即饱和）——解释了路由收益上界小的原因。
 
 ### Experiment F/G：单 teacher 跨架构 KD（全量在线 + 10k×10 公平离线）
@@ -89,7 +89,7 @@ oracle 上界只有 +0.0125 DA。→ 进入 Phase 1-B 深入验证。
 | +TwinLiteNet+ | 0.1434 (+0.001) | 0.8197 (+0.021) | 0.1615 (+0.008) |
 | +TriLiteNet | 0.1443 (+0.002) | 0.8206 (+0.022) | 0.1589 (+0.005) |
 
-**H4 支持**：三 teacher 均提升 student（DA +0.015~0.022）；YOLOP 检测最佳、综合最稳 → 选为 Exp I teacher。
+**H-04 支持**：三 teacher 均提升 student（DA +0.015~0.022）；YOLOP 检测最佳、综合最稳 → 选为 Exp I teacher。
 
 ### Experiment I：KD 后重测 Dynamic（四模型）
 
@@ -108,7 +108,7 @@ oracle 上界只有 +0.0125 DA。→ 进入 Phase 1-B 深入验证。
 
 ## 五、最终结论（§26 决策树 → **Route B：通用弹性模型**）
 
-> **Compact Representation（H2 ✓，信息效率高）+ Cross-Architecture KD（H4 ✓，accuracy 引擎）+ Runtime Elasticity（多档位部署灵活性，不承诺等预算 accuracy 增益）**
+> **Compact Representation（H-02 ✓，信息效率高）+ Cross-Architecture KD（H-04 ✓，accuracy 引擎）+ Runtime Elasticity（多档位部署灵活性，不承诺等预算 accuracy 增益）**
 
 论文候选结论（全部诚实测量）：
 > "紧凑表示 + 跨架构蒸馏让 0.235M 模型在轻量 baseline 水平运行并支持多计算档位弹性部署；
@@ -117,10 +117,10 @@ oracle 上界只有 +0.0125 DA。→ 进入 Phase 1-B 深入验证。
 
 | 假设 | 结论 |
 |---|---|
-| H1（task-wise 动态分配 > 统一宽度） | ✗ 不成立（oracle 上界小 + 动态训练不稳定） |
-| H2（紧凑表示保留三任务信息） | ✓ 支持 |
-| H3（单模型覆盖 Pareto） | ✓ 支持（Dynamic≈Static 插值） |
-| H4（跨架构 KD 提升 student） | ✓ 支持 |
+| H-01（task-wise 动态分配 > 统一宽度） | ✗ 不成立（oracle 上界小 + 动态训练不稳定） |
+| H-02（紧凑表示保留三任务信息） | ✓ 支持 |
+| H-03（单模型覆盖 Pareto） | ✓ 支持（Dynamic≈Static 插值） |
+| H-04（跨架构 KD 提升 student） | ✓ 支持 |
 
 ---
 
@@ -135,9 +135,9 @@ oracle 上界只有 +0.0125 DA。→ 进入 Phase 1-B 深入验证。
 
 ## 七、交付物
 
-- 各实验报告：`experiments/expA_equal_budget/EXP_A_REPORT.md`、`expD_compact_z/EXP_D_REPORT.md`、
+- 各实验报告：`experiments/phase2c/expA_equal_budget/EXP_A_REPORT.md`、`expD_compact_z/EXP_D_REPORT.md`、
   `expF_single_teacher/EXP_FG_REPORT.md`、`expI_kd_dynamic/`（metrics）、`PHASE1B_REPORT.md`
-- 图表（§22 Figure 1-6）：`experiments/figures/`（Pareto×2、容量曲线、KD 效果、KD 变体、预算分布）
+- 图表（§22 Figure 1-6）：`experiments/_figures/`（Pareto×2、容量曲线、KD 效果、KD 变体、预算分布）
 - 服务器复现手册：`docs/RUNBOOK_SERVER.md`
 - 全部代码/配置/脚本在 `trac/`（53 commits）
 

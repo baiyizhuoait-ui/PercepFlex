@@ -32,7 +32,7 @@ them out one at a time until only one is left per task.
 Ordering rule: anything answerable without training runs first, and is only
 escalated to a training run if the cheap answer says the factor is live.
 
-### 4B-1 Lane label geometry - is part of the lane deficit the label?
+### P4B-EXP-01 Lane label geometry - is part of the lane deficit the label?
 
 - **Question.** Are BDD100K lane strokes the same width in train and val? If
   not, a perfectly localised model trained on the train width is bounded at
@@ -50,9 +50,9 @@ escalated to a training run if the cheap answer says the factor is live.
 - **Status.** Running. Script `scripts/phase5_label_geometry.py`, output
   `experiments/phase5/phase5_label_geometry.csv`.
 
-### 4B-2 Feature provenance by linear readout - is 1/4 information actually there?
+### P4B-EXP-02 Feature provenance by linear readout - is 1/4 information actually there?
 
-- **Question.** H5b says the 1/4 information never reaches the lane branch. But
+- **Question.** H-05b says the 1/4 information never reaches the lane branch. But
   "the encoder has a 1/4 map" is not the same as "that map supports lane". A
   frozen-feature linear readout separates them: if a ridge/logistic classifier
   on s1 (1/4) predicts lane far better than one on F2 (1/8), the information is
@@ -64,7 +64,7 @@ escalated to a training run if the cheap answer says the factor is live.
   0.20 and `l14f1` lands at 0.20, the lateral is already delivering everything
   s1 has and going finer is pointless.
 - **Same test, free, for detection.** Run the readout for small-object presence
-  at 1/4 vs 1/8. This is the cheap version of the P2 question in 4B-3.
+  at 1/4 vs 1/8. This is the cheap version of the P2 question in P4B-EXP-03.
 - **Prediction.** A-YOLOM argues lane "requires low-level and multi-scale
   features", so the 1/4 readout should beat the 1/8 readout for lane. For DA
   the two should be close, because DA is blob-like (YOLOPv2) and the block-fill
@@ -72,7 +72,7 @@ escalated to a training run if the cheap answer says the factor is live.
 - **Falsification.** 1/4 readout <= 1/8 readout + noise for lane.
 - **Cost.** CPU only, one pass to cache features. No training of the model.
 
-### 4B-3 Detection: a 1/4 rung for the detection head
+### P4B-EXP-03 Detection: a 1/4 rung for the detection head
 
 - **Question.** Is small-object recall limited by the absence of a 1/4 feature
   in the detection head? The head currently reads F2/F3/F4 - uncompressed, but
@@ -97,7 +97,7 @@ escalated to a training run if the cheap answer says the factor is live.
   reading clears 2x noise - and per project rule, a 4-epoch result can justify
   the 20-epoch run but cannot establish the finding.
 
-### 4B-4 DA: anatomy of the false positives
+### P4B-EXP-04 DA: anatomy of the false positives
 
 - **Question.** DA loses on precision (0.72-0.87) with recall saturated
   (0.97-0.99) and paints 1.32-1.37x the true area, yet its tolerance curve is
@@ -122,7 +122,7 @@ escalated to a training run if the cheap answer says the factor is live.
 - **Cost.** CPU only, reuses existing checkpoints' predictions if cached, else
   one inference pass.
 
-### 4B-5 Conditional, only if 4B-4 says boundary: DA edge-aware auxiliary supervision
+### P4B-EXP-05 Conditional, only if P4B-EXP-04 says boundary: DA edge-aware auxiliary supervision
 
 - **Precedent.** GDA-RoadSeg's edge-aware auxiliary branch with generated edge
   supervision; AURASeg's Sobel-informed residual boundary refinement module.
@@ -132,12 +132,12 @@ escalated to a training run if the cheap answer says the factor is live.
   budget.
 - **Cost.** 2 cells x 4 epochs.
 
-### 4B-6 Conditional: detection label assignment for small objects
+### P4B-EXP-06 Conditional: detection label assignment for small objects
 
 - **Precedent.** YOLOPv3 argues hand-crafted assignment "results in ambiguous
   matching between the prior anchors and the ground truth, thus impairing
   detection performance" and replaces it with dynamic assignment.
-- **Only if 4B-3 underperforms its literature prediction.** Then the small
+- **Only if P4B-EXP-03 underperforms its literature prediction.** Then the small
   object may be present at 1/4 but not being assigned a target during training,
   which is a supervision problem rather than a resolution one.
 - **Cost.** 1 cell x 4 epochs plus a diagnostic on assignment statistics, which
@@ -151,10 +151,10 @@ escalated to a training run if the cheap answer says the factor is live.
 
 | step | cells | epochs | approx |
 |---|---|---|---|
-| 4B-1, 4B-2, 4B-4 | - | - | CPU only |
-| 4B-3 | 2 | 4 | ~1 h |
-| 4B-5 (conditional) | 2 | 4 | ~1 h |
-| 4B-6 (conditional) | 1 | 4 | ~0.5 h |
+| P4B-EXP-01, P4B-EXP-02, P4B-EXP-04 | - | - | CPU only |
+| P4B-EXP-03 | 2 | 4 | ~1 h |
+| P4B-EXP-05 (conditional) | 2 | 4 | ~1 h |
+| P4B-EXP-06 (conditional) | 1 | 4 | ~0.5 h |
 | confirmation of whatever survives | <=2 | 20 | ~4 h |
 | final 3-seed | 1 | 20 | ~6 h |
 

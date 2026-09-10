@@ -1,16 +1,16 @@
-# Phase 5 STEP 7b — 20-epoch confirmation of l14f1_z16
+# P5-STEP7b — 20-epoch confirmation of l14f1_z16
 ## Registration, written and committed BEFORE the run
 
 Date: 2026-09-08 12:35 CST. No number from this run exists yet.
 
 ## What is being confirmed
 
-The 4-epoch probe passed L1+L3 of the STEP 7 pre-registration
+The 4-epoch probe passed L1+L3 of the P5-STEP7 pre-registration
 (`PHASE5_LANE_PROBE_PREREGISTRATION.md`): adding the 1/4 lateral
 (`l14f1`) moved lane_fg +0.0151 (2.36x external noise) while the
 equal-FLOP channel control (`lch64`) moved +0.0013 (0.20x), and the
 det/DA controls stayed inside 1x noise. Per that registration, this
-authorises (does not establish) H5b: the lane bottleneck at Z=16 is
+authorises (does not establish) H-05b: the lane bottleneck at Z=16 is
 the absence of 1/4-resolution information, not channel capacity.
 
 ## Literature pre-check (user rule: search before every step)
@@ -42,13 +42,13 @@ measurement). No 20-epoch replicate exists; using the 4-epoch floor at
 Applying it on purpose.
 
 - d_lane = lane_fg(l14f1_z16, 20ep) - 0.1943
-- **d_lane >= +0.0256 (2x)** -> H5b CONFIRMED at 20 epochs. STEP 7
+- **d_lane >= +0.0256 (2x)** -> H-05b CONFIRMED at 20 epochs. P5-STEP7
   closes; bottleneck profile locks "spatial resolution (1/4 missing)"
   as the lane bottleneck.
-- **+0.0128 (1x) <= d_lane < +0.0256** -> WEAK SUPPORT. H5b stays
+- **+0.0128 (1x) <= d_lane < +0.0256** -> WEAK SUPPORT. H-05b stays
   provisional; do not build on it; record in the map as unresolved.
 - **d_lane < +0.0128** -> NOT CONFIRMED. The 4-epoch gain was a
-  short-training artifact (probe A precedent). H5b returns to OPEN and
+  short-training artifact (probe A precedent). H-05b returns to OPEN and
   the lane bottleneck question stays open.
 - Controls: det (mAP50) and DA (da_fg) of l14f1_z16 e20 must sit
   within 2x their respective noise floors of the r2_z16 e20 values.

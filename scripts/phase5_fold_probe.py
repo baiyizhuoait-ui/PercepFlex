@@ -7,16 +7,16 @@ Reads:
                                                       three probe cells)
 
 Writes:
-  experiments/phase5/phase5_hypothesis_matrix.csv   (H5a/H5b/H6/H17 updated)
+  experiments/phase5/phase5_hypothesis_matrix.csv   (H-05a/H-05b/H-06/H-17 updated)
   experiments/phase5/phase5_bottleneck_profile.csv  (per-task per-bottleneck
                                                     verdict)
   experiments/phase5/phase5_intervention_matrix.csv (per-task: intervention,
                                                     cell, gain, cost, status)
 
-The H17 status uses the precision/recall decomposition to decide whether the
+The H-17 status uses the precision/recall decomposition to decide whether the
 1/4 head moves precision (resolution was the binding constraint) or recall
-(continuity was). If precision is the one that moves, H5/H5b is the
-explanation; if recall also moves, H17 partly dissolves into H5.
+(continuity was). If precision is the one that moves, H-05/H-05b is the
+explanation; if recall also moves, H-17 partly dissolves into H-05.
 """
 import csv
 import io
@@ -41,11 +41,11 @@ def load_decision():
     l4_ok = "control FAILED" not in txt
     branch = "?"
     if l1 and l3:
-        branch = "H5b supported; extend l14f1 to 20ep"
+        branch = "H-05b supported; extend l14f1 to 20ep"
     elif l1 and not l3:
-        branch = "H5b weakly supported; spatial claim cannot be made"
+        branch = "H-05b weakly supported; spatial claim cannot be made"
     elif l2 and not l1:
-        branch = "H5a supported; H5b not"
+        branch = "H-05a supported; H-05b not"
     elif "UNRESOLVED" in txt:
         branch = "unresolved; extend two cells to 20ep"
     else:
@@ -86,23 +86,23 @@ def fold(matrix_rows, by_id, decision, eg):
             h5b_state = "WEAKLY SUPPORTED (L1 not L3)"
         else:
             h5b_state = "NOT SUPPORTED at 4ep"
-        by_id["H5b"].update(
+        by_id["H-05b"].update(
             status=h5b_state,
             evidence_available=decision_summary + "  " + decision["branch"],
             decision=decision["branch"] + (
                 "; 4ep result provisional until 20ep confirmation" if decision["l1"] else ""
             ),
         )
-        # H5a mirrors H5b roughly: l14up is the H5a cell.
+        # H-05a mirrors H-05b roughly: l14up is the H-05a cell.
         l14up = eg.get("l14up_z16")
         if l14up and float(l14up["fg_iou"]) > float(baseline["fg_iou"]) + 0.0032:
-            by_id["H5a"]["status"] = "PARTIALLY SUPPORTED"
+            by_id["H-05a"]["status"] = "PARTIALLY SUPPORTED"
         else:
-            by_id["H5a"]["status"] = "WEAKLY SUPPORTED (L2 only or none)"
+            by_id["H-05a"]["status"] = "WEAKLY SUPPORTED (L2 only or none)"
 
-        # H17 reads the recall side of the move.
+        # H-17 reads the recall side of the move.
         if l14f1 and l14f1.get("recall") and l14f1["recall"] != baseline["recall"]:
-            by_id["H17"]["status"] = (
+            by_id["H-17"]["status"] = (
                 f"OPEN (recall {'moved' if abs(float(l14f1['recall'])-float(baseline['recall'])) > 0.01 else 'did not move'} "
                 "between 1/8 and 1/4)"
             )

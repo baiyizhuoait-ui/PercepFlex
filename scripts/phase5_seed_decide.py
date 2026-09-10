@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-"""STEP 7c seed replication decision.
+"""P5-STEP7c seed replication decision.
 
 Rule fixed in docs/PHASE5_SEED_REPLICATION_REGISTRATION.md (commit a185e48),
 BEFORE the two extra seeds existed. Nothing here adapts to the numbers;
 the script only applies the rule and prints the arithmetic that produced it.
 
-    d_mean >= +0.0256            -> CONFIRMED (H5b upgraded)
+    d_mean >= +0.0256            -> CONFIRMED (H-05b upgraded)
     +0.0128 <= d_mean < +0.0256  -> WEAK (unchanged)
-    d_mean <  +0.0128            -> NOT CONFIRMED (H5b reverts to OPEN)
+    d_mean <  +0.0128            -> NOT CONFIRMED (H-05b reverts to OPEN)
 
 No seed may be dropped, and no additional seed may be added, after the
 numbers are visible.
@@ -43,7 +43,7 @@ def get(r, key, default=None):
 
 
 def main():
-    # seed 0 lives in its own CSV from the STEP 7b confirmation run;
+    # seed 0 lives in its own CSV from the P5-STEP7b confirmation run;
     # seeds 1 and 2 were appended into the replication CSV.
     observations = []          # (seed, lane_fg, mAP50, da_fg, source)
     for r in read_rows(SEED0_CSV):
@@ -88,7 +88,7 @@ def main():
         verdict = "NOT CONFIRMED"
 
     lines = []
-    lines.append("Phase 5 STEP 7c - seed replication decision")
+    lines.append("P5-STEP7c - seed replication decision")
     lines.append("=" * 62)
     lines.append("")
     lines.append("Rule fixed before the runs (docs/PHASE5_SEED_REPLICATION_REGISTRATION.md,")
@@ -115,17 +115,17 @@ def main():
     lines.append("")
 
     if verdict == "CONFIRMED":
-        lines.append("H5b is upgraded from provisional to SUPPORTED. The 1/4 lateral may")
+        lines.append("H-05b is upgraded from provisional to SUPPORTED. The 1/4 lateral may")
         lines.append("be treated as a real, replicated effect and built on.")
     elif verdict == "WEAK SUPPORT":
-        lines.append("H5b stays WEAK SUPPORT. The effect is real in direction and clearly")
+        lines.append("H-05b stays WEAK SUPPORT. The effect is real in direction and clearly")
         lines.append("non-zero, but its mean sits below the pre-set 2x bar. Treat it as a")
         lines.append("small effect: do not build the final architecture on it alone, and")
         lines.append("do not report it as a confirmed bottleneck finding without the bar")
         lines.append("being restated. Every seed landed above the 1x floor, so the")
         lines.append("direction is stable; the magnitude is the open part.")
     else:
-        lines.append("H5b reverts to OPEN. The 4-epoch probe gain did not survive at")
+        lines.append("H-05b reverts to OPEN. The 4-epoch probe gain did not survive at")
         lines.append("20 epochs once seed variance was accounted for (probe C precedent).")
 
     lines.append("")

@@ -1,9 +1,9 @@
-Phase 4B-3 detection probe - preregistered decision
+P4B-EXP-03 detection probe - preregistered decision
 baseline cell = r2_z16
 
 baseline: mAP50=0.3543 params=0.2014M flops=1.0796G lane_fg=0.1943 da_fg=0.7612
 
-D1 (primary, H19): danc mAP50 gain >= 2x noise (0.0292)
+D1 (primary, H-19): danc mAP50 gain >= 2x noise (0.0292)
   danc mAP50 (seed=1): gain +0.1439 = +9.86x noise -> PASS (>2x noise)
   mAP50_95: 0.1273 -> 0.2171 (seed=1)
   danc mAP50 (seed=2): gain +0.1417 = +9.71x noise -> PASS (>2x noise)
@@ -21,10 +21,10 @@ D2 (mechanism): the gain must land on small-object recall.
     large     13.5%
   D2 substantive: the dominant bucket is 'medium', not 'small' -> the predicted small-object channel is NOT the main mechanism. Report as formally-confirmed / substantively-weak.
 
-D3 (H20): dp2a - danc >= 1x noise (0.0146) -> grid resolution binds
+D3 (H-20): dp2a - danc >= 1x noise (0.0146) -> grid resolution binds
   dp2a_z16: NOT RUN
 
-D3b (H21): dp2b - danc >= 1x noise (0.0146) -> grid resolution binds once the stride-4 level carries real shallow features
+D3b (H-21): dp2b - danc >= 1x noise (0.0146) -> grid resolution binds once the stride-4 level carries real shallow features
   dp2b_z16: NOT RUN
 
 D4 (control): lane_fg and da_fg move < 2x noise in every cell

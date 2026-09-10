@@ -188,7 +188,7 @@ Yes, and this is worth stating plainly because it bounds what can be claimed.
 
 ---
 
-## L6. Detection supervision side (added for Phase 4B-3, before reading D1-D3)
+## L6. Detection supervision side (added for P4B-EXP-03, before reading D1-D3)
 
 Registered *before* the anchor cells were decided, so it can constrain the
 reading of the numbers rather than rationalise them afterwards.
@@ -228,18 +228,18 @@ and ranking of the boxes that are found. D2 was written to catch exactly this:
 a rise in mAP50 with no rise in small recall is a mechanism-unconfirmed
 outcome, not a pass.
 
-**P2 / high-resolution detection head (carried from the 4B-3 preregistration).**
+**P2 / high-resolution detection head (carried from the P4B-EXP-03 preregistration).**
 RSO-YOLO (BDD100K): a P2 head gives +4.6 mAP50 for +29% GFLOPs and -44% FPS.
 MHD-Net: P2 plus dilated context, +2.6 mAP at negligible cost. SPTD-YOLO: P2
 must combine upsampled semantics with shallow detail rather than use raw
 shallow features - the same semantics-from-deep / resolution-from-grid
-principle the 4B-2 lane probe found independently. Our head is far smaller than
+principle the P4B-EXP-02 lane probe found independently. Our head is far smaller than
 those baselines, so the FLOP cost of a stride-4 level here is expected to be a
 few percent, not 29%.
 
 ---
 
-## L7. Stride-4 (P2) detection heads (added for H21, before any dp2b run)
+## L7. Stride-4 (P2) detection heads (added for H-21, before any dp2b run)
 
 Registered before running the separating cell, so it constrains how a dp2b
 result may be read.
@@ -321,11 +321,11 @@ Four design facts from these papers that bear on our open questions:
 
 1. **TriLiteNet has no P2.** Detection head is P3/P4/P5 (stride 8/16/32),
    anchor-based, with k-means "auto anchor", 3 per level. It beats us by 10 mAP
-   without a stride-4 level. This is the prior registered against H21/dp2b.
+   without a stride-4 level. This is the prior registered against H-21/dp2b.
 2. **Its segmentation heads output at FULL resolution.** Input is C3 (1/8), then
    transposed conv + conv with skip connections up to 1/1. HybridNets likewise
    fuses five neck levels at **W/4 (stride 4)**, adds P2, then restores to
-   (W, H, 3). Both therefore do exactly what Phase 4B-2's linear probe pointed
+   (W, H, 3). Both therefore do exactly what P4B-EXP-02's linear probe pointed
    to independently: **deep features, high-resolution output grid**. Our heads
    output at 1/8.
 3. **HybridNets feeds P2 to the SEGMENTATION branch, not the detection head.**

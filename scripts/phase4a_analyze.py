@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Phase 4A STEP 4 - R0 vs R2 paired analysis.
+"""P4A-STEP4 - R0 vs R2 paired analysis.
 
 The central question: does detection become Z-sensitive once it is forced
 through Z? That is answered by comparing the SAME z-contrast inside R0 and
@@ -170,7 +170,7 @@ for m in METRICS:
 
 # ---------------------------------------------------------------- D : verdict per task
 p("-" * 100)
-p("### D. DID DETECTION BECOME Z-SENSITIVE?  (H1 / H2)")
+p("### D. DID DETECTION BECOME Z-SENSITIVE?  (H-01 / H-02)")
 p("-" * 100)
 p()
 det = {}
@@ -184,11 +184,11 @@ for tag in ("R0", "R2"):
     p("  %s  largest detection |z16->z128| = %.2f x noise" % (tag, worst))
 p()
 if det.get("R2", 0) > 1.0 and det.get("R2", 0) > det.get("R0", 0):
-    p("  ==> H1 SUPPORTED: detection is more Z-sensitive in R2 than in R0.")
+    p("  ==> H-01 SUPPORTED: detection is more Z-sensitive in R2 than in R0.")
     p("      The earlier 'Z does not matter for detection' was at least partly")
     p("      the R0 bypass, not a property of detection itself.")
 elif det.get("R2", 0) <= 1.0:
-    p("  ==> H2 NOT SUPPORTED at this encoder: even with the bypass removed,")
+    p("  ==> H-02 NOT SUPPORTED at this encoder: even with the bypass removed,")
     p("      detection stays inside the noise floor across z16/32/128.")
     p("      Do NOT conclude 'Z is useless' - see the explanation list below.")
     p("      The designated next test for explanation C (encoder is the binding")
@@ -199,7 +199,7 @@ p()
 
 # ---------------------------------------------------------------- E
 p("-" * 100)
-p("### E. PER-TASK Z DEMAND UNDER R2  (H3 DA, H4 lane)")
+p("### E. PER-TASK Z DEMAND UNDER R2  (H-03 DA, H-04 lane)")
 p("-" * 100)
 p()
 for task in TASKS:
@@ -220,7 +220,7 @@ p("### F. WHICH EXPLANATIONS ARE STILL OPEN")
 p("-" * 100)
 p()
 p("  R2 removes explanation B (bypass) by construction. The others are NOT")
-p("  settled by this table and need the STEP 5 diagnostics:")
+p("  settled by this table and need the P4A-STEP5 diagnostics:")
 p()
 for k, txt in [
     ("A", "task genuinely saturated at z=16"),

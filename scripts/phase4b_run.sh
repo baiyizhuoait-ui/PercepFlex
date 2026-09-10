@@ -5,7 +5,7 @@
 # does it decouple task capacity from the shared-Z width?
 #
 # Four cells, E-base, seed 0, 4 epochs, 640x640, batch 16:
-#   r2u_z16    R2 uniform  Z=16   (REUSED from Phase 4A STEP 2 sanity)
+#   r2u_z16    R2 uniform  Z=16   (REUSED from P4A-STEP2 sanity)
 #   r2u_z32    R2 uniform  Z=32
 #   r3tp_z16   R3 taskproj Z=16   det32 / lane32 / da16
 #   r3tp_z32   R3 taskproj Z=32   det32 / lane32 / da16
@@ -41,7 +41,7 @@ COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
 HEADER="variant,cell,z,encoder,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,peak_gpu_mem_mib,final_train_loss,train_wall_min,seed,source,git_commit"
 if [ ! -f "$CSV" ]; then
   echo "$HEADER" > "$CSV"
-  # r2u_z16 is not retrained: its 4ep run is Phase 4A STEP 2 sanity, and the
+  # r2u_z16 is not retrained: its 4ep run is P4A-STEP2 sanity, and the
   # model builds to identical parameters with task_proj defaulted off.
   "$PY" - "$CSV" <<'PYEOF'
 import sys, csv, os
@@ -58,7 +58,7 @@ if os.path.exists(src):
         fields = open(csv_path).readline().strip().split(",")
         with open(csv_path, "a", newline="") as fh:
             csv.DictWriter(fh, fieldnames=fields).writerow(r)
-        print("REUSED r2u_z16 from Phase 4A STEP 2 sanity:", r["mAP50"])
+        print("REUSED r2u_z16 from P4A-STEP2 sanity:", r["mAP50"])
     else:
         print("[WARN] no 4ep r2_z16 row in", src)
 else:

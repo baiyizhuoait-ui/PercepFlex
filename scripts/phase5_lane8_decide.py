@@ -1,4 +1,4 @@
-"""Phase 4B-5 lane label widening (lane8_z16) - mechanical decision.
+"""P4B-EXP-05 lane label widening (lane8_z16) - mechanical decision.
 
 lane8_z16 trains on 8px-widened lane labels, evaluates on raw 2px. Baseline is
 the committed r2_z16 20ep lane_fg = 0.1943. Rule registered in
@@ -14,7 +14,7 @@ BASE = 0.1943  # r2_z16 e20 lane_fg, committed
 rows = list(csv.DictReader(open("experiments/phase5/phase5_lane8_e20.csv")))
 lane = [r for r in rows if r["cell"] == "lane8_z16"]
 print(f"lane8_z16 20ep rows: {len(lane)}")
-out = ["Phase 4B-5 lane label widening (lane8_z16) decision"]
+out = ["P4B-EXP-05 lane label widening (lane8_z16) decision"]
 out.append(f"baseline r2_z16 e20 lane_fg = {BASE}; noise = {NOISE}")
 if not lane:
     out.append("[INCOMPLETE] lane8_z16 not present - do NOT decide")
@@ -42,7 +42,7 @@ else:
         out.append("VERDICT D5-3: widening HURTS (>= 2x noise negative). Confirms "
                    "the precision problem on thin lines is architectural (no "
                    "supervision fix recovers it) -> redirects to the high-res "
-                   "output head (4B-6).")
+                   "output head (P4B-EXP-06).")
     elif x <= -1:
         out.append("VERDICT D5-3/WEAK: widening lowers lane IoU by 1-2x noise - "
                    "direction negative but below the bar.")

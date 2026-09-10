@@ -24,8 +24,8 @@ import sys
 
 
 # ---------------------------------------------------------------------------
-# Trusted proxy table — transcribed from experiments/phase2/STEP1_REPORT.md and
-# experiments/expD_compact_z/EXP_D_REPORT.md (the project's own equal-budget runs).
+# Trusted proxy table — transcribed from experiments/phase2/P2-STEP1_REPORT.md and
+# experiments/phase2b/expD_compact_z/EXP_D_REPORT.md (the project's own equal-budget runs).
 # 0.235M & 0.5M = fixed 4ep protocol; 1.0M & 2.0M = Phase-1 3ep/2ep (epoch mismatch
 # flagged). These are JOINT encoder+Z capacity points, NOT a Z-isolated sweep.
 # ---------------------------------------------------------------------------

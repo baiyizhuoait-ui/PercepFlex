@@ -1,6 +1,6 @@
 """Probe C configs: R2 with the detection loss scaled down to 0.2.
 
-Goal (H11): equalise the three tasks' effective pull on the shared Z. Measured
+Goal (H-11): equalise the three tasks' effective pull on the shared Z. Measured
 at the Phase 4A 20ep checkpoints, ||dL_t/dZ|| is 0.0308 / 0.0059 / 0.0054 at
 z16 (det / da / lane) -> detection owns ~75% of the gradient while the pairwise
 cosines sit at ~0. Scaling det by 0.2 puts the three at ~0.0062 / 0.0059 /

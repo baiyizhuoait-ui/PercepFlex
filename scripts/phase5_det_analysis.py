@@ -1,4 +1,4 @@
-"""Phase 5 STEP 3 - what kind of detection error is left, and where is it?
+"""P5-STEP3 - what kind of detection error is left, and where is it?
 
 The question, stated precisely
 ------------------------------
@@ -11,8 +11,8 @@ remaining error so it can be given a type.
 Three decompositions, all zero-training
 ---------------------------------------
 1. SIZE. COCO-style area buckets (small < 32^2, medium 32^2..96^2, large
-   > 96^2 px) with per-bucket recall@0.5. H1 predicts the encoder advantage
-   is concentrated on small objects. H2 predicts R2 (single 1/8 input) loses
+   > 96^2 px) with per-bucket recall@0.5. H-01 predicts the encoder advantage
+   is concentrated on small objects. H-02 predicts R2 (single 1/8 input) loses
    relative to R0 (multi-scale input) specifically on small objects.
 
 2. POSITION. Recall by vertical position within the CONTENT region (letterbox
@@ -22,7 +22,7 @@ Three decompositions, all zero-training
 
 3. CROWDING / OCCLUSION. For each ground-truth box, the maximum IoU it has
    with any other ground-truth box, and the number of ground truths in the
-   image. H3 predicts recall degrades with crowding after controlling for
+   image. H-03 predicts recall degrades with crowding after controlling for
    size. If it does not, context is not the binding constraint and the
    dilation probe's failure was not a fluke of that particular design.
 

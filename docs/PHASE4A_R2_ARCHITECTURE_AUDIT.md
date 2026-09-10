@@ -64,7 +64,7 @@ F4 (1/32) -> 1x1 -> upsample to 1/8 -> add into Z -> downsample to 1/32
 This round trip is not a bypass (the path is forced through Z) but it is a
 plausible source of spatial information loss, and it makes R2's detection result
 partly a statement about the reconstruction, not only about Z width. This is
-hypothesis H7 and it is why the reconstruction probe exists.
+hypothesis H-07 and it is why the reconstruction probe exists.
 
 ## 4. Cost breakdown
 

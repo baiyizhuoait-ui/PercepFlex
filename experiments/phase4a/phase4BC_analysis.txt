@@ -96,7 +96,7 @@ and -2.53x noise at 20ep). r2p_z16 and r2d_z16 were therefore queued at
 
 
 ==============================================================================
-PROBE C  (H11: rebalance the gradient magnitudes on Z)  20 ep, seed 0
+PROBE C  (H-11: rebalance the gradient magnitudes on Z)  20 ep, seed 0
 ==============================================================================
 
 Rebalanced cells vs the R2 baseline at the same z (20ep, same seed):
@@ -163,7 +163,7 @@ C3  detection gives something up (>=2x noise on mAP50, either arm)
     C3 = PASS   (detection was sacrificed, by a very large margin)
 
 ------------------------------------------------------------------------------
-THE EXCHANGE RATE (the number that settles H11)
+THE EXCHANGE RATE (the number that settles H-11)
 
   rw_z16   gave up   13.07x noise of mAP50
            bought     0.27x noise of da_fg,    1.25x noise of lane_fg
@@ -191,7 +191,7 @@ is being used and none of the extra use reaches DA or lane.
 ------------------------------------------------------------------------------
 PRE-REGISTERED DECISION RULE
     C4=True C1=False C2=False C3=True
-    --> H11 REJECTED AS A LEVER
+    --> H-11 REJECTED AS A LEVER
     --> imbalance is real but reallocating gradient does not help the seg tasks; their ceiling is set by what Z contains
 
 ==============================================================================

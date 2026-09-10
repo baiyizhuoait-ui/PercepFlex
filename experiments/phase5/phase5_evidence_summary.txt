@@ -49,7 +49,7 @@ Established facts carried into Phase 5 as PRIOR (do not re-derive):
     correlated channels, not independent ones.
 
 ------------------------------------------------------------------------------
-C. GRADIENT COMPOSITION ON Z (Phase 4A STEP 5, 8 batches)
+C. GRADIENT COMPOSITION ON Z (P4A-STEP5, 8 batches)
 ------------------------------------------------------------------------------
 cell        gnorm_det   gnorm_da gnorm_lane   sh_det  cos(det,da)
 r0_z16        0.00000    0.00525    0.00619    0.000          nan

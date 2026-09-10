@@ -1,4 +1,4 @@
-z,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_fg,lane_mIoU,checkpoint,seed,epochs,git_commit
+﻿z,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_fg,lane_mIoU,checkpoint,seed,epochs,git_commit
 16,0.189,1.060,227.37,0.2346,0.0755,0.8315,0.7355,0.1733,0.5735,experiments/phase2c/expA_z16_s1/checkpoint.pt,1,4,591b9e37dad4c2ebef889598e3a303fcf56aa41e
 16,0.189,1.060,434.47,0.2332,0.0730,0.8092,0.7038,0.1738,0.5740,experiments/phase2c/expA_z16_s2/checkpoint.pt,2,4,591b9e37dad4c2ebef889598e3a303fcf56aa41e
 32,0.203,1.197,133.30,0.2260,0.0732,0.8258,0.7274,0.1763,0.5751,experiments/phase2c/expA_z32_s1/checkpoint.pt,1,4,591b9e37dad4c2ebef889598e3a303fcf56aa41e

@@ -1,5 +1,5 @@
 {
-  "model": "OursStatic-experiments/expD_compact_z/ours_1.0M/checkpoint.pt",
+  "model": "OursStatic-experiments/phase2b/expD_compact_z/ours_1.0M/checkpoint.pt",
   "split": "tri_val",
   "input_size": [
     640,

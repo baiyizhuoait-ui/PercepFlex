@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-"""Phase 4A STEP 5 - LEVEL 0 diagnostics. No training is involved.
+"""P4A-STEP5 - LEVEL 0 diagnostics. No training is involved.
 
 Two measurements, each attached to specific hypotheses:
 
-A. Per-task gradient on Z   (H1, H2, H5, H10)
+A. Per-task gradient on Z   (H-01, H-02, H-05, H-10)
 
    ||dL_task / dZ|| for detection / DA / lane, plus the pairwise cosine between
    those three gradient vectors.
@@ -13,9 +13,9 @@ A. Per-task gradient on Z   (H1, H2, H5, H10)
    available for the claim "the earlier Z results were masked by a bypass":
    zero means detection contributed no supervision to Z at all, non-zero means
    it did. The cosines then say whether the tasks pull Z in different
-   directions (H10).
+   directions (H-10).
 
-B. Z utilisation via effective rank   (H6, H9, and sec.19)
+B. Z utilisation via effective rank   (H-06, H-09, and sec.19)
 
    Per-channel activation statistics plus an SVD of the channel covariance.
    If z128 has roughly the same effective rank as z16, then the extra width is

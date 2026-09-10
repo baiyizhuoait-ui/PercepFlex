@@ -1,11 +1,11 @@
-"""Phase 4B STEP 2 (4B-2) - feature provenance by linear readout.
+"""P4B-STEP2 (P4B-EXP-02) - feature provenance by linear readout.
 
 Question: does the trained BASELINE encoder's 1/4 map (f1, discarded by the
 architecture) linearly encode lane location better than its 1/8 map (f2,
 what the lane head actually reads)?
 
   If a logistic probe on f1 predicts lane cells far better than one on f2,
-  the information exists and the architecture throws it away (H5b is about
+  the information exists and the architecture throws it away (H-05b is about
   the path, not the encoding). If f1 ~= f2, the encoder never encoded lane
   detail at 1/4 and the l14f1 gain must come from the lateral conv learning
   lane-specific features, not from pre-existing encoder information.

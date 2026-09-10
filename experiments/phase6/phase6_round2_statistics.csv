@@ -1,0 +1,192 @@
+block,entity,metric,value,unit,note
+EXP-07.raw,z16_old,params_M,0.2014,,
+EXP-07.raw,z16_old,flops_G,1.0796,,
+EXP-07.raw,z16_km,params_M,0.2014,,
+EXP-07.raw,z16_km,flops_G,1.0796,,
+EXP-07.raw,z32_old,params_M,0.2157,,
+EXP-07.raw,z32_old,flops_G,1.2238,,
+EXP-07.raw,z32_km,params_M,0.2157,,
+EXP-07.raw,z32_km,flops_G,1.2238,,
+EXP-07.capacity,mAP50,dCap_old(z32-z16),0.0282,,
+EXP-07.capacity,mAP50,dCap_kmeans(z32-z16),0.0118,,
+EXP-07.interaction,mAP50,interaction,-0.0164,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,mAP50,main_capacity,0.02,,
+EXP-07.main,mAP50,main_assignment,-0.0044,,
+EXP-07.gate,mAP50,interaction_in_noise_units,1.12329,x,phase5 pre-registered 4ep noise 1x = 0.0146
+EXP-07.capacity,mAP50_95,dCap_old(z32-z16),0.0169,,
+EXP-07.capacity,mAP50_95,dCap_kmeans(z32-z16),0.0069,,
+EXP-07.interaction,mAP50_95,interaction,-0.01,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,mAP50_95,main_capacity,0.0119,,
+EXP-07.main,mAP50_95,main_assignment,-0.0017,,
+EXP-07.capacity,da_mIoU,dCap_old(z32-z16),0.0153,,
+EXP-07.capacity,da_mIoU,dCap_kmeans(z32-z16),-0.0057,,
+EXP-07.interaction,da_mIoU,interaction,-0.021,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,da_mIoU,main_capacity,0.0048,,
+EXP-07.main,da_mIoU,main_assignment,0.0039,,
+EXP-07.capacity,lane_mIoU,dCap_old(z32-z16),0.0045,,
+EXP-07.capacity,lane_mIoU,dCap_kmeans(z32-z16),-0.0013,,
+EXP-07.interaction,lane_mIoU,interaction,-0.0058,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,lane_mIoU,main_capacity,0.0016,,
+EXP-07.main,lane_mIoU,main_assignment,-0.0004,,
+EXP-07.capacity,det_AP50_small,dCap_old(z32-z16),0.0351,,
+EXP-07.capacity,det_AP50_small,dCap_kmeans(z32-z16),0.0278,,
+EXP-07.interaction,det_AP50_small,interaction,-0.0073,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,det_AP50_small,main_capacity,0.03145,,
+EXP-07.main,det_AP50_small,main_assignment,5e-05,,
+EXP-07.capacity,det_AP50_medium,dCap_old(z32-z16),-0.0074,,
+EXP-07.capacity,det_AP50_medium,dCap_kmeans(z32-z16),-0.0271,,
+EXP-07.interaction,det_AP50_medium,interaction,-0.0197,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,det_AP50_medium,main_capacity,-0.01725,,
+EXP-07.main,det_AP50_medium,main_assignment,-0.02005,,
+EXP-07.capacity,det_AP50_large,dCap_old(z32-z16),0.1327,,
+EXP-07.capacity,det_AP50_large,dCap_kmeans(z32-z16),0.0391,,
+EXP-07.interaction,det_AP50_large,interaction,-0.0936,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,det_AP50_large,main_capacity,0.0859,,
+EXP-07.main,det_AP50_large,main_assignment,0.0135,,
+EXP-07.capacity,det_AP95_small,dCap_old(z32-z16),0.0141,,
+EXP-07.capacity,det_AP95_small,dCap_kmeans(z32-z16),0.0113,,
+EXP-07.interaction,det_AP95_small,interaction,-0.0028,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,det_AP95_small,main_capacity,0.0127,,
+EXP-07.main,det_AP95_small,main_assignment,-0.0007,,
+EXP-07.capacity,det_AP95_medium,dCap_old(z32-z16),0.004,,
+EXP-07.capacity,det_AP95_medium,dCap_kmeans(z32-z16),-0.01,,
+EXP-07.interaction,det_AP95_medium,interaction,-0.014,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,det_AP95_medium,main_capacity,-0.003,,
+EXP-07.main,det_AP95_medium,main_assignment,-0.0076,,
+EXP-07.capacity,det_AP95_large,dCap_old(z32-z16),0.0926,,
+EXP-07.capacity,det_AP95_large,dCap_kmeans(z32-z16),0.0337,,
+EXP-07.interaction,det_AP95_large,interaction,-0.0589,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,det_AP95_large,main_capacity,0.06315,,
+EXP-07.main,det_AP95_large,main_assignment,0.01065,,
+EXP-07.capacity,det_rec50_small,dCap_old(z32-z16),0.0098,,
+EXP-07.capacity,det_rec50_small,dCap_kmeans(z32-z16),0.0071,,
+EXP-07.interaction,det_rec50_small,interaction,-0.0027,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,det_rec50_small,main_capacity,0.00845,,
+EXP-07.main,det_rec50_small,main_assignment,-0.00405,,
+EXP-07.capacity,det_rec50_medium,dCap_old(z32-z16),0.0075,,
+EXP-07.capacity,det_rec50_medium,dCap_kmeans(z32-z16),0.002,,
+EXP-07.interaction,det_rec50_medium,interaction,-0.0055,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,det_rec50_medium,main_capacity,0.00475,,
+EXP-07.main,det_rec50_medium,main_assignment,-0.00195,,
+EXP-07.capacity,det_rec50_large,dCap_old(z32-z16),0.0125,,
+EXP-07.capacity,det_rec50_large,dCap_kmeans(z32-z16),-0.0066,,
+EXP-07.interaction,det_rec50_large,interaction,-0.0191,,dCap(km)-dCap(old); negative = opposite to H-34
+EXP-07.main,det_rec50_large,main_capacity,0.00295,,
+EXP-07.main,det_rec50_large,main_assignment,-0.00215,,
+EXP-08.arm,A_uniform,n_seeds,1,,
+EXP-08.arm,A_uniform,params_M,0.3339,,
+EXP-08.arm,A_uniform,flops_G,1.665,,
+EXP-08.arm,A_uniform,det,0.5339,,mean
+EXP-08.arm,A_uniform,det_sd,0.0,,stdev
+EXP-08.arm,A_uniform,lane,0.5879,,mean
+EXP-08.arm,A_uniform,lane_sd,0.0,,stdev
+EXP-08.arm,A_uniform,DA,0.8581,,mean
+EXP-08.arm,A_uniform,DA_sd,0.0,,stdev
+EXP-08.arm,A_uniform,det_95,0.242,,mean
+EXP-08.arm,A_uniform,det_95_sd,0.0,,stdev
+EXP-08.arm,A_uniform,lane_fg,0.2008,,mean
+EXP-08.arm,A_uniform,lane_fg_sd,0.0,,stdev
+EXP-08.arm,A_uniform,DA_fg,0.775,,mean
+EXP-08.arm,A_uniform,DA_fg_sd,0.0,,stdev
+EXP-08.arm,B_spatial,n_seeds,3,,
+EXP-08.arm,B_spatial,params_M,0.2019,,
+EXP-08.arm,B_spatial,flops_G,1.6391,,
+EXP-08.arm,B_spatial,det,0.35883,,mean
+EXP-08.arm,B_spatial,det_sd,0.00312,,stdev
+EXP-08.arm,B_spatial,lane,0.59803,,mean
+EXP-08.arm,B_spatial,lane_sd,0.00235,,stdev
+EXP-08.arm,B_spatial,DA,0.8548,,mean
+EXP-08.arm,B_spatial,DA_sd,0.00161,,stdev
+EXP-08.arm,B_spatial,det_95,0.12847,,mean
+EXP-08.arm,B_spatial,det_95_sd,0.00145,,stdev
+EXP-08.arm,B_spatial,lane_fg,0.218,,mean
+EXP-08.arm,B_spatial,lane_fg_sd,0.00394,,stdev
+EXP-08.arm,B_spatial,DA_fg,0.77007,,mean
+EXP-08.arm,B_spatial,DA_fg_sd,0.00241,,stdev
+EXP-08.arm,C_asym,n_seeds,3,,
+EXP-08.arm,C_asym,params_M,0.2019,,
+EXP-08.arm,C_asym,flops_G,1.6391,,
+EXP-08.arm,C_asym,det,0.49807,,mean
+EXP-08.arm,C_asym,det_sd,0.00598,,stdev
+EXP-08.arm,C_asym,lane,0.59507,,mean
+EXP-08.arm,C_asym,lane_sd,0.00121,,stdev
+EXP-08.arm,C_asym,DA,0.855,,mean
+EXP-08.arm,C_asym,DA_sd,0.00017,,stdev
+EXP-08.arm,C_asym,det_95,0.21667,,mean
+EXP-08.arm,C_asym,det_95_sd,0.00401,,stdev
+EXP-08.arm,C_asym,lane_fg,0.2131,,mean
+EXP-08.arm,C_asym,lane_fg_sd,0.00185,,stdev
+EXP-08.arm,C_asym,DA_fg,0.77033,,mean
+EXP-08.arm,C_asym,DA_fg_sd,0.00029,,stdev
+EXP-08.arm,ref,n_seeds,1,,
+EXP-08.arm,ref,params_M,0.2014,,
+EXP-08.arm,ref,flops_G,1.0796,,
+EXP-08.arm,ref,det,0.3543,,mean
+EXP-08.arm,ref,det_sd,0.0,,stdev
+EXP-08.arm,ref,lane,0.5847,,mean
+EXP-08.arm,ref,lane_sd,0.0,,stdev
+EXP-08.arm,ref,DA,0.8488,,mean
+EXP-08.arm,ref,DA_sd,0.0,,stdev
+EXP-08.arm,ref,det_95,0.1273,,mean
+EXP-08.arm,ref,det_95_sd,0.0,,stdev
+EXP-08.arm,ref,lane_fg,0.1943,,mean
+EXP-08.arm,ref,lane_fg_sd,0.0,,stdev
+EXP-08.arm,ref,DA_fg,0.7612,,mean
+EXP-08.arm,ref,DA_fg_sd,0.0,,stdev
+EXP-08.gain,A_uniform,d_det,0.1796,,abs vs ref
+EXP-08.gain,A_uniform,d_det_rel,0.50692,frac,
+EXP-08.gain,A_uniform,d_lane,0.0032,,abs vs ref
+EXP-08.gain,A_uniform,d_lane_rel,0.00547,frac,
+EXP-08.gain,A_uniform,d_DA,0.0093,,abs vs ref
+EXP-08.gain,A_uniform,d_DA_rel,0.01096,frac,
+EXP-08.utility,A_uniform,utility_meanrel,0.17445,frac,mean of relative gains over det/lane/DA
+EXP-08.cost,A_uniform,d_flops_G,0.5854,,
+EXP-08.cost,A_uniform,d_params_M,0.1325,,
+EXP-08.cost,A_uniform,d_flops_rel,0.54224,frac,parity rule: |frac| <= 0.05
+EXP-08.cost,A_uniform,d_params_rel,0.65789,frac,parity rule: |frac| <= 0.05
+EXP-08.cost,A_uniform,utility_per_dFLOPs,0.298,frac/G,
+EXP-08.cost,A_uniform,utility_per_dParams,1.31659,frac/M,
+EXP-08.gain,B_spatial,d_det,0.00453,,abs vs ref
+EXP-08.gain,B_spatial,d_det_rel,0.0128,frac,
+EXP-08.gain,B_spatial,d_lane,0.01333,,abs vs ref
+EXP-08.gain,B_spatial,d_lane_rel,0.0228,frac,
+EXP-08.gain,B_spatial,d_DA,0.006,,abs vs ref
+EXP-08.gain,B_spatial,d_DA_rel,0.00707,frac,
+EXP-08.utility,B_spatial,utility_meanrel,0.01422,frac,mean of relative gains over det/lane/DA
+EXP-08.cost,B_spatial,d_flops_G,0.5595,,
+EXP-08.cost,B_spatial,d_params_M,0.0005,,
+EXP-08.cost,B_spatial,d_flops_rel,0.51825,frac,parity rule: |frac| <= 0.05
+EXP-08.cost,B_spatial,d_params_rel,0.00248,frac,parity rule: |frac| <= 0.05
+EXP-08.cost,B_spatial,utility_per_dFLOPs,0.02542,frac/G,
+EXP-08.cost,B_spatial,utility_per_dParams,NA,frac/M,dParams < 5% of ref - ratio not interpretable
+EXP-08.gain,C_asym,d_det,0.14377,,abs vs ref
+EXP-08.gain,C_asym,d_det_rel,0.40578,frac,
+EXP-08.gain,C_asym,d_lane,0.01037,,abs vs ref
+EXP-08.gain,C_asym,d_lane_rel,0.01773,frac,
+EXP-08.gain,C_asym,d_DA,0.0062,,abs vs ref
+EXP-08.gain,C_asym,d_DA_rel,0.0073,frac,
+EXP-08.utility,C_asym,utility_meanrel,0.1436,frac,mean of relative gains over det/lane/DA
+EXP-08.cost,C_asym,d_flops_G,0.5595,,
+EXP-08.cost,C_asym,d_params_M,0.0005,,
+EXP-08.cost,C_asym,d_flops_rel,0.51825,frac,parity rule: |frac| <= 0.05
+EXP-08.cost,C_asym,d_params_rel,0.00248,frac,parity rule: |frac| <= 0.05
+EXP-08.cost,C_asym,utility_per_dFLOPs,0.25666,frac/G,
+EXP-08.cost,C_asym,utility_per_dParams,NA,frac/M,dParams < 5% of ref - ratio not interpretable
+EXP-08.contrast_BC,det,C_minus_B,0.13923,,anchors-only change at identical 0.2019M/1.6391G
+EXP-08.contrast_BC,det,C_minus_B_sigma,29.20836,x,"pooled 3-seed sd (B n=3, C n=3)"
+EXP-08.contrast_BC,lane,C_minus_B,-0.00297,,anchors-only change at identical 0.2019M/1.6391G
+EXP-08.contrast_BC,lane,C_minus_B_sigma,1.59068,x,"pooled 3-seed sd (B n=3, C n=3)"
+EXP-08.contrast_BC,DA,C_minus_B,0.0002,,anchors-only change at identical 0.2019M/1.6391G
+EXP-08.contrast_BC,DA,C_minus_B_sigma,0.17474,x,"pooled 3-seed sd (B n=3, C n=3)"
+EXP-08.contrast_BC,det_95,C_minus_B,0.0882,,anchors-only change at identical 0.2019M/1.6391G
+EXP-08.contrast_BC,det_95,C_minus_B_sigma,29.28902,x,"pooled 3-seed sd (B n=3, C n=3)"
+EXP-08.contrast_BC,lane_fg,C_minus_B,-0.0049,,anchors-only change at identical 0.2019M/1.6391G
+EXP-08.contrast_BC,lane_fg,C_minus_B_sigma,1.59187,x,"pooled 3-seed sd (B n=3, C n=3)"
+EXP-08.contrast_BC,DA_fg,C_minus_B,0.00027,,anchors-only change at identical 0.2019M/1.6391G
+EXP-08.contrast_BC,DA_fg,C_minus_B_sigma,0.1553,x,"pooled 3-seed sd (B n=3, C n=3)"
+EXP-08.pareto,B_spatial,dominated_on_flops,1,,1 = some arm has >= utility with <= FLOPs
+EXP-08.pareto,B_spatial,dominated_on_params,1,,
+EXP-08.pareto,C_asym,dominated_on_flops,0,,1 = some arm has >= utility with <= FLOPs
+EXP-08.pareto,C_asym,dominated_on_params,0,,
+EXP-08.pareto,A_uniform,dominated_on_flops,0,,1 = some arm has >= utility with <= FLOPs
+EXP-08.pareto,A_uniform,dominated_on_params,0,,

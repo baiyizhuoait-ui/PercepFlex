@@ -1,4 +1,4 @@
-encoder,z,params_M,flops_G,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,pareto_status,dominated_by
+﻿encoder,z,params_M,flops_G,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,pareto_status,dominated_by
 esmall,16,0.1013,0.7218,0.2687,0.0890,0.8423,0.7515,0.5818,0.1885,frontier,
 esmall,32,0.1135,0.8522,0.2810,0.0968,0.8456,0.7564,0.5841,0.1922,frontier,
 esmall,128,0.1867,1.6350,0.2639,0.0879,0.8490,0.7613,0.5855,0.1955,frontier,

@@ -1,4 +1,4 @@
-encoder,stem,stages,z,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,peak_gpu_mem_mib,final_train_loss,train_wall_min,seed,source,git_commit
+﻿encoder,stem,stages,z,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,peak_gpu_mem_mib,final_train_loss,train_wall_min,seed,source,git_commit
 esmall,12,24-40-64-80,16,20,0.1013,0.7218,135.03,0.2687,0.0890,0.8423,0.7515,0.5818,0.1885,2130,0.2290,113,0,trained,51b68394aa6a727597bd046dd79ae5553d704113
 ebase,16,32-64-96-128,16,20,0.1889,1.0597,140.62,0.3204,0.1149,0.8564,0.7723,0.5867,0.1973,2446,0.2156,NA,0,reused:phase2d/expD_z16_e20,51b68394aa6a727597bd046dd79ae5553d704113
 elarge,20,40-80-128-168,16,20,0.2915,1.4279,375.21,0.3585,0.1356,0.8589,0.7761,0.5878,0.2000,2970,0.2068,153,0,trained,51b68394aa6a727597bd046dd79ae5553d704113

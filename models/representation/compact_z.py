@@ -6,7 +6,7 @@ multi-scale features themselves (passed to task heads / router).
 
 This is deliberately simple (1x1 lateral convs + bilinear upsampling + add),
 per the taskbook: no attention, no large FPN. The *representation* itself is
-the research object (H2: one compact Z carries det + DA + lane information).
+the research object (H-02: one compact Z carries det + DA + lane information).
 """
 import torch
 import torch.nn as nn

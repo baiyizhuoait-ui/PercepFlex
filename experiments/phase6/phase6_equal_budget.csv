@@ -1,0 +1,9 @@
+﻿variant,cell,z,encoder,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,peak_gpu_mem_mib,final_train_loss,train_wall_min,seed,source,git_commit
+e8,e8_B_spatial_l14f1,16,ebase,20,0.2019,1.6391,387.07,0.3612,0.1292,0.8533,0.7678,0.5988,0.2192,NA,NA,NA,0,reused-phase4b-l14f1-e20,reused
+e8,e8_B_spatial_l14f1,16,ebase,20,0.2019,1.6391,406.7,0.3553,0.1268,0.8546,0.7698,0.5954,0.2136,NA,NA,NA,1,reused-phase4b-l14f1-e20,reused
+e8,e8_B_spatial_l14f1,16,ebase,20,0.2019,1.6391,375.5,0.36,0.1294,0.8565,0.7726,0.5999,0.2212,NA,NA,NA,2,reused-phase4b-l14f1-e20,reused
+e8,e8_C_asym_combo,16,ebase,20,0.2019,1.6391,360.66,0.5047,0.221,0.8551,0.7705,0.5962,0.2149,NA,NA,NA,0,reused-phase6-combo20-e20,reused
+e8,e8_C_asym_combo,16,ebase,20,0.2019,1.6391,419.16,0.4931,0.2131,0.8548,0.77,0.5938,0.2112,NA,NA,NA,1,reused-phase6-combo20-e20,reused
+e8,e8_C_asym_combo,16,ebase,20,0.2019,1.6391,377.94,0.4964,0.2159,0.8551,0.7705,0.5952,0.2132,NA,NA,NA,2,reused-phase6-combo20-e20,reused
+ref,e8_ref_r2z16,16,ebase,20,0.2014,1.0796,114.92,0.3543,0.1273,0.8488,0.7612,0.5847,0.1943,NA,NA,NA,0,reused-r2z16-e20,reused
+r2,e8_unif_seed0,16,ebase,20,0.3339,1.6650,423.86,0.5339,0.2420,0.8581,0.7750,0.5879,0.2008,NA,0.2020,166,0,trained,d7175c42e66ff256430c1467a441ba4072b79f2f

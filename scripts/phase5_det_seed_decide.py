@@ -1,4 +1,4 @@
-"""Phase 4B-3 detection 20ep seed confirmation - mechanical decision.
+"""P4B-EXP-03 detection 20ep seed confirmation - mechanical decision.
 
 Replicates the +0.1543 4ep gain (danc_z16, k-means anchors) at 20 epochs across
 3 seeds. The rule is registered in docs/PHASE5_DET_E20_CONFIRM_REGISTRATION.md

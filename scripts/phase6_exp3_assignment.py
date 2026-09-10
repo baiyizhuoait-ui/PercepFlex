@@ -1,11 +1,11 @@
-"""Phase 6 EXP-3 (zero-training): size-stratified anchor/assignment analysis.
+"""Phase 6 EXP-03 (zero-training): size-stratified anchor/assignment analysis.
 
 Question: in an extremely small model, is supervision quality (assignment)
 amplified relative to representation quality? We quantify the assignment
 improvement of the k-means anchor set over the old aspect-flipped default,
 stratified by GT box size (COCO side buckets), and pair it with the measured
 mAP effect sizes across runs to state the capacity-supervision coupling
-hypothesis (H-M) with its current evidence tier.
+hypothesis (H-34) with its current evidence tier.
 
 Reuses datasets.bdd100k det_targets exactly like phase5_anchor_coverage.py.
 """

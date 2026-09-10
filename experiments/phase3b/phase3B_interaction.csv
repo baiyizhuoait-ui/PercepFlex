@@ -1,4 +1,4 @@
-encoder,z,task,metric,delta_Z_vs_z16,delta_Z_esmall,interaction,noise_ref_phase2c,beyond_noise
+﻿encoder,z,task,metric,delta_Z_vs_z16,delta_Z_esmall,interaction,noise_ref_phase2c,beyond_noise
 ebase,32,detection,mAP50,+0.0018,+0.0123,-0.0105,0.0073,yes
 ebase,32,detection,mAP50_95,+0.0009,+0.0078,-0.0069,0.0032,yes
 ebase,32,DA,da_mIoU,-0.0037,+0.0033,-0.0070,0.0142,no

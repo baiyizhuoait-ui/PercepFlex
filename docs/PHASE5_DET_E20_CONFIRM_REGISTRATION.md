@@ -1,4 +1,4 @@
-# Phase 4B-3, 20-epoch confirmation of `danc` — preregistration
+# P4B-EXP-03, 20-epoch confirmation of `danc` — preregistration
 
 Written **before** the 20-epoch run is launched. D1 has already passed at
 4 epochs (`phase5_det_probe_decision.txt`: +0.1543 mAP50 = 10.57x noise), and
@@ -45,7 +45,7 @@ Noise floors are the external Phase 2-C figures used throughout:
 - **E1 (primary)** `danc_20` mAP50 - 0.3543 >= 2x noise (+0.0292), i.e.
   mAP50 >= 0.3835 -> the anchor finding is **confirmed at 20 epochs**.
   1x-2x -> WEAK. < 1x -> the 4-epoch result was a convergence-speed artefact
-  and H19 is REJECTED at full budget.
+  and H-19 is REJECTED at full budget.
 - **E2 (convergence, not a pass/fail gate)** report `danc_20 - danc_4`.
   A negative value means the 4-epoch number overshot; it is reported, not
   corrected.

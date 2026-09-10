@@ -1,7 +1,7 @@
-variant,z,det_from_z,det_verdict,da_verdict,lane_verdict,strict_shared,z_shape,params_encoder,params_representation,params_det_head,params_da_head,params_lane_head,params_total,macs_M_encoder,macs_M_representation,macs_M_det_head,macs_M_da_head,macs_M_lane_head,gflops
-R0,16,False,BYPASS Z (reads encoder only),Z-only,Z-only,no,(1, 16, 80, 80),147776,4640,8406,14016,14016,188854,325.6704,9.8304,16.5888,88.8832,88.8832,1.0597
-R2,16,True,Z-only,Z-only,Z-only,yes,(1, 16, 80, 80),147776,4640,20918,14016,14016,201366,325.6704,9.8304,26.5472,88.8832,88.8832,1.0796
-R0,32,False,BYPASS Z (reads encoder only),Z-only,Z-only,no,(1, 32, 80, 80),147776,9280,8406,18624,18624,202710,325.6704,19.6608,16.5888,118.3744,118.3744,1.1973
-R2,32,True,Z-only,Z-only,Z-only,yes,(1, 32, 80, 80),147776,9280,21430,18624,18624,215734,325.6704,19.6608,29.824,118.3744,118.3744,1.2238
-R0,128,False,BYPASS Z (reads encoder only),Z-only,Z-only,no,(1, 128, 80, 80),147776,37120,8406,46272,46272,285846,325.6704,78.6432,16.5888,295.3216,295.3216,2.0231
-R2,128,True,Z-only,Z-only,Z-only,yes,(1, 128, 80, 80),147776,37120,24502,46272,46272,301942,325.6704,78.6432,49.4848,295.3216,295.3216,2.0889
+﻿variant,z,det_from_z,det_verdict,da_verdict,lane_verdict,strict_shared,z_shape,params_encoder,params_representation,params_det_head,params_da_head,params_lane_head,params_total,macs_M_encoder,macs_M_representation,macs_M_det_head,macs_M_da_head,macs_M_lane_head,gflops,
+R0,16,False,BYPASS Z (reads encoder only),Z-only,Z-only,no,(1, 16, 80, 80),147776,4640,8406,14016,14016,188854,325.6704,9.8304,16.5888,
+R2,16,True,Z-only,Z-only,Z-only,yes,(1, 16, 80, 80),147776,4640,20918,14016,14016,201366,325.6704,9.8304,26.5472,
+R0,32,False,BYPASS Z (reads encoder only),Z-only,Z-only,no,(1, 32, 80, 80),147776,9280,8406,18624,18624,202710,325.6704,19.6608,16.5888,
+R2,32,True,Z-only,Z-only,Z-only,yes,(1, 32, 80, 80),147776,9280,21430,18624,18624,215734,325.6704,19.6608,29.824,
+R0,128,False,BYPASS Z (reads encoder only),Z-only,Z-only,no,(1, 128, 80, 80),147776,37120,8406,46272,46272,285846,325.6704,78.6432,16.5888,
+R2,128,True,Z-only,Z-only,Z-only,yes,(1, 128, 80, 80),147776,37120,24502,46272,46272,301942,325.6704,78.6432,49.4848,

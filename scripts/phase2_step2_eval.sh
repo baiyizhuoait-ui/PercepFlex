@@ -15,4 +15,4 @@ for m in s2_nokd s2_kd_YOLOP s2_kd_TLP s2_kd_TriLite; do
       --outdir "$EV/$m" > "$EV/$m.log" 2>&1
   [ -f "$EV/$m/metrics.json" ] && st "DONE $m" || st "FAIL $m"
 done
-st "STEP2_EVAL_DONE"
+st "P2-STEP2_EVAL_DONE"

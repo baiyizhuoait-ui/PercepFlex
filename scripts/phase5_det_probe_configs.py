@@ -1,4 +1,4 @@
-"""Generate the 4B-3 detection probe configs.
+"""Generate the P4B-EXP-03 detection probe configs.
 
 Only three things differ from the committed phase4b_r2u_z16 baseline:
   model.detection.anchors   (used by the head at decode time)

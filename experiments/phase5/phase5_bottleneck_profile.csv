@@ -1,4 +1,4 @@
-task,bottleneck,status,evidence_one_line
+﻿task,bottleneck,status,evidence_one_line
 detection,Detection is encoder/channel limited,OPEN,"Phase3A: E-small/E-base/E-large monotone on 6/6 metrics, detection most sensitive. Phase3C fixed-budget: encoder-heavy >"
 detection,Detection is spatial-resolution limited,OPEN,"R0 det reads F2/F3/F4 at 1/8,1/16,1/32; R2 forces det through a single 1/8 Z and detection IMPROVES (+0.0339 mAP50 at z1"
 detection,Detection is receptive-field/context limited,OPEN,"Probe B: dilation (2,4) reconstruction was WORSE than equal-parameter plain depth by 3.64x noise at 4ep; the plain-depth"

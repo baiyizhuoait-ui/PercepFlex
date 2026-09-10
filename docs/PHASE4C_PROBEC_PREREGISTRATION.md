@@ -1,7 +1,7 @@
-# Probe C — Gradient-Magnitude Rebalancing (H11)
+# Probe C — Gradient-Magnitude Rebalancing (H-11)
 
 **Pre-registered before any probe C number exists.** The runner had not been
-started when this was written; the only numbers below come from Phase 4A STEP 5
+started when this was written; the only numbers below come from P4A-STEP5
 (already committed) and from the external Phase 2-C noise floor.
 
 ---
@@ -19,7 +19,7 @@ null. Probe B is testing a second architectural explanation (receptive field of
 the reconstruction). Probe C tests an **optimisation** explanation, which is
 orthogonal to both: it leaves the architecture untouched.
 
-The measurement that motivates it, from Phase 4A STEP 5 (`phase4A_gradient_diagnostic.csv`,
+The measurement that motivates it, from P4A-STEP5 (`phase4A_gradient_diagnostic.csv`,
 20ep checkpoints, 8 batches):
 
 | cell | ‖∂L_det/∂Z‖ | ‖∂L_da/∂Z‖ | ‖∂L_lane/∂Z‖ | det share | cos(det,da) | cos(det,lane) |
@@ -34,10 +34,10 @@ imbalance alone is enough for one task to dominate the shared parameters —
 that the fix is to equalise gradient magnitudes, and that conflict is not a
 precondition. Our numbers are a textbook instance of the situation it describes.
 
-**H11: the shared Z is being monopolised by detection, and this — not Z width
+**H-11: the shared Z is being monopolised by detection, and this — not Z width
 and not head capacity — is why DA and lane do not benefit from Z.**
 
-If H11 is right, it also supplies a *competing* explanation for probe A's null:
+If H-11 is right, it also supplies a *competing* explanation for probe A's null:
 giving lane a wider projection is useless if lane barely pushes Z in the first
 place.
 
@@ -145,9 +145,9 @@ run is reported as an invalid manipulation, not as a null result.
 | outcome | verdict | next step |
 |---|---|---|
 | **C4 fails** | INVALID | report as a failed manipulation; do not touch this axis again without a different intervention (true GradNorm / uncertainty weighting) |
-| C4 passes, **C1 or C2** holds | **H11 supported** | the probe-A null may be an optimisation artefact; re-run the best task-projection cell *under balanced gradients* (A × C interaction), and treat loss balancing as a candidate ingredient of the final model |
-| C4 passes, **C3** holds, C1 and C2 fail | **H11 rejected as a lever** | imbalance is real but reallocating gradient does not help the seg tasks — their ceiling is set by what Z *contains*, which points back at probe B's answer |
-| C4 passes, nothing reaches 2× noise | **H11 not binding** | drop this axis; the shared-Z gradient composition is not where the remaining headroom is |
+| C4 passes, **C1 or C2** holds | **H-11 supported** | the probe-A null may be an optimisation artefact; re-run the best task-projection cell *under balanced gradients* (A × C interaction), and treat loss balancing as a candidate ingredient of the final model |
+| C4 passes, **C3** holds, C1 and C2 fail | **H-11 rejected as a lever** | imbalance is real but reallocating gradient does not help the seg tasks — their ceiling is set by what Z *contains*, which points back at probe B's answer |
+| C4 passes, nothing reaches 2× noise | **H-11 not binding** | drop this axis; the shared-Z gradient composition is not where the remaining headroom is |
 
 Anything landing between 1× and 2× noise is reported as *unresolved* and calls
 for a follow-up on that specific metric, not for a verdict.

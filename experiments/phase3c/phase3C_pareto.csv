@@ -1,4 +1,4 @@
-cell,params_M,flops_G,mAP50,da_mIoU,lane_mIoU,status
+﻿cell,params_M,flops_G,mAP50,da_mIoU,lane_mIoU,status
 esmall_z16,0.1013,0.7218,0.2687,0.8423,0.5818,non-dominated
 esmall_z32,0.1135,0.8522,0.2810,0.8456,0.5841,non-dominated
 midL_z32,0.1860,1.1603,0.3152,0.8532,0.5862,non-dominated

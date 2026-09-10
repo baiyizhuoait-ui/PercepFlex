@@ -54,7 +54,7 @@
 
 ## 0.4 已建立的开发基础设施
 - `trac/` 独立 git 仓库（commit 8147d8e），后续实验记录 commit_hash。
-- `scripts/smoke_baselines.py`：B1–B3 冒烟 + 参数/FLOPs/前向耗时（一键验证环境与 baseline 可用）。
+- `scripts/phase2_smoke_baselines.py`：B1–B3 冒烟 + 参数/FLOPs/前向耗时（一键验证环境与 baseline 可用）。
 - `experiments/README.md`：§22 实验记录规范（metrics.json 字段、Best/Average/Worst 硬规则）。
 - `requirements.txt` / `.gitignore` / `README.md` / `docs/TASKBOOK.md`（任务书完整存档）。
 

@@ -1,0 +1,135 @@
+﻿class,legacy_id,canonical_id,status,note
+# PercepFlex naming alias table (v3, 2026-09-10) — legacy -> canonical, one direction only.
+# status: renamed-2026-09-10 | renamed-2026-09-10-v3 | catalog-registered | task-specified
+subphase,Phase 6 Round 1,Phase 6A,renamed-2026-09-10,round-number to letter-suffix
+subphase,Phase 6 Round 2,Phase 6B,renamed-2026-09-10,round-number to letter-suffix
+subphase,Round-1,Phase 6A,renamed-2026-09-10,hyphen form
+subphase,Phase 6 Round-2,Phase 6B,renamed-2026-09-10,
+hyp,H-A,H-22,renamed-2026-09-10,letter to global number (A=22 .. N=35)
+hyp,H-B,H-23,renamed-2026-09-10,
+hyp,H-C,H-24,renamed-2026-09-10,
+hyp,H-D,H-25,renamed-2026-09-10,
+hyp,H-E,H-26,renamed-2026-09-10,
+hyp,H-F,H-27,renamed-2026-09-10,
+hyp,H-G,H-28,renamed-2026-09-10,
+hyp,H-H,H-29,renamed-2026-09-10,
+hyp,H-I,H-30,renamed-2026-09-10,
+hyp,H-J,H-31,renamed-2026-09-10,
+hyp,H-K,H-32,renamed-2026-09-10,
+hyp,H-L,H-33,renamed-2026-09-10,
+hyp,H-M,H-34,renamed-2026-09-10,capacity-supervision coupling
+hyp,H-N,H-35,renamed-2026-09-10,capacity is multi-dimensional
+hyp,H1,H-01,renamed-2026-09-10-v3,Phase 1-5 hypotheses now in scope (user decision)
+hyp,H2,H-02,renamed-2026-09-10-v3,
+hyp,H3,H-03,renamed-2026-09-10-v3,
+hyp,H4,H-04,renamed-2026-09-10-v3,
+hyp,H5,H-05,renamed-2026-09-10-v3,
+hyp,H5a,H-05a,renamed-2026-09-10-v3,sub-hypothesis suffix preserved
+hyp,H5b,H-05b,renamed-2026-09-10-v3,highest-frequency legacy id
+hyp,H5c,H-05c,renamed-2026-09-10-v3,
+hyp,H6,H-06,renamed-2026-09-10-v3,
+hyp,H6b,H-06b,renamed-2026-09-10-v3,
+hyp,H7,H-07,renamed-2026-09-10-v3,
+hyp,H7b,H-07b,renamed-2026-09-10-v3,
+hyp,H8,H-08,renamed-2026-09-10-v3,
+hyp,H9,H-09,renamed-2026-09-10-v3,
+hyp,H10,H-10,renamed-2026-09-10-v3,
+hyp,H11,H-11,renamed-2026-09-10-v3,
+hyp,H11-alt,H-11-alt,renamed-2026-09-10-v3,-alt suffix preserved
+hyp,H12,H-12,renamed-2026-09-10-v3,
+hyp,H13,H-13,renamed-2026-09-10-v3,
+hyp,H17,H-17,renamed-2026-09-10-v3,
+hyp,H18,H-18,renamed-2026-09-10-v3,
+hyp,H19,H-19,renamed-2026-09-10-v3,
+hyp,H20,H-20,renamed-2026-09-10-v3,
+hyp,H21,H-21,renamed-2026-09-10-v3,
+exp,4B-2,P4B-EXP-02,renamed-2026-09-10-v3,slash form collapsed to hyphen
+exp,4B-3,P4B-EXP-03,renamed-2026-09-10-v3,assignment/anchor experiment
+exp,4B-4,P4B-EXP-04,renamed-2026-09-10-v3,
+exp,4B-5,P4B-EXP-05,renamed-2026-09-10-v3,lane label widen
+exp,4B-6,P4B-EXP-06,renamed-2026-09-10-v3,DA head 1/4
+exp,P4B/EXP-02,P4B-EXP-02,renamed-2026-09-10-v3,slash form retired
+exp,P4B/EXP-03,P4B-EXP-03,renamed-2026-09-10-v3,
+exp,P4B/EXP-04,P4B-EXP-04,renamed-2026-09-10-v3,
+exp,P4B/EXP-05,P4B-EXP-05,renamed-2026-09-10-v3,
+exp,P4B/EXP-06,P4B-EXP-06,renamed-2026-09-10-v3,
+exp,EXP-1,EXP-01,renamed-2026-09-10,zero-padded
+exp,EXP-2,EXP-02,renamed-2026-09-10,
+exp,EXP-3,EXP-03,renamed-2026-09-10,
+exp,EXP-4,EXP-04,renamed-2026-09-10,
+exp,EXP-5,EXP-05,renamed-2026-09-10,
+exp,EXP-6,EXP-06,renamed-2026-09-10,
+exp,EXP-7,EXP-07,renamed-2026-09-10,
+exp,EXP-8,EXP-08,renamed-2026-09-10,
+step,STEP1,P4B5-STEP1,renamed-2026-09-10-v3,Phase 4B->5 closure chain (danc seed1); bare form
+step,STEP2,P4B5-STEP2,renamed-2026-09-10-v3,closure chain (danc seed2)
+step,STEP3,P4B5-STEP3,renamed-2026-09-10-v3,closure chain (dp2b)
+step,STEP4,P4B5-STEP4,renamed-2026-09-10-v3,closure chain (lane8)
+step,STEP5,P4B5-STEP5,renamed-2026-09-10-v3,closure chain (da14)
+step,ROUND2 STEP1,P6B-STEP1,renamed-2026-09-10-v3,uppercase chain header in phase6_round2_chain.sh
+# ---- bare "STEP <n>" is phase-overloaded; resolved per owning phase (scope map) ----
+step,Phase 4A STEP n,P4A-STEPn,renamed-2026-09-10-v3,"PHASE 4A · STEP 2 / HISTORICAL: was mis-read as P5-STEP before the scope fix"
+step,Phase 3C STEP 1,P3C-STEP1,renamed-2026-09-10-v3,PHASE 3C STEP 1 - BUDGET GROUPING
+step,Phase 4B STEP n,P4B-STEPn,renamed-2026-09-10-v3,Phase 4B STEP 4 (anatomy of false positives)
+step,Phase 5 STEP 6,P5-STEP6,renamed-2026-09-10-v3,Phase 5 lane causal probe STEP 6/7
+step,Phase 5 STEP 7b,P5-STEP7b,renamed-2026-09-10-v3,20ep confirmation of l14f1_z16
+step,Phase 5 STEP 7c,P5-STEP7c,renamed-2026-09-10-v3,seed replication
+step,Phase 2 STEP n,P2-STEPn,renamed-2026-09-10-v3,phase2 report files renamed P2-STEPn_REPORT.md
+step,STEP1_BUDGET_CHAIN_DONE,P2-STEP1_BUDGET_CHAIN_DONE,renamed-2026-09-10-v3,Phase-2 status marker constant
+step,STEP2_SINGLE_KD_DONE,P2-STEP2_SINGLE_KD_DONE,renamed-2026-09-10-v3,Phase-2 status marker constant
+step,STEP2_EVAL_DONE,P2-STEP2_EVAL_DONE,renamed-2026-09-10-v3,Phase-2 status marker constant
+step,STEP A,P6A-STEP2a,renamed-2026-09-10,letter-form sub-step of the overnight chain
+step,STEP B,P6A-STEP2b,renamed-2026-09-10,
+step,STEP C,P6A-STEP2c,renamed-2026-09-10,
+step,STEP D,P6A-STEP2d,renamed-2026-09-10,
+step,GPU-1,P6A-STEP1,renamed-2026-09-10,scheduling alias to execution step
+step,GPU-2,P6A-STEP2,renamed-2026-09-10,
+step,GPU-3,P6A-STEP3,renamed-2026-09-10,
+gate,GATE1,GATE-6A.1,renamed-2026-09-10,letterless gate form
+gate,GATE2,GATE-6A.2,renamed-2026-09-10,
+file,PHASE4BC_LEVEL2_DECISION_REPORT.md,PHASE4BC_LEVEL2_DECISION_REPORT.md,rule-defined,merged form is LEGAL (4B+4C); not a conflict
+task,phase6_round2_factorial.csv,phase6_round2_factorial.csv,task-specified,round-2 brief fixes this exact output path — never renamed
+task,phase6_equal_budget.csv,phase6_equal_budget.csv,task-specified,round-2 brief
+task,phase6_round2_decision.md,phase6_round2_decision.md,task-specified,round-2 brief
+task,phase6_round2_statistics.csv,phase6_round2_statistics.csv,task-specified,round-2 brief
+task,phase6_round2_chain.sh,phase6_round2_chain.sh,task-specified,kept consistent with its own outputs
+# ---- path-level aliases (kind: dir/file) — full list in scripts/naming_path_map.csv ----
+path,experiments/expA_equal_budget,experiments/phase2c/expA_equal_budget,renamed-2026-09-10-v3,HIGH: docs/PHASE2C_EXPA_RESULTS.md
+path,experiments/expD_compact_z,experiments/phase2b/expD_compact_z,renamed-2026-09-10-v3,MED
+path,experiments/expF_single_teacher,experiments/phase2b/expF_single_teacher,renamed-2026-09-10-v3,MED
+path,experiments/expI_kd_dynamic,experiments/phase2b/expI_kd_dynamic,renamed-2026-09-10-v3,MED
+path,experiments/exp_train_A,experiments/phase1b/exp_train_a,renamed-2026-09-10-v3,HIGH
+path,experiments/exp_train_D,experiments/phase1b/exp_train_d,renamed-2026-09-10-v3,HIGH
+path,experiments/exp_001,experiments/phase1b/exp_001,renamed-2026-09-10-v3,HIGH
+path,experiments/exp_static_vs_dynamic,experiments/phase1b/exp_static_vs_dynamic,renamed-2026-09-10-v3,HIGH
+path,experiments/exp_shared_vs_taskwise,experiments/phase1b/exp_shared_vs_taskwise,renamed-2026-09-10-v3,HIGH
+path,experiments/revised,experiments/phase1b/revised,renamed-2026-09-10-v3,HIGH
+path,experiments/template,experiments/_template,renamed-2026-09-10-v3,MED
+path,experiments/figures,experiments/_figures,renamed-2026-09-10-v3,MED
+path,scripts/night_master_chain.sh,scripts/phase1b_night_master_chain.sh,renamed-2026-09-10-v3,MED
+path,scripts/chain_after.sh,scripts/phase2_chain_after.sh,renamed-2026-09-10-v3,MED
+path,scripts/queue_errorgeom.sh,scripts/phase5_queue_errorgeom.sh,renamed-2026-09-10-v3,HIGH
+path,scripts/recover_step2_then_chain.sh,scripts/phase4b_recover_step2_then_chain.sh,renamed-2026-09-10-v3,HIGH
+path,configs/train_stageA.yaml,configs/phase1b_train_stage_a.yaml,renamed-2026-09-10-v3,HIGH
+path,configs/ours_0.5M.yaml,configs/phase2_ours_0.5m.yaml,renamed-2026-09-10-v3,MED
+# ---- variant-tag vocabulary (NOT renamed; registered so the tag set is closed) ----
+cell,danc,k-means default anchors,catalog-registered,variant tag vocabulary
+cell,dp2a,DA probe 2a,catalog-registered,
+cell,dp2b,DA probe 2b,catalog-registered,
+cell,lane8,lane label widen 8px,catalog-registered,
+cell,da14,DA head 1/4 + f1 skip,catalog-registered,
+cell,l14f1,lane 1/4 lateral from encoder s1 + feature1,catalog-registered,
+cell,l14up,lane 1/4 upsample,catalog-registered,
+cell,lch64,lane channels 64,catalog-registered,
+cell,lch72,lane channels 72,catalog-registered,
+cell,combo20,k-means anchors + lane 1/4 (20ep),catalog-registered,
+cell,r2d,r2 variant d,catalog-registered,
+cell,r2p,r2 variant p,catalog-registered,
+cell,r2u,r2 variant u,catalog-registered,
+cell,r3tp,r3 variant tp,catalog-registered,
+cell,rw,reweight,catalog-registered,
+cell,e7_z16_old,EXP-07 cell z16 x old-assignment,catalog-registered,
+cell,e7_z16_km,EXP-07 cell z16 x k-means,catalog-registered,
+cell,e7_z32_old,EXP-07 cell z32 x old-assignment,catalog-registered,
+cell,e7_z32_km,EXP-07 cell z32 x k-means,catalog-registered,
+cell,e8_unif_seed0,EXP-08 A-uniform arm seed0,catalog-registered,

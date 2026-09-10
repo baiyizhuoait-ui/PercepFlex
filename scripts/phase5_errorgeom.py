@@ -50,7 +50,7 @@ CELLS = [
      "experiments/phase4a/exp4A_r2_z128_e20/checkpoint.pt"),
 ]
 
-# Phase 5 STEP 7: the lane probe cells are scored through this same code
+# P5-STEP7: the lane probe cells are scored through this same code
 # path. Set PHASE5_EG_CELLS to a JSON list of [variant, cell, config,
 # checkpoint] rows to append them, so the probe is measured with the
 # identical geometry code as the Phase 4A cells.

@@ -134,18 +134,18 @@ This is why section 3 compares movement within a variant rather than R2 against 
 
 | hypothesis | status | decision |
 |---|---|---|
-| H1 - R0 shows no detection->Z effect mainly because detection bypasses Z | **supported** | Measured, not inferred: ||dL_det/dZ|| is exactly 0 in R0 at all three widths and >0 in R2. The R0 null was the bypass. |
-| H2 - Once detection is forced through Z, mAP becomes clearly Z-sensitive | **supported-partial** | Detection Z-sensitivity rises to 2.34x noise (mAP50) and 2.56x (mAP50_95), but it is not monotone: z16->z32 is 0.14x noise, only z16->z128 clears the floor. |
-| H3 - z=16 is already sufficient for DA | **supported** | DA spread is inside the noise floor in BOTH R0 (<=0.30x) and R2 (<=0.61x). Saturation is real, not a bypass artefact. |
-| H4 - Lane's Z demand is real, not R0-specific training noise | **supported** | lane_fg z16->z128 is 2.25x noise under R2 versus 1.00x under R0. The lane Z demand reproduces and strengthens under a shared bottleneck. |
-| H5 - Encoder-heavy still beats Z-heavy under a genuine shared bottleneck | **not-tested** | Phase 3C settled this under R0 only. No encoder sweep was run under R2, so the allocation law is not yet known to transfer. |
-| H6 - Compressing encoder features into Z causes irreversible information loss | **not-supported-as-stated** | No dead channels at any width, and detection IMPROVES through Z, so compression to z>=16 is not measurably lossy here. What is lost is effective dimensionality, not task performance. |
-| H7 - R2 performance depends as much on reconstruction design as on Z width | **open** | Only one reconstruction (DetFromZ, det_ch=32) was trained. Its contribution cannot be separated from Z width without a second design. |
-| H8 - A single Z can serve all three tasks | **partially-supported** | A single Z does serve all three tasks, but not optimally: detection and lane want z128, DA is indifferent at z16. It works, it is not ideal. |
-| H9 - Tasks need different granularity, so one uniform Z is suboptimal | **supported** | Task-specific demand is measurable: detection 2.34x, lane 2.25x, DA 0.21x noise over the same z16->z128 range. |
-| H10 - Task gradients conflict at Z and shape how it is used | **not-supported** | Cosines are ~0 (det-da -0.002..+0.001, det-lane ~0.000, da-lane +0.033..+0.060). Tasks are near-orthogonal, not in conflict, so conflict does not explain Z insensitivity. |
-| H6b - Extra Z capacity is allocated but not used | **supported-with-caveat** | Utilisation falls from 42.5% of channels at z16 to 24.9% at z128 (effective rank 6.79 -> 31.93 of 16 -> 128), so most added channels are redundant. Caveat: none are dead and the redundant ones still buy real gains (detection 2.34x, lane 2.25x noise), so it is low-utilisation, not pure waste. |
-| H7b - Bottleneck placement matters more than width | **not-tested** | Only one bottleneck placement was trained (Z at 1/8 resolution, compression before all three heads). Width was swept, placement was not, so the two cannot be compared yet. |
+| H-01 - R0 shows no detection->Z effect mainly because detection bypasses Z | **supported** | Measured, not inferred: ||dL_det/dZ|| is exactly 0 in R0 at all three widths and >0 in R2. The R0 null was the bypass. |
+| H-02 - Once detection is forced through Z, mAP becomes clearly Z-sensitive | **supported-partial** | Detection Z-sensitivity rises to 2.34x noise (mAP50) and 2.56x (mAP50_95), but it is not monotone: z16->z32 is 0.14x noise, only z16->z128 clears the floor. |
+| H-03 - z=16 is already sufficient for DA | **supported** | DA spread is inside the noise floor in BOTH R0 (<=0.30x) and R2 (<=0.61x). Saturation is real, not a bypass artefact. |
+| H-04 - Lane's Z demand is real, not R0-specific training noise | **supported** | lane_fg z16->z128 is 2.25x noise under R2 versus 1.00x under R0. The lane Z demand reproduces and strengthens under a shared bottleneck. |
+| H-05 - Encoder-heavy still beats Z-heavy under a genuine shared bottleneck | **not-tested** | Phase 3C settled this under R0 only. No encoder sweep was run under R2, so the allocation law is not yet known to transfer. |
+| H-06 - Compressing encoder features into Z causes irreversible information loss | **not-supported-as-stated** | No dead channels at any width, and detection IMPROVES through Z, so compression to z>=16 is not measurably lossy here. What is lost is effective dimensionality, not task performance. |
+| H-07 - R2 performance depends as much on reconstruction design as on Z width | **open** | Only one reconstruction (DetFromZ, det_ch=32) was trained. Its contribution cannot be separated from Z width without a second design. |
+| H-08 - A single Z can serve all three tasks | **partially-supported** | A single Z does serve all three tasks, but not optimally: detection and lane want z128, DA is indifferent at z16. It works, it is not ideal. |
+| H-09 - Tasks need different granularity, so one uniform Z is suboptimal | **supported** | Task-specific demand is measurable: detection 2.34x, lane 2.25x, DA 0.21x noise over the same z16->z128 range. |
+| H-10 - Task gradients conflict at Z and shape how it is used | **not-supported** | Cosines are ~0 (det-da -0.002..+0.001, det-lane ~0.000, da-lane +0.033..+0.060). Tasks are near-orthogonal, not in conflict, so conflict does not explain Z insensitivity. |
+| H-06b - Extra Z capacity is allocated but not used | **supported-with-caveat** | Utilisation falls from 42.5% of channels at z16 to 24.9% at z128 (effective rank 6.79 -> 31.93 of 16 -> 128), so most added channels are redundant. Caveat: none are dead and the redundant ones still buy real gains (detection 2.34x, lane 2.25x noise), so it is low-utilisation, not pure waste. |
+| H-07b - Bottleneck placement matters more than width | **not-tested** | Only one bottleneck placement was trained (Z at 1/8 resolution, compression before all three heads). Width was swept, placement was not, so the two cannot be compared yet. |
 
 ## 9. Stopping decision
 
@@ -195,7 +195,7 @@ CASE D does not hold because R2 is better than R0, not worse.
   Phase 2-C reference (3 seeds, 4 epochs), not a variance estimate for this phase.
   Anything within about 2x that floor should be read as unresolved.
 - **One reconstruction, one placement.** `DetFromZ` at det_ch=32 is the only design
-  trained, so H7 and the placement question are untouched.
+  trained, so H-07 and the placement question are untouched.
 - **r2_z16 was trained twice.** The first attempt was killed by an out-of-memory
   condition I caused by running a diagnostic on the same GPU mid-training. The
   reported run is the clean retry at epoch 20.
@@ -203,15 +203,15 @@ CASE D does not hold because R2 is better than R0, not worse.
   and FLOPs only.
 - **R2 beats R0 partly on head capacity**, not only on the shared bottleneck. The
   decomposition in section 7 is the honest reading and must be carried forward.
-- **No encoder sweep under R2**, so H5 is deferred rather than answered.
+- **No encoder sweep under R2**, so H-05 is deferred rather than answered.
 
 ## 12. What Phase 4A recommends next
 
 Only Level 2 probes, and at most two of them, per CASE C:
 
 - **Split-Z / task projection** (4 epochs): does a per-task projection off one shared
-  Z beat a single uniform Z at the same width? This is the direct test of H8/H9.
-- **A second reconstruction** (4 epochs): separates H7 from Z width, and tells us
+  Z beat a single uniform Z at the same width? This is the direct test of H-08/H-09.
+- **A second reconstruction** (4 epochs): separates H-07 from Z width, and tells us
   whether the ~+0.033 constant offset is reconstruction quality or just head params.
 
 Not recommended: continuing to widen Z (effective rank says the model will not use

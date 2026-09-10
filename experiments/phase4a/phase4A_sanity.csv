@@ -1,2 +1,2 @@
-variant,cell,z,encoder,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,peak_gpu_mem_mib,final_train_loss,train_wall_min,seed,source,git_commit
+﻿variant,cell,z,encoder,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,peak_gpu_mem_mib,final_train_loss,train_wall_min,seed,source,git_commit
 r2,r2_z16,16,ebase,4,0.2014,1.0796,407.38,0.2411,0.0728,0.8169,0.7146,0.5761,0.1765,2666,0.2505,26,0,trained,63fa17bacbbf34778c6353364e6652e2f462688e

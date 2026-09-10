@@ -9,8 +9,8 @@ Stages:
   D: budget-aware training (lambda_budget > 0, budget_target envelope)
 
 Usage:
-    gpu_env/bin/python training/train.py --config configs/train_stageA.yaml
-    gpu_env/bin/python training/train.py --config configs/train_stageD.yaml --num-images 1000 --epochs 2
+    gpu_env/bin/python training/train.py --config configs/phase1b_train_stage_a.yaml
+    gpu_env/bin/python training/train.py --config configs/phase1b_train_stage_d.yaml --num-images 1000 --epochs 2
 """
 import argparse
 import hashlib

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Phase 4A STEP 0 - consolidate existing evidence and build the hypothesis matrix.
+"""P4A-STEP0 - consolidate existing evidence and build the hypothesis matrix.
 
 Every number below is read from the result CSVs of the earlier phases. Nothing is
 transcribed by hand, so this file can be regenerated after any phase changes.
@@ -42,7 +42,7 @@ P3B = load(os.path.join(ROOT, "experiments/phase3b/phase3B_encoder_z.csv"))
 P3C = load(os.path.join(ROOT, "experiments/phase3c/phase3C_new_cells.csv"))
 R0 = P3A + P3B          # the full R0 3x3 grid
 p("=" * 100)
-p("PHASE 4A - STEP 0 · EXISTING EVIDENCE SUMMARY")
+p("P4A-STEP0 · EXISTING EVIDENCE SUMMARY")
 p("=" * 100)
 p("generated from result CSVs; no value in this file is hand-entered")
 p("  R0 cells (3A z16 + 3B z32/z128) : %d" % len(R0))
@@ -136,7 +136,7 @@ p("    F  task gradients conflict and suppress Z utilisation")
 p("    G  one shared Z is simply the wrong interface for these three tasks")
 p()
 p("  R2 removes explanation B by construction. The rest are still open and are")
-p("  what the diagnostics in STEP 5 are for.")
+p("  what the diagnostics in P4A-STEP5 are for.")
 
 # ---------------------------------------------------------------- 3
 p()
@@ -144,14 +144,14 @@ p("-" * 100)
 p("### 3. OPEN QUESTIONS PHASE 4A MUST SETTLE")
 p("-" * 100)
 for i, q in enumerate([
-    "Does detection become Z-sensitive once it is forced through Z? (H1, H2)",
-    "Is DA saturation real, or an artifact of the R0 information path? (H3)",
-    "Is lane's Z demand real and repeatable under a different routing? (H4)",
-    "Does encoder-heavy still beat Z-heavy under a genuine shared bottleneck? (H5)",
-    "Is the loss from compression irreversible, i.e. an information problem? (H6)",
-    "How much of any R2 result is reconstruction design rather than Z width? (H7)",
-    "Can one uniform Z serve detection + DA + lane at all? (H8, H9)",
-    "Do the three tasks fight over Z through their gradients? (H10)",
+    "Does detection become Z-sensitive once it is forced through Z? (H-01, H-02)",
+    "Is DA saturation real, or an artifact of the R0 information path? (H-03)",
+    "Is lane's Z demand real and repeatable under a different routing? (H-04)",
+    "Does encoder-heavy still beat Z-heavy under a genuine shared bottleneck? (H-05)",
+    "Is the loss from compression irreversible, i.e. an information problem? (H-06)",
+    "How much of any R2 result is reconstruction design rather than Z width? (H-07)",
+    "Can one uniform Z serve detection + DA + lane at all? (H-08, H-09)",
+    "Do the three tasks fight over Z through their gradients? (H-10)",
 ], 1):
     p("  Q%-2d %s" % (i, q))
 
@@ -181,25 +181,25 @@ with open(EV, "w") as f:
 
 # ---------------------------------------------------------------- hypothesis matrix
 H = [
-    ("H1", "R0 shows no detection->Z effect mainly because detection bypasses Z",
+    ("H-01", "R0 shows no detection->Z effect mainly because detection bypasses Z",
      "R0 vs R2 paired", "detection z-sensitivity rises from ~0 (R0) to >noise (R2)", "pending"),
-    ("H2", "Once detection is forced through Z, mAP becomes clearly Z-sensitive",
+    ("H-02", "Once detection is forced through Z, mAP becomes clearly Z-sensitive",
      "R2 z16/z32/z128", "monotone or clearly separated mAP50 across z", "pending"),
-    ("H3", "z=16 is already sufficient for DA",
+    ("H-03", "z=16 is already sufficient for DA",
      "R2 z sweep", "DA spread across z stays inside the noise floor", "pending"),
-    ("H4", "Lane's Z demand is real, not R0-specific training noise",
+    ("H-04", "Lane's Z demand is real, not R0-specific training noise",
      "R2 z sweep", "lane_fg rises with z again, reproducing the Phase 3B trend", "pending"),
-    ("H5", "Encoder-heavy still beats Z-heavy under a genuine shared bottleneck",
+    ("H-05", "Encoder-heavy still beats Z-heavy under a genuine shared bottleneck",
      "R2 budget probe", "wider encoder + narrow Z beats narrow encoder + wide Z", "pending"),
-    ("H6", "Compressing encoder features into Z causes irreversible information loss",
+    ("H-06", "Compressing encoder features into Z causes irreversible information loss",
      "R2 vs R0 at equal z", "R2 detection below R0 detection at every z", "pending"),
-    ("H7", "R2 performance depends as much on reconstruction design as on Z width",
+    ("H-07", "R2 performance depends as much on reconstruction design as on Z width",
      "reconstruction A/B", "two reconstructions differ at fixed z=16", "pending"),
-    ("H8", "A single Z can serve all three tasks",
+    ("H-08", "A single Z can serve all three tasks",
      "R2 z128 vs R0", "R2 approaches R0 on all three tasks at wide z", "pending"),
-    ("H9", "Tasks need different granularity, so one uniform Z is suboptimal",
+    ("H-09", "Tasks need different granularity, so one uniform Z is suboptimal",
      "split-Z / adapter probe", "task-specific projection beats direct heads at fixed z", "pending"),
-    ("H10", "Task gradients conflict at Z and shape how it is used",
+    ("H-10", "Task gradients conflict at Z and shape how it is used",
      "gradient diagnostic", "negative cosine between task gradients w.r.t. Z", "pending"),
 ]
 with open(HYP, "w") as f:
@@ -207,9 +207,9 @@ with open(HYP, "w") as f:
     for h, s, e, ev, st in H:
         f.write('"%s","%s","%s","%s",%s,\n' % (h, s, e, ev, st))
     # extra diagnostics that are not of the form above
-    f.write('"H6b","Extra Z capacity is allocated but not used","effective-rank diagnostic",'
+    f.write('"H-06b","Extra Z capacity is allocated but not used","effective-rank diagnostic",'
             '"effective rank of z128 close to that of z16",pending,\n')
-    f.write('"H7b","Bottleneck placement matters more than width",'
+    f.write('"H-07b","Bottleneck placement matters more than width",'
             '"bottleneck placement probe","moving compression point changes results at fixed z",pending,\n')
 
 print()

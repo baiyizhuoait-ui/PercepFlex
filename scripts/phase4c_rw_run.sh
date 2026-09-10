@@ -1,5 +1,5 @@
 #!/bin/bash
-# Phase 4A Level 2, probe C - Gradient-Magnitude Rebalancing (H11) @ 20 epochs.
+# Phase 4A Level 2, probe C - Gradient-Magnitude Rebalancing (H-11) @ 20 epochs.
 #
 # Question: is the shared Z being monopolised by detection?
 #

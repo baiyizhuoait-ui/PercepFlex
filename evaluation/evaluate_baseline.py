@@ -297,6 +297,16 @@ def main():
         m = evaluate_detection(det_preds, det_gts)
         metrics.update({"mAP50": round(m["mAP50"], 4), "mAP50_95": round(m["mAP50_95"], 4),
                         "det_n_gt": m["n_gt"], "det_n_pred": m["n_pred"]})
+        try:
+            from evaluation.metrics import evaluate_detection_persize
+            pm = evaluate_detection_persize(det_preds, det_gts)
+            for _b in ("small", "medium", "large"):
+                metrics["det_AP50_" + _b] = round(pm[_b]["AP50"], 4)
+                metrics["det_AP5095_" + _b] = round(pm[_b]["AP5095"], 4)
+                metrics["det_recall50_" + _b] = round(pm[_b]["recall50"], 4)
+                metrics["det_ngt_" + _b] = pm[_b]["n_gt"]
+        except Exception as _e:
+            print(f"[persize] failed: {_e}")
     if da_metric.conf.sum() > 0:
         metrics.update({"da_pixel_acc": round(da_metric.pixel_accuracy(), 4),
                         "da_fg_iou": round(da_metric.fg_iou(), 4),

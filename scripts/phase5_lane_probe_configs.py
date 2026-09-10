@@ -1,4 +1,4 @@
-"""Phase 5 STEP 6 - lane causal intervention configs.
+"""P5-STEP6 - lane causal intervention configs.
 
 Three cells, all at Z=16 (the width where the shared-Z design is most
 compressed, so any resolution effect is least confounded by spare capacity):

@@ -1,4 +1,4 @@
-cell,bucket_by,bucket,n_gt,recall@0.5,AP@0.5
+﻿cell,bucket_by,bucket,n_gt,recall@0.5,AP@0.5
 r2u_z16,side,small,67566,0.6217,0.1326
 r2u_z16,side,medium,29559,0.8366,0.2315
 r2u_z16,side,large,11238,0.9132,0.2919

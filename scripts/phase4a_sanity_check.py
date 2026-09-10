@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Phase 4A STEP 2 - decide whether the 4-epoch R2 sanity run may proceed.
+"""P4A-STEP2 - decide whether the 4-epoch R2 sanity run may proceed.
 
 Pass criteria are the ones the protocol lists: it trains, the loss falls, all
 three tasks produce output, nothing is NaN, and the metrics file is sane. It
@@ -28,7 +28,7 @@ def p(s=""):
 ok = True
 
 p("=" * 100)
-p("PHASE 4A · STEP 2 SANITY CHECK  (%s)" % TAG)
+p("P4A-STEP2 SANITY CHECK  (%s)" % TAG)
 p("=" * 100)
 p()
 

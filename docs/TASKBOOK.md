@@ -83,7 +83,7 @@ YOLOP、TwinLiteNet+、TriLiteNet、MDANet（可获得时）、Our Static、Our 
 
 ## 22. 实验自动记录
 统一 experiment log：experiment_id / model / commit_hash / dataset_version / input_size / parameters / FLOPs / average_latency / P50 / P95 / FPS / GPU_memory / mAP / DA_mIoU / Lane_IoU / budget_distribution / seed。
-目录 experiments/exp_001/...，每实验自动保存 config.yaml / metrics.json / training_log.txt / checkpoint.pt / allocation_statistics.csv。
+目录 experiments/phase1b/exp_001/...，每实验自动保存 config.yaml / metrics.json / training_log.txt / checkpoint.pt / allocation_statistics.csv。
 
 ## 23. 代码结构
 models/{encoder,representation,router,heads,adaptive_model.py}、losses/、distillation/、datasets/、training/、evaluation/、profiling/、visualization/、configs/、experiments/、scripts/。不许全写进一个 model.py；baseline 与 ours 可通过 config 切换。
@@ -99,11 +99,11 @@ Behavior：不同场景→不同分配；不同任务→不同容量分配。
 Reproducibility：全部结果单命令复现。
 
 ## 26. 论文假设
-H1 任务间共享特征需求不同 ⇒ task-wise dynamic allocation 比统一宽度有效。
-H2 Compact Representation 在小参数预算下保留三任务信息。
-H3 动态信息分配获得更好 Accuracy–Compute Pareto Frontier，无需多模型。
-H4（Phase 2）Heterogeneous teachers 提供互补 architecture-aware knowledge。
-H5（Phase 3/4）Runtime adaptation + temporal reuse 降低视频流平均计算成本。
+H-01 任务间共享特征需求不同 ⇒ task-wise dynamic allocation 比统一宽度有效。
+H-02 Compact Representation 在小参数预算下保留三任务信息。
+H-03 动态信息分配获得更好 Accuracy–Compute Pareto Frontier，无需多模型。
+H-04（Phase 2）Heterogeneous teachers 提供互补 architecture-aware knowledge。
+H-05（Phase 3/4）Runtime adaptation + temporal reuse 降低视频流平均计算成本。
 
 ## 27. 工作顺序
 1 读现有项目与数据集结构 → 2 确认可复用代码 → 3 统一 baseline evaluation → 4 实现 Compact Representation → 5 Static multi-task 模型 → 6 Task-Resource Router → 7 多级 dynamic width → 8 task-wise allocation → 9 budget-aware training → 10 Static vs Dynamic 实验 → 11 Shared vs Task-wise 实验 → 12 allocation 可视化与 Pareto 曲线 → 13 失败模式分析 → 14 Phase 1 有效后开始 Cross-Architecture Distillation。

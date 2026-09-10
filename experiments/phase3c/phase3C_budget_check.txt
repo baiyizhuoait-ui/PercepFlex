@@ -1,5 +1,5 @@
 ====================================================================================================
-PHASE 3C STEP 1 - BUDGET GROUPING + FAIRNESS CHECK
+P3C-STEP1 - BUDGET GROUPING + FAIRNESS CHECK
 ====================================================================================================
   source: experiments/phase3a/exp3A_encoder.csv
   source: experiments/phase3b/phase3B_encoder_z.csv

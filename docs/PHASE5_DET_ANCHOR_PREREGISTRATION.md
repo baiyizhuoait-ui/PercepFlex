@@ -1,4 +1,4 @@
-# Phase 4B-3 preregistration — detection: anchor prior / assignment coverage
+# P4B-EXP-03 preregistration — detection: anchor prior / assignment coverage
 
 Registered **before** any detection cell is trained. The decision rule is
 fixed here and is applied mechanically afterwards.
@@ -51,14 +51,14 @@ assignment rule turns a poor prior into an absent one for half the boxes.
 
 ## 2. Hypotheses under test
 
-- **H19 (new) — detection is supervision/assignment-limited, not
+- **H-19 (new) — detection is supervision/assignment-limited, not
   capacity-limited.** Half the GT boxes receive no positive assignment under
   the project's own rule. If this is the binding constraint, replacing the
   anchors with data-driven ones buys detection accuracy at **zero parameter
   and zero FLOP cost** — which would make it categorically different from
   every capacity-side intervention tried so far (Z width, encoder capacity,
   lane resolution).
-- **H20 — on top of a correct prior, grid resolution still binds.** The
+- **H-20 — on top of a correct prior, grid resolution still binds.** The
   29.8% sub-cell statistic is the grid-resolution argument. It is tested
   only *after* the prior is fixed, so the two effects do not confound.
 
@@ -93,16 +93,16 @@ Noise floors are the external Phase 2-C figures already used by the lane
 probe: `mAP50 0.0146`, `lane_fg 0.0064`, `da_fg 0.0404`. Baseline is the
 **committed** `r2u_z16` 4-epoch row (mAP50 0.2411), not a rerun.
 
-- **D1 (primary, H19)** `danc` mAP50 gain >= 2x noise (+0.0292) ->
-  H19 SUPPORTED. 1x-2x -> WEAK. < 1x -> H19 REJECTED at this budget.
+- **D1 (primary, H-19)** `danc` mAP50 gain >= 2x noise (+0.0292) ->
+  H-19 SUPPORTED. 1x-2x -> WEAK. < 1x -> H-19 REJECTED at this budget.
 - **D2 (mechanism)** the gain must land on small-object recall. If mAP50
   rises while small recall does not, the mechanism is not the one predicted
   and the finding is reported as mechanism-unconfirmed regardless of D1.
-- **D3 (H20, sequential)** `dp2a` mAP50 - `danc` mAP50 >= 1x noise
+- **D3 (H-20, sequential)** `dp2a` mAP50 - `danc` mAP50 >= 1x noise
   (+0.0146) -> grid resolution binds on top of the prior. Negative or
   inside noise -> the sub-cell statistic is not the binding constraint.
   D3 is only read if D1 passes; if D1 fails, `dp2a` is still run but is
-  interpreted as a test of H20 alone against the baseline.
+  interpreted as a test of H-20 alone against the baseline.
 - **D4 (control)** lane_fg and da_fg move < 2x noise in both cells.
 - **D5 (cost)** `danc` params and GFLOPs equal to baseline within rounding.
   A "free" win that is not free is not a free win.
@@ -129,7 +129,7 @@ probe: `mAP50 0.0146`, `lane_fg 0.0064`, `da_fg 0.0404`. Baseline is the
   and -44% FPS. MHD-Net: P2 plus dilated context, +2.6 mAP at negligible
   cost. SPTD-YOLO: P2 must combine *upsampled semantics* with shallow
   detail rather than use raw shallow features — the same
-  semantics-from-deep / resolution-from-grid principle the 4B-2 lane probe
+  semantics-from-deep / resolution-from-grid principle the P4B-EXP-02 lane probe
   found independently. Our head is far smaller than those baselines, so the
   FLOP cost of a stride-4 level here is expected to be a few percent, not
   29%.

@@ -1,7 +1,7 @@
-# Phase 6 EXP-4 / unified asymmetric candidate (H-K/L first brick):
+# Phase 6 EXP-04 / unified asymmetric candidate (H-32/L first brick):
 # detection = k-means anchor assignment (validated: danc 20ep 0.4982/0.4960)
 # lane      = 1/4 lateral refinement branch (validated: l14f1 20ep 0.5988, WEAK)
-# DA        = untouched (saturated per Phase 3A/4B-6)
+# DA        = untouched (saturated per Phase 3A/P4B-EXP-06)
 # FLOPs expected ~= l14f1 (1.639G) since anchors are zero-cost.
 model:
   encoder:

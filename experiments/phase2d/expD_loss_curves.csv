@@ -1,4 +1,4 @@
-z,epochs_configured,epoch,n_steps_logged,mean_loss,mean_det,mean_da,mean_lane,final_step_loss,epoch_done_avg_loss
+﻿z,epochs_configured,epoch,n_steps_logged,mean_loss,mean_det,mean_da,mean_lane,final_step_loss,epoch_done_avg_loss
 16,10,1,438,0.414197,0.141633,0.157007,0.115558,0.3415,
 16,10,2,438,0.281859,0.120094,0.090203,0.071565,0.2754,
 16,10,3,438,0.259637,0.114469,0.078785,0.066384,0.2572,

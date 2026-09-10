@@ -1,5 +1,5 @@
 ====================================================================================================
-PHASE 4A - STEP 0 · EXISTING EVIDENCE SUMMARY
+P4A-STEP0 · EXISTING EVIDENCE SUMMARY
 ====================================================================================================
 generated from result CSVs; no value in this file is hand-entered
   R0 cells (3A z16 + 3B z32/z128) : 9
@@ -71,19 +71,19 @@ F6 · No usable R2 accuracy result exists yet.
     G  one shared Z is simply the wrong interface for these three tasks
 
   R2 removes explanation B by construction. The rest are still open and are
-  what the diagnostics in STEP 5 are for.
+  what the diagnostics in P4A-STEP5 are for.
 
 ----------------------------------------------------------------------------------------------------
 ### 3. OPEN QUESTIONS PHASE 4A MUST SETTLE
 ----------------------------------------------------------------------------------------------------
-  Q1  Does detection become Z-sensitive once it is forced through Z? (H1, H2)
-  Q2  Is DA saturation real, or an artifact of the R0 information path? (H3)
-  Q3  Is lane's Z demand real and repeatable under a different routing? (H4)
-  Q4  Does encoder-heavy still beat Z-heavy under a genuine shared bottleneck? (H5)
-  Q5  Is the loss from compression irreversible, i.e. an information problem? (H6)
-  Q6  How much of any R2 result is reconstruction design rather than Z width? (H7)
-  Q7  Can one uniform Z serve detection + DA + lane at all? (H8, H9)
-  Q8  Do the three tasks fight over Z through their gradients? (H10)
+  Q1  Does detection become Z-sensitive once it is forced through Z? (H-01, H-02)
+  Q2  Is DA saturation real, or an artifact of the R0 information path? (H-03)
+  Q3  Is lane's Z demand real and repeatable under a different routing? (H-04)
+  Q4  Does encoder-heavy still beat Z-heavy under a genuine shared bottleneck? (H-05)
+  Q5  Is the loss from compression irreversible, i.e. an information problem? (H-06)
+  Q6  How much of any R2 result is reconstruction design rather than Z width? (H-07)
+  Q7  Can one uniform Z serve detection + DA + lane at all? (H-08, H-09)
+  Q8  Do the three tasks fight over Z through their gradients? (H-10)
 
 ----------------------------------------------------------------------------------------------------
 ### 4. WHAT PHASE 4A WILL MEASURE (per your section 3)

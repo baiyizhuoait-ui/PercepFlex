@@ -33,25 +33,25 @@ ev = ("l14f1 lane_fg 0.1916 (+0.0151, 2.36x noise, threshold 0.1829); "
       "per-FLOP spatial 0.0270 vs channel 0.0031 (8.7x); "
       "L4 det/DA controls < 1x noise")
 
-if "H5b" in by_id:
-    by_id["H5b"]["status"] = h5b
-    by_id["H5b"]["evidence_available"] = ev
-    by_id["H5b"]["decision"] = (
+if "H-05b" in by_id:
+    by_id["H-05b"]["status"] = h5b
+    by_id["H-05b"]["evidence_available"] = ev
+    by_id["H-05b"]["decision"] = (
         "extend l14f1_z16 to 20ep under PHASE5_E20_CONFIRM_REGISTRATION.md; "
         "do not run the 1/2 rung; 4ep result provisional"
     )
-if "H5a" in by_id:
-    by_id["H5a"]["status"] = (
+if "H-05a" in by_id:
+    by_id["H-05a"]["status"] = (
         "PARTIALLY SUPPORTED (L2: upsample-only gains 2.02x noise, "
         "crosses 1/8 block-fill 0.1853)"
         if l2 else "OPEN"
     )
-    by_id["H5a"]["decision"] = "subordinate to H5b; no further experiment"
-if "H6" in by_id:
-    by_id["H6"]["status"] = "REJECTED (lch64: 64ch at 1/8 buys 0.20x noise for +16% params)"
-    by_id["H6"]["decision"] = "channel capacity is not the lane bottleneck at Z=16"
-if "H17" in by_id:
-    by_id["H17"]["status"] = "OPEN (quantisation half now causal; continuity half waits for 20ep + EG)"
+    by_id["H-05a"]["decision"] = "subordinate to H-05b; no further experiment"
+if "H-06" in by_id:
+    by_id["H-06"]["status"] = "REJECTED (lch64: 64ch at 1/8 buys 0.20x noise for +16% params)"
+    by_id["H-06"]["decision"] = "channel capacity is not the lane bottleneck at Z=16"
+if "H-17" in by_id:
+    by_id["H-17"]["status"] = "OPEN (quantisation half now causal; continuity half waits for 20ep + EG)"
 
 with open(MATRIX, "w", newline="", encoding="utf-8") as f:
     w = csv.DictWriter(f, fieldnames=fields)

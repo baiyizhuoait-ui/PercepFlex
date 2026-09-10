@@ -1,4 +1,4 @@
-task,factor,out_res,hard_ceiling_fgiou,soft_ceiling_fgiou,bilinear_oracle_fgiou,oracle_threshold,precision,recall,pred_over_gt_area,gain_vs_1over8_hard,gain_vs_1over8_soft,erode1_survival,erode2_survival,erode3_survival,mean_gt_px_per_img,n_images
+﻿task,factor,out_res,hard_ceiling_fgiou,soft_ceiling_fgiou,bilinear_oracle_fgiou,oracle_threshold,precision,recall,pred_over_gt_area,gain_vs_1over8_hard,gain_vs_1over8_soft,erode1_survival,erode2_survival,erode3_survival,mean_gt_px_per_img,n_images
 lane,1,640x640,1.0,1.0,1.0,0.0,1.0,1.0,1.0,0.8147,0.788,0.0107,0.0007,0.0,2089.3,300
 lane,2,320x320,0.5721,0.5724,0.3601,0.003,0.5721,1.0,1.7546,0.3868,0.3604,0.0107,0.0007,0.0,2089.3,300
 lane,4,160x160,0.322,0.334,0.2612,0.048,0.322,1.0,3.142,0.1368,0.1219,0.0107,0.0007,0.0,2089.3,300

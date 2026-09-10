@@ -19,7 +19,7 @@ Four cells, E-base, seed 0, 4 epochs, batch 16, 640x640, `tri_train` 69863.
 | `r3tp_z16` | R3 taskproj | 16 | 32 | **32** (16->32) | 16 (identity) | 206550 |
 | `r3tp_z32` | R3 taskproj | 32 | 32 (identity) | 32 (identity) | **16** (32->16) | 211670 |
 
-`r2u_z16` is **reused** from the Phase 4A STEP 2 sanity run (`exp4A_r2_z16_e4`).
+`r2u_z16` is **reused** from the P4A-STEP2 sanity run (`exp4A_r2_z16_e4`).
 That is legitimate only because the model builds to the identical 201366
 parameters with `task_proj` defaulted off, verified numerically by
 `scripts/phase4b_compat.py`. Its provenance is recorded in the results CSV as

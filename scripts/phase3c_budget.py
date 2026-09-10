@@ -60,7 +60,7 @@ rows = load()
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 
 p("=" * 100)
-p("PHASE 3C STEP 1 - BUDGET GROUPING + FAIRNESS CHECK")
+p("P3C-STEP1 - BUDGET GROUPING + FAIRNESS CHECK")
 p("=" * 100)
 for c in CSVS: p("  source: %s" % os.path.relpath(c, ROOT))
 p("  cells loaded: %d   (expect 9 = 3 encoders x 3 widths)" % len(rows))

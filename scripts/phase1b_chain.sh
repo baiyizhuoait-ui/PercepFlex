@@ -2,7 +2,7 @@
 # Phase 1-B master chain: wait for F/G -> launch I -> final report.
 set -u
 cd "$(dirname "$0")/.."
-OUT=experiments/expF_single_teacher
+OUT=experiments/phase2b/expF_single_teacher
 for i in $(seq 1 240); do
   if grep -q "EXP-F/G DONE" "$OUT/status.txt" 2>/dev/null; then
     echo "$(date +%H:%M:%S) F/G done, launching Exp I"
@@ -11,7 +11,7 @@ for i in $(seq 1 240); do
   sleep 120
 done
 echo "$(date +%H:%M:%S) F/G analysis:"
-../gpu_env/bin/python scripts/expFG_analyze.py 2>&1 | tee "$OUT/analysis.txt"
+../gpu_env/bin/python scripts/phase2b_expfg_analyze.py 2>&1 | tee "$OUT/analysis.txt"
 echo "$(date +%H:%M:%S) launching Exp I (KD-dynamic)"
-./scripts/expI_kd_dynamic.sh
+./scripts/phase2b_expi_kd_dynamic.sh
 echo "$(date +%H:%M:%S) PHASE1B CHAIN COMPLETE"

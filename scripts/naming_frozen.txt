@@ -1,0 +1,60 @@
+# PercepFlex naming freeze list (v3 — MINIMAL set)
+#
+# 语义: glob 匹配仓库相对路径; 前缀 `!` = 解冻; last-match-wins.
+#
+# v3 变更 (用户 2026-09-10 决策: "历史阶段的冲突名字也要改, 必须统一"):
+#   * Phase 0-5 全部解冻 —— 历史阶段纳入统一范围
+#   * 仅保留两类不可改写对象: (a) 非文本产物与版本控制内部; (b) 命名工具自指
+#
+# 注意: 链运行期间 phase6_round2_chain.sh / phase6_run.sh 由执行器临时追加冻结,
+#       链结束后自动解除 (见 rename_paths.py --respect-running-chain).
+
+# ---------- 1. 版本控制与缓存 (不可改写) ----------
+.git/**
+**/__pycache__/**
+**/*.pyc
+**/*.pyo
+
+# ---------- 2. 数据 / 权重 / 外部产物 (非命名管辖) ----------
+data/**
+datasets/**
+weights/**
+trained_models/**
+**/*.pt
+**/*.pth
+**/*.onnx
+**/*.engine
+**/*.trt
+**/*.bin
+**/*.npz
+**/*.npy
+
+# ---------- 2b. Round 2 per-size 重评产物 (eval 正在写入, 本次迁移不触碰) ----------
+experiments/phase6/persize_*
+
+# ---------- 3. 二进制 / 图像 / 归档产物 ----------
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.gif
+**/*.webp
+**/*.pdf
+**/*.tgz
+**/*.zip
+**/*.gz
+
+# ---------- 4. 命名工具自指 (源码含规则字面量, 自改写会破坏工具) ----------
+scripts/apply_naming_migration.py
+scripts/rename_paths.py
+scripts/check_naming.sh
+scripts/verify_naming.py
+scripts/naming_frozen.txt
+scripts/naming_path_map.csv
+scripts/refs_pass2.py
+scripts/diag_chk11.py
+scripts/naming_historical_refs.txt
+docs/NAMING_CONVENTION.md
+docs/NAMING_ALIASES.csv
+
+# ---------- 5. 运行中链脚本 (执行器动态替换为具体文件名; 链结束后清空) ----------
+# __RUNNING_CHAIN_GUARD__

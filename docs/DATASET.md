@@ -36,7 +36,7 @@ trac/data/bdd100k/
 
 ### 图片集版本说明
 - `labels/*.json`、`lanes/masks`、`segments/masks` 与 `images/100k` 全部 100% 匹配 ✅
-- 三个任务在**同一批图片**上的交集清单已由 `scripts/verify_dataset.py` 生成
+- 三个任务在**同一批图片**上的交集清单已由 `scripts/phase2_verify_dataset.py` 生成
   （`splits/*.txt`），保证三任务 loss 在相同样本上计算（与 YOLOP/TriLiteNet 训练协议一致）。
 
 ## 开发子集（保留）
@@ -45,5 +45,5 @@ trac/data/bdd100k/
 
 ## 校验命令
 ```bash
-gpu_env/bin/python scripts/verify_dataset.py   # Phase 1 提供：三任务交集、计数、对应关系
+gpu_env/bin/python scripts/phase2_verify_dataset.py   # Phase 1 提供：三任务交集、计数、对应关系
 ```

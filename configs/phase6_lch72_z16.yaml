@@ -1,4 +1,4 @@
-# Phase 6 EXP-1 strict FLOPs-parity cell: more channels @ 1/8.
+# Phase 6 EXP-01 strict FLOPs-parity cell: more channels @ 1/8.
 # lane_hidden=72 -> 1.6336G total FLOPs vs l14f1 1.6391G (0.3% gap, well
 # inside the +/-5% budget-parity rule). Question: is spatial capacity @1/4
 # (l14f1) better than equal compute spent on channel capacity @1/8?

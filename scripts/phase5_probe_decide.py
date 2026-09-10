@@ -1,4 +1,4 @@
-"""Phase 5 STEP 7 - apply the pre-registered decision rule to the lane probe.
+"""P5-STEP7 - apply the pre-registered decision rule to the lane probe.
 
 Why this is a separate script
 -----------------------------
@@ -8,7 +8,7 @@ decision is produced by the rule rather than by judgement applied after seeing
 the result. This script does not choose which rule to apply; it evaluates all
 of them and prints the branch that fires.
 
-It also refuses to over-read: a 4-epoch pass cannot establish H5b. It can only
+It also refuses to over-read: a 4-epoch pass cannot establish H-05b. It can only
 authorise the 20-epoch run. The script says so explicitly in its output,
 because two previous findings in this project reversed between 4 and 20 epochs.
 """
@@ -54,7 +54,7 @@ def main():
 
     say("Phase 5 lane probe - pre-registered decision")
     say("=" * 72)
-    say("Baseline cell: %s (Phase 4A STEP 2 sanity, 4 epochs, not retrained)"
+    say("Baseline cell: %s (P4A-STEP2 sanity, 4 epochs, not retrained)"
         % BASELINE_CELL)
     say("Noise floor (2x Phase 2-C external): lane_fg %.4f, mAP50 %.4f, "
         "da_fg %.4f" % (2 * NOISE["lane_fg"], 2 * NOISE["mAP50"],
@@ -116,10 +116,10 @@ def main():
     l1 = f(data["l14f1_z16"], "lane_fg") >= L1_BAR
     l2 = g14up >= NOISE["lane_fg"]
 
-    say("L1 (H5b, primary): l14f1 lane_fg >= %.4f -> %s (%.4f, %+.4f)"
+    say("L1 (H-05b, primary): l14f1 lane_fg >= %.4f -> %s (%.4f, %+.4f)"
         % (L1_BAR, "PASS" if l1 else "FAIL",
            f(data["l14f1_z16"], "lane_fg"), g14f1))
-    say("L2 (H5a):          l14up gain >= 1x noise (%.4f) and < L1 gain -> %s "
+    say("L2 (H-05a):          l14up gain >= 1x noise (%.4f) and < L1 gain -> %s "
         "(%+.4f)" % (NOISE["lane_fg"], "PASS" if (l2 and g14up < g14f1)
                      else "FAIL", g14up))
     say("")
@@ -148,20 +148,20 @@ def main():
     say("Decision (rule fixed in the pre-registration)")
     say("-" * 72)
     if l1 and l3:
-        say("L1 and L3 -> H5b SUPPORTED.")
+        say("L1 and L3 -> H-05b SUPPORTED.")
         say("ACTION: extend l14f1_z16 to 20 epochs. Do not run the 1/2 rung.")
     elif l1 and not l3:
         say("L1, not L3 -> resolution helps but buys no more per FLOP than "
             "channels.")
-        say("H5b supported weakly. H6 is not subordinate. 'Lane is spatial' "
+        say("H-05b supported weakly. H-06 is not subordinate. 'Lane is spatial' "
             "cannot be claimed.")
         say("ACTION: hold. Do not extend on this branch yet.")
     elif l2 and not l1:
         say("L2 only -> the gain is upsampling, not information.")
-        say("H5b NOT supported. The 1/4 lateral is not worth its complexity.")
-        say("ACTION: do not extend. Reopen H5a as the operative hypothesis.")
+        say("H-05b NOT supported. The 1/4 lateral is not worth its complexity.")
+        say("ACTION: do not extend. Reopen H-05a as the operative hypothesis.")
     elif max(g14f1, g14up, gch64) < NOISE["lane_fg"]:
-        say("Nothing reaches 1x noise -> H5b NOT supported at Z=16.")
+        say("Nothing reaches 1x noise -> H-05b NOT supported at Z=16.")
         say("ACTION: do not extend to 20 epochs on this branch. The next "
             "question is")
         say("whether the 1/4 map itself is too shallow (32 ch, one block) to "
@@ -177,7 +177,7 @@ def main():
         "detection")
     say("control +0.26x -> -2.53x; reconstruction depth +4.47x -> -0.10x). A "
         "PASS here")
-    say("authorises the 20-epoch run. It does not establish H5b.")
+    say("authorises the 20-epoch run. It does not establish H-05b.")
     if not l4_ok:
         say("The L4 control also failed, so even a PASS is conditional on the "
             "coupling")

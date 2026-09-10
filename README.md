@@ -7,9 +7,9 @@
 建立优于固定容量模型的 Accuracy–Compute Pareto Frontier。
 
 > Phase 1 核心假设：
-> - **H1** 不同任务对共享特征需求不同 ⇒ task-wise dynamic allocation 优于统一宽度。
-> - **H2** Compact Representation 在小参数预算下同时保留三任务信息。
-> - **H3** 动态信息分配取得更好的 Accuracy–Compute Pareto Frontier，无需训练多个模型。
+> - **H-01** 不同任务对共享特征需求不同 ⇒ task-wise dynamic allocation 优于统一宽度。
+> - **H-02** Compact Representation 在小参数预算下同时保留三任务信息。
+> - **H-03** 动态信息分配取得更好的 Accuracy–Compute Pareto Frontier，无需训练多个模型。
 
 详细任务书见 `docs/TASKBOOK.md`（算法开发任务书摘要）与 `docs/PHASE0_DEV_PREP.md`（开发准备报告）。
 
@@ -62,9 +62,9 @@ trac/
 
 验证命令：
 ```bash
-../gpu_env/bin/python scripts/smoke_baselines.py --device cuda   # baseline 导入/前向/参数/FLOPs
-../gpu_env/bin/python scripts/load_baseline_weights.py --device cuda  # 官方权重加载验证（B1-B3 全部通过）
-../gpu_env/bin/python scripts/verify_dataset.py   # 数据集完整性 + 三任务清单生成（data/bdd100k/splits/）
+../gpu_env/bin/python scripts/phase2_smoke_baselines.py --device cuda   # baseline 导入/前向/参数/FLOPs
+../gpu_env/bin/python scripts/phase2_load_baseline_weights.py --device cuda  # 官方权重加载验证（B1-B3 全部通过）
+../gpu_env/bin/python scripts/phase2_verify_dataset.py   # 数据集完整性 + 三任务清单生成（data/bdd100k/splits/）
 ```
 
 ---

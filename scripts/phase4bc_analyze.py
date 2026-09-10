@@ -206,7 +206,7 @@ def section_c(lines):
     rank_old = load("phase4A_effective_rank.csv")
 
     lines.append("=" * 78)
-    lines.append("PROBE C  (H11: rebalance the gradient magnitudes on Z)  20 ep, seed 0")
+    lines.append("PROBE C  (H-11: rebalance the gradient magnitudes on Z)  20 ep, seed 0")
     lines.append("=" * 78)
     lines.append("")
     lines.append("Rebalanced cells vs the R2 baseline at the same z (20ep, same seed):")
@@ -308,7 +308,7 @@ def section_c(lines):
 
     # ---- exchange rate
     lines.append("-" * 78)
-    lines.append("THE EXCHANGE RATE (the number that settles H11)")
+    lines.append("THE EXCHANGE RATE (the number that settles H-11)")
     lines.append("")
     for new, old in [("rw_z16", "r2_z16"), ("rw_z32", "r2_z32")]:
         det = units(m(pc[new], "mAP50") - m(base[old], "mAP50"), "mAP50")
@@ -346,14 +346,14 @@ def section_c(lines):
         verdict = "INVALID MANIPULATION"
         note = "no scientific conclusion may be drawn"
     elif c1 or c2:
-        verdict = "H11 SUPPORTED"
+        verdict = "H-11 SUPPORTED"
         note = "re-run the best task-projection cell under balanced gradients"
     elif c3:
-        verdict = "H11 REJECTED AS A LEVER"
+        verdict = "H-11 REJECTED AS A LEVER"
         note = ("imbalance is real but reallocating gradient does not help the seg "
                 "tasks; their ceiling is set by what Z contains")
     else:
-        verdict = "H11 NOT BINDING"
+        verdict = "H-11 NOT BINDING"
         note = "drop this axis"
     lines.append("    C4=%s C1=%s C2=%s C3=%s" % (c4, c1, c2, c3))
     lines.append("    --> %s" % verdict)

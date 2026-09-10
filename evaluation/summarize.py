@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Summarize baseline evaluation results from experiments/exp_001/ into a table."""
+"""Summarize baseline evaluation results from experiments/phase1b/exp_001/ into a table."""
 import json
 import os
 import sys

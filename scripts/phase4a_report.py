@@ -104,46 +104,46 @@ def det_status():
 
 def build_statuses():
     st = {}
-    st["H1"] = ("supported",
+    st["H-01"] = ("supported",
                 "Measured, not inferred: ||dL_det/dZ|| is exactly 0 in R0 at all "
                 "three widths and >0 in R2. The R0 null was the bypass.")
-    st["H2"] = ("supported-partial",
+    st["H-02"] = ("supported-partial",
                 "Detection Z-sensitivity rises to 2.34x noise (mAP50) and 2.56x "
                 "(mAP50_95), but it is not monotone: z16->z32 is 0.14x noise, only "
                 "z16->z128 clears the floor.")
-    st["H3"] = ("supported",
+    st["H-03"] = ("supported",
                 "DA spread is inside the noise floor in BOTH R0 (<=0.30x) and R2 "
                 "(<=0.61x). Saturation is real, not a bypass artefact.")
-    st["H4"] = ("supported",
+    st["H-04"] = ("supported",
                 "lane_fg z16->z128 is 2.25x noise under R2 versus 1.00x under R0. "
                 "The lane Z demand reproduces and strengthens under a shared bottleneck.")
-    st["H5"] = ("not-tested",
+    st["H-05"] = ("not-tested",
                 "Phase 3C settled this under R0 only. No encoder sweep was run under "
                 "R2, so the allocation law is not yet known to transfer.")
-    st["H6"] = ("not-supported-as-stated",
+    st["H-06"] = ("not-supported-as-stated",
                 "No dead channels at any width, and detection IMPROVES through Z, so "
                 "compression to z>=16 is not measurably lossy here. What is lost is "
                 "effective dimensionality, not task performance.")
-    st["H7"] = ("open",
+    st["H-07"] = ("open",
                 "Only one reconstruction (DetFromZ, det_ch=32) was trained. Its "
                 "contribution cannot be separated from Z width without a second design.")
-    st["H8"] = ("partially-supported",
+    st["H-08"] = ("partially-supported",
                 "A single Z does serve all three tasks, but not optimally: detection "
                 "and lane want z128, DA is indifferent at z16. It works, it is not ideal.")
-    st["H9"] = ("supported",
+    st["H-09"] = ("supported",
                 "Task-specific demand is measurable: detection 2.34x, lane 2.25x, DA "
                 "0.21x noise over the same z16->z128 range.")
-    st["H10"] = ("not-supported",
+    st["H-10"] = ("not-supported",
                  "Cosines are ~0 (det-da -0.002..+0.001, det-lane ~0.000, da-lane "
                  "+0.033..+0.060). Tasks are near-orthogonal, not in conflict, so "
                  "conflict does not explain Z insensitivity.")
-    st["H6b"] = ("supported-with-caveat",
+    st["H-06b"] = ("supported-with-caveat",
                  "Utilisation falls from 42.5% of channels at z16 to 24.9% at z128 "
                  "(effective rank 6.79 -> 31.93 of 16 -> 128), so most added channels "
                  "are redundant. Caveat: none are dead and the redundant ones still "
                  "buy real gains (detection 2.34x, lane 2.25x noise), so it is "
                  "low-utilisation, not pure waste.")
-    st["H7b"] = ("not-tested",
+    st["H-07b"] = ("not-tested",
                  "Only one bottleneck placement was trained (Z at 1/8 resolution, "
                  "compression before all three heads). Width was swept, placement was "
                  "not, so the two cannot be compared yet.")
@@ -376,7 +376,7 @@ w("- **Single seed.** Every Phase 4A number is seed 0. The noise floor is an ext
 w("  Phase 2-C reference (3 seeds, 4 epochs), not a variance estimate for this phase.")
 w("  Anything within about 2x that floor should be read as unresolved.")
 w("- **One reconstruction, one placement.** `DetFromZ` at det_ch=32 is the only design")
-w("  trained, so H7 and the placement question are untouched.")
+w("  trained, so H-07 and the placement question are untouched.")
 w("- **r2_z16 was trained twice.** The first attempt was killed by an out-of-memory")
 w("  condition I caused by running a diagnostic on the same GPU mid-training. The")
 w("  reported run is the clean retry at epoch 20.")
@@ -384,7 +384,7 @@ w("- **FPS is still unusable** (power-cap throttling); all cost statements use p
 w("  and FLOPs only.")
 w("- **R2 beats R0 partly on head capacity**, not only on the shared bottleneck. The")
 w("  decomposition in section 7 is the honest reading and must be carried forward.")
-w("- **No encoder sweep under R2**, so H5 is deferred rather than answered.")
+w("- **No encoder sweep under R2**, so H-05 is deferred rather than answered.")
 w()
 
 w("## 12. What Phase 4A recommends next")
@@ -392,8 +392,8 @@ w()
 w("Only Level 2 probes, and at most two of them, per CASE C:")
 w()
 w("- **Split-Z / task projection** (4 epochs): does a per-task projection off one shared")
-w("  Z beat a single uniform Z at the same width? This is the direct test of H8/H9.")
-w("- **A second reconstruction** (4 epochs): separates H7 from Z width, and tells us")
+w("  Z beat a single uniform Z at the same width? This is the direct test of H-08/H-09.")
+w("- **A second reconstruction** (4 epochs): separates H-07 from Z width, and tells us")
 w("  whether the ~+0.033 constant offset is reconstruction quality or just head params.")
 w()
 w("Not recommended: continuing to widen Z (effective rank says the model will not use")

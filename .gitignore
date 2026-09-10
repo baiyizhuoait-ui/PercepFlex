@@ -25,6 +25,11 @@ experiments/*/*.csv
 !experiments/phase3c/*.csv
 !experiments/phase4a/*.csv
 !experiments/phase5/*.csv
+# Phase 6 was missing from this list, so every Phase-6 result table (registry,
+# hypothesis matrix, round-2 factorial/equal-budget/statistics) fell under
+# `experiments/*/*.csv` and was silently untracked. The tables are the
+# deliverable and the decision reports are generated from them (27 KB total).
+!experiments/phase6/*.csv
 
 # Baseline repos keep their own .git; ignore their weight files
 baselines/*/pretrained/
@@ -45,6 +50,10 @@ __pycache__/
 .DS_Store
 experiments/*/kd_cache/
 experiments/expF_single_teacher/kd_cache/
+# The 2026-09-10 Phase-1B/2B/2C directory reorganisation moved this cache to
+# experiments/phase2b/expF_single_teacher/kd_cache/ — which matched NEITHER
+# pattern above, so 21 GB of *.npy would have been staged. Match at any depth.
+experiments/**/kd_cache/
 
 # Baseline/teacher weights and key trained models (uploaded for the server)
 !weights/

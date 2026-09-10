@@ -1,7 +1,7 @@
 """Measure the BDD100K detection box size distribution to SET P2 anchors from
 data instead of guessing.
 
-Two questions matter for the 4B-3 probe:
+Two questions matter for the P4B-EXP-03 probe:
   1. what side lengths (sqrt(w*h)) does the "small" regime actually cover,
   2. how many grid cells does a small box occupy at stride 8 vs stride 4.
 """

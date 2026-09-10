@@ -1,11 +1,11 @@
-"""Phase 4B-3, decision rule D2: is the anchor gain a *small-object* gain?
+"""P4B-EXP-03, decision rule D2: is the anchor gain a *small-object* gain?
 
 Zero training. Loads one or more frozen checkpoints and reports, per GT size
 bucket, the fraction of GT boxes matched by at least one prediction at
 IoU >= 0.5 (recall@0.5), the per-bucket AP@0.5, and the prediction count.
 
 The preregistration (docs/PHASE5_DET_ANCHOR_PREREGISTRATION.md, rule D2) says
-the danc gain only counts as evidence for H19 if it lands on small-object
+the danc gain only counts as evidence for H-19 if it lands on small-object
 recall. mAP50 alone cannot show that, so this script stratifies by size.
 
 Everything that defines a "prediction" is copied from

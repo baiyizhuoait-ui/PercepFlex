@@ -114,7 +114,7 @@ ls data/bdd100k/
 **④ 校验**（确认目录结构、数量正确）：
 ```bash
 cd /home/cmu/Desktop/trac
-python3 scripts/verify_dataset.py
+python3 scripts/phase2_verify_dataset.py
 # 期望：images train=70000 val=10000；三任务交集 tri_train=69863 / tri_val=10000
 ```
 
@@ -153,7 +153,7 @@ unzip -o lane_masks_val.zip   -d bdd100k/lanes/masks/val/
 
 # 5) 校验
 cd /home/cmu/Desktop/trac
-python3 scripts/verify_dataset.py
+python3 scripts/phase2_verify_dataset.py
 # 期望：images train=70000 val=10000；三任务交集 tri_train=69863 / tri_val=10000
 ```
 > `splits/{tri_train,tri_val}.txt` 是项目自定义三任务交集划分，已随仓库走，勿覆盖。
@@ -165,7 +165,7 @@ python3 scripts/verify_dataset.py
 
 ```bash
 cd /home/cmu/Desktop/trac
-python3 training/train.py --config configs/train_stageA.yaml --num-images 64 --epochs 1 --outdir /home/cmu/Desktop/trac/experiments/smoke
+python3 training/train.py --config configs/phase1b_train_stage_a.yaml --num-images 64 --epochs 1 --outdir /home/cmu/Desktop/trac/experiments/smoke
 # 应正常跑完，末尾打印 avg_loss 与 saved checkpoint
 ```
 
@@ -183,20 +183,20 @@ EXP=/home/cmu/Desktop/trac/experiments/expA_equal_budget
 
 # static_eb（独立训练 @0.45，等预算 ~0.90G）—— 3 seeds
 for s in 0 1 2; do
-  python3 training/train.py --config configs/train_stageA_eb.yaml --seed $s --outdir $EXP/static_eb_s$s
+  python3 training/train.py --config configs/phase1b_train_stage_a_eb.yaml --seed $s --outdir $EXP/static_eb_s$s
 done
 # dynamic（A6-B2-C2-D2）—— 3 seeds
 for s in 0 1 2; do
-  python3 training/train.py --config configs/train_stageA.yaml --seed $s --epochs 6 --outdir $EXP/dynA_s$s
-  python3 training/train.py --config configs/train_stageB.yaml --seed $s --init $EXP/dynA_s$s/checkpoint.pt --epochs 2 --outdir $EXP/dynB_s$s
-  python3 training/train.py --config configs/train_stageC.yaml --seed $s --init $EXP/dynB_s$s/checkpoint.pt --epochs 2 --outdir $EXP/dynC_s$s
-  python3 training/train.py --config configs/train_stageD.yaml --seed $s --init $EXP/dynC_s$s/checkpoint.pt --epochs 2 --outdir $EXP/dynD_s$s
+  python3 training/train.py --config configs/phase1b_train_stage_a.yaml --seed $s --epochs 6 --outdir $EXP/dynA_s$s
+  python3 training/train.py --config configs/phase1b_train_stage_b.yaml --seed $s --init $EXP/dynA_s$s/checkpoint.pt --epochs 2 --outdir $EXP/dynB_s$s
+  python3 training/train.py --config configs/phase1b_train_stage_c.yaml --seed $s --init $EXP/dynB_s$s/checkpoint.pt --epochs 2 --outdir $EXP/dynC_s$s
+  python3 training/train.py --config configs/phase1b_train_stage_d.yaml --seed $s --init $EXP/dynC_s$s/checkpoint.pt --epochs 2 --outdir $EXP/dynD_s$s
 done
 # 评测
 python3 evaluation/evaluate_baseline.py --baseline OursStatic --preset $EXP/static_eb_s0/checkpoint.pt --static-width 0.45 --outdir $EXP/static_eb_s0_eval
 python3 evaluation/evaluate_baseline.py --baseline OursDynamic --preset $EXP/dynD_s0/checkpoint.pt --outdir $EXP/dynD_s0_eval --alloc-stats
 # 汇总
-python3 scripts/expA_analyze.py $EXP
+python3 scripts/phase2c_expa_analyze.py $EXP
 ```
 
 ### Experiment D（容量扫描 0.5/1.0/2.0M）
@@ -207,7 +207,7 @@ for t in 0.5M 1.0M 2.0M; do
   python3 training/train.py --config configs/train_stageA_$t.yaml --outdir $EXP/ours_$t
   python3 evaluation/evaluate_baseline.py --baseline OursStatic --preset $EXP/ours_$t/checkpoint.pt --outdir $EXP/ours_${t}_eval
 done
-python3 scripts/expD_analyze.py
+python3 scripts/phase2b_expd_analyze.py
 ```
 
 ### Experiment F/G（单 teacher KD，离线方案）
@@ -217,7 +217,7 @@ EXP=/home/cmu/Desktop/trac/experiments/expF_single_teacher
 
 # 1) 预计算 teacher 目标（TITAN RTX 可 batch 64；磁盘充足，可全量 70k）
 for t in YOLOP TwinLiteNetPlus TriLiteNet; do
-  python3 scripts/precompute_teacher.py --teacher $t --num-images 70000 &
+  python3 scripts/phase2_precompute_teacher.py --teacher $t --num-images 70000 &
 done
 wait
 # 2) 全量离线 KD 训练 + 评测
@@ -225,7 +225,7 @@ for t in YOLOP TwinLiteNetPlus TriLiteNet; do
   python3 training/train.py --config configs/train_stageA_offkd_$t.yaml --num-images 70000 --epochs 6 --outdir $EXP/kd_${t}_full
   python3 evaluation/evaluate_baseline.py --baseline OursStatic --preset $EXP/kd_${t}_full/checkpoint.pt --outdir $EXP/kd_${t}_full_eval
 done
-python3 scripts/expFG_analyze.py
+python3 scripts/phase2b_expfg_analyze.py
 ```
 
 ### Experiment I（KD 后重测 Dynamic）
@@ -233,16 +233,16 @@ python3 scripts/expFG_analyze.py
 cd /home/cmu/Desktop/trac
 EXP=/home/cmu/Desktop/trac/experiments/expI_kd_dynamic
 KD=/home/cmu/Desktop/trac/experiments/expF_single_teacher/kd_YOLOP_full/checkpoint.pt
-python3 training/train.py --config configs/train_stageB.yaml --init $KD --epochs 2 --outdir $EXP/kdD_B
-python3 training/train.py --config configs/train_stageC.yaml --init $EXP/kdD_B/checkpoint.pt --epochs 2 --outdir $EXP/kdD_C
-python3 training/train.py --config configs/train_stageD.yaml --init $EXP/kdD_C/checkpoint.pt --epochs 2 --outdir $EXP/kdD_D
+python3 training/train.py --config configs/phase1b_train_stage_b.yaml --init $KD --epochs 2 --outdir $EXP/kdD_B
+python3 training/train.py --config configs/phase1b_train_stage_c.yaml --init $EXP/kdD_B/checkpoint.pt --epochs 2 --outdir $EXP/kdD_C
+python3 training/train.py --config configs/phase1b_train_stage_d.yaml --init $EXP/kdD_C/checkpoint.pt --epochs 2 --outdir $EXP/kdD_D
 python3 evaluation/evaluate_baseline.py --baseline OursDynamic --preset $EXP/kdD_D/checkpoint.pt --outdir $EXP/kdD_eval --alloc-stats
 ```
 
 ### 汇总图表
 ```bash
 cd /home/cmu/Desktop/trac
-python3 scripts/gen_figures.py
+python3 scripts/phase2_gen_figures.py
 ```
 
 ---

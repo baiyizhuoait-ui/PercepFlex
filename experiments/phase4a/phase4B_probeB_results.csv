@@ -1,4 +1,4 @@
-variant,cell,z,encoder,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,peak_gpu_mem_mib,final_train_loss,train_wall_min,seed,source,git_commit
+﻿variant,cell,z,encoder,epochs,params_M,flops_G,fps,mAP50,mAP50_95,da_mIoU,da_fg,lane_mIoU,lane_fg,peak_gpu_mem_mib,final_train_loss,train_wall_min,seed,source,git_commit
 r2,r2u_z16,16,ebase,4,0.2014,1.0796,407.38,0.2411,0.0728,0.8169,0.7146,0.5761,0.1765,2666,0.2505,26,0,reused:phase4a-sanity,63fa17bacbbf34778c6353364e6652e2f462688e
 r2,r2d_z16,16,ebase,4,0.2042,1.1132,364.78,0.2471,0.0776,0.8206,0.7200,0.5786,0.1798,2486,0.2507,27,0,trained,6a4550e2ba0bd9fe67612b521aacc0088cc293af
 r2,r2d_z32,32,ebase,4,0.2186,1.2574,410.39,0.2497,0.0802,0.8295,0.7327,0.5750,0.1762,2496,0.2494,27,0,trained,6a4550e2ba0bd9fe67612b521aacc0088cc293af

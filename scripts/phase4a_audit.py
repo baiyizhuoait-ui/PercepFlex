@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Phase 4A STEP 1 - R2 architecture audit, provenance trace, cost breakdown.
+"""P4A-STEP1 - R2 architecture audit, provenance trace, cost breakdown.
 
 Two things are checked, and the second one is the one that matters:
 
@@ -295,7 +295,7 @@ md.append("")
 md.append("This round trip is not a bypass (the path is forced through Z) but it is a")
 md.append("plausible source of spatial information loss, and it makes R2's detection result")
 md.append("partly a statement about the reconstruction, not only about Z width. This is")
-md.append("hypothesis H7 and it is why the reconstruction probe exists.")
+md.append("hypothesis H-07 and it is why the reconstruction probe exists.")
 md.append("")
 md.append("## 4. Cost breakdown")
 md.append("")

@@ -9,10 +9,10 @@ things in order:
   2.  Score the same checkpoints with the error-geometry code path used
       for the Phase 4A cells, so each new cell gets the precision / recall
       / area / tolerance-curve breakdown that turns lane_fg into a two-axis
-      story (H5a/H5b vs H17). Uses the env-override seam added to
+      story (H-05a/H-05b vs H-17). Uses the env-override seam added to
       phase5_errorgeom.py in 9d5a2a1.
-  3.  Fold the result back into phase5_hypothesis_matrix.csv (H5a, H5b,
-      H6, H17) and regenerate phase5_bottleneck_profile.csv and
+  3.  Fold the result back into phase5_hypothesis_matrix.csv (H-05a, H-05b,
+      H-06, H-17) and regenerate phase5_bottleneck_profile.csv and
       phase5_intervention_matrix.csv.
 
 Step 2 is GPU work (one forward per cell) but is short - 300 images on a

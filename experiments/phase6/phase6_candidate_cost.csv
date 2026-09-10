@@ -1,0 +1,7 @@
+﻿candidate,params_M,flops_G,det_mAP50,lane_mIoU,da_mIoU,epochs,seed,note
+r2_z16_uniform_baseline,0.2014,1.0796,0.3543,0.5847,0.8488,20,0,measured: phase4A/phase5 committed rows
+danc_supervision_only,0.2014,1.0796,0.4982,0.5824,0.8567,20,1,measured: det gain is ZERO-cost (assignment only); seed2 0.4960
+l14f1_spatial_only,0.2019,1.6391,0.3612,0.5988,0.8533,20,0,measured: +0.5595G all spent on lane 1/4 branch
+combo_asymmetric_proto,0.2019,1.6391,0.5047,0.5962,0.8551,20,0,measured: EXP-06 prototype = measured
+lch72_channel_arm,0.2448,1.6336,0.4084,0.5797,0.8189,4,0,measured: FLOPs-parity channel control (0.3% gap vs l14f1)
+lch64_channel_arm,0.2338,1.4933,0.2373,0.5765,0.8272,4,0,measured: cheaper channel control (phase5 lane probe)

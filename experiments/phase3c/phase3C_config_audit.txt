@@ -12,7 +12,7 @@ allowed to change: model.encoder.stem, model.encoder.stages  (nothing else)
   -> PASS (protocol untouched)
 
 ----------------------------------------------------------------------------------------------------
-### midL  -> configs/phase3c_midL_z32.yaml
+### midL  -> configs/phase3c_midl_z32.yaml
 ----------------------------------------------------------------------------------------------------
   stem=15  stages=[32, 64, 88, 120]  z=32  blocks=[2, 2, 2]  input_size=[640, 640]
   fields differing from template: ['model.encoder.stages', 'model.encoder.stem']
@@ -22,7 +22,7 @@ allowed to change: model.encoder.stem, model.encoder.stages  (nothing else)
   CELL VERDICT: PASS
 
 ----------------------------------------------------------------------------------------------------
-### midM  -> configs/phase3c_midM_z32.yaml
+### midM  -> configs/phase3c_midm_z32.yaml
 ----------------------------------------------------------------------------------------------------
   stem=19  stages=[40, 80, 120, 160]  z=32  blocks=[2, 2, 2]  input_size=[640, 640]
   fields differing from template: ['model.encoder.stages', 'model.encoder.stem']

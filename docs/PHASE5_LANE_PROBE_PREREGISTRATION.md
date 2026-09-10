@@ -1,4 +1,4 @@
-# Phase 5 STEP 6/7 - Lane causal resolution probe: pre-registration
+# P5-STEP6/7 - Lane causal resolution probe: pre-registration
 
 Committed before the runner produced any number, so the reading of the result
 cannot be tuned after seeing it.
@@ -16,10 +16,10 @@ precision around 0.20.
 That is a measurement, not yet a cause. Two things could produce it, and they
 are architecturally different:
 
-- **H5a** the head simply operates too coarsely - the fix is a better
+- **H-05a** the head simply operates too coarsely - the fix is a better
   upsampler (DUpsampling, Tian et al. CVPR 2019, argues bilinear upsampling is
   data-independent and that a learned replacement recovers detail).
-- **H5b** the information is not in Z at all - Z is fused from F2/F3/F4, all
+- **H-05b** the information is not in Z at all - Z is fused from F2/F3/F4, all
   1/8 or deeper, so sub-cell lane position was discarded before the head ever
   ran. The fix is to give the lane branch the encoder's 1/4 map.
 
@@ -30,7 +30,7 @@ can.
 
 | cell | lane input | new information | params | ~extra GFLOPs |
 |---|---|---|---|---|
-| `r2u_z16` | Z at 1/8 | - | 201366 | baseline (reused from Phase 4A STEP 2 sanity) |
+| `r2u_z16` | Z at 1/8 | - | 201366 | baseline (reused from P4A-STEP2 sanity) |
 | `l14up_z16` | bilinear(Z) at 1/4 | none | 201366 (+0) | ~+0.53 (head FLOPs x4) |
 | `l14f1_z16` | bilinear(Z) + 1x1 lateral from encoder s1 (1/4, 32 ch) | yes | 201878 (+512) | ~+0.53 |
 | `lch64_z16` | Z at 1/8, head hidden 32 -> 64 | none | 233814 (+32448) | ~+0.41 |
@@ -46,7 +46,7 @@ resolution arm (+0.53) so the two can be compared as gain per unit compute,
 which is the actual question in section 7 of the Phase 5 brief. It is not
 there to find a better model.
 
-The baseline is not retrained: `r2u_z16` at 4 epochs is the Phase 4A STEP 2
+The baseline is not retrained: `r2u_z16` at 4 epochs is the P4A-STEP2
 sanity run and the model builds to identical parameters with the new options
 defaulted off (asserted by phase4b_compat.py).
 
@@ -60,10 +60,10 @@ da_fg 0.7146, lane_mIoU 0.5761, lane_fg 0.1765.
 
 ## Predictions, registered in advance
 
-- **L1 (H5b, primary)** `l14f1_z16` lane_fg >= 0.1829, i.e. baseline + 2x
+- **L1 (H-05b, primary)** `l14f1_z16` lane_fg >= 0.1829, i.e. baseline + 2x
   noise. The ladder opened +0.137 of headroom between 1/8 and 1/4; capturing
   even a tenth of it clears this bar.
-- **L2 (H5a)** `l14up_z16` lane_fg gain >= 1x noise (0.0032) but smaller than
+- **L2 (H-05a)** `l14up_z16` lane_fg gain >= 1x noise (0.0032) but smaller than
   the L1 gain. DUpsampling says a learned upsampler should help somewhat; it
   does not say it should help as much as real high-resolution information.
 - **L3 (spatial vs channel, the point of the probe)**
@@ -78,14 +78,14 @@ da_fg 0.7146, lane_mIoU 0.5761, lane_fg 0.1765.
 
 ## Decision rule, fixed now
 
-- **L1 and L3** -> H5b supported. Extend `l14f1_z16` to 20 epochs. Do not yet
+- **L1 and L3** -> H-05b supported. Extend `l14f1_z16` to 20 epochs. Do not yet
   run the 1/2 rung.
 - **L1, not L3** -> resolution helps but buys no more per FLOP than channels.
-  H5b is supported weakly, H6 is not subordinate, and "lane is spatial" cannot
+  H-05b is supported weakly, H-06 is not subordinate, and "lane is spatial" cannot
   be claimed.
-- **L2 only** -> the gain is upsampling, not information. H5b is not supported;
+- **L2 only** -> the gain is upsampling, not information. H-05b is not supported;
   the 1/4 lateral is not worth its complexity.
-- **Nothing reaches 1x noise** -> H5b not supported at Z=16. Do not extend to
+- **Nothing reaches 1x noise** -> H-05b not supported at Z=16. Do not extend to
   20 epochs on this branch; the next question becomes whether the 1/4 map
   itself is too shallow (32 ch, one block) to carry lane, which is a different
   experiment needing its own registration.
@@ -98,4 +98,4 @@ da_fg 0.7146, lane_mIoU 0.5761, lane_fg 0.1765.
 A's detection control: +0.26x at 4ep, -2.53x at 20ep; reconstruction depth:
 +4.47x at 4ep, -0.10x at 20ep). Therefore, even if L1 passes here, the result
 is treated as provisional until a 20-epoch confirmation exists. A 4-epoch
-result cannot establish H5b; it can only justify spending the 20-epoch run.
+result cannot establish H-05b; it can only justify spending the 20-epoch run.

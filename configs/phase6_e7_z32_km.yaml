@@ -1,0 +1,40 @@
+# Phase 6B EXP-07 factorial cell: z32 x k-means anchors.
+# Derived from phase4b_danc_z16.yaml (only change: z_channels 16 -> 32, epochs 4).
+# Everything else (encoder, det head, anchors, train protocol) identical.
+model:
+  encoder:
+    stem: 16
+    stages: [32, 64, 96, 128]
+    blocks: [2, 2, 2]
+  representation:
+    z_channels: 32
+  detection:
+    nc: 1
+    from_z: true
+    z_proj: true
+    det_ch: 32
+    anchors:
+      - [[9, 8], [18, 15], [32, 24]]
+      - [[49, 38], [80, 52], [65, 102]]
+      - [[124, 82], [166, 136], [237, 214]]
+  segmentation:
+    hidden: 32
+input_size: [640, 640]
+train:
+  stage: A
+  train_split: tri_train
+  batch_size: 16
+  num_workers: 2
+  epochs: 4
+  lr: 1e-3
+  weight_decay: 5e-4
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lambda_budget: 0.0
+  grad_clip: 10.0
+  anchors:
+    - [[9, 8], [18, 15], [32, 24]]
+    - [[49, 38], [80, 52], [65, 102]]
+    - [[124, 82], [166, 136], [237, 214]]
+data:
+  root: data/bdd100k

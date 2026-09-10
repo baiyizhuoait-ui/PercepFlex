@@ -1,4 +1,4 @@
-variant,cell,n_batches,gnorm_det,gnorm_da,gnorm_lane,share_det,share_da,share_lane,cos_det_da,cosmean_det_da,cos_det_lane,cosmean_det_lane,cos_da_lane,cosmean_da_lane
+﻿variant,cell,n_batches,gnorm_det,gnorm_da,gnorm_lane,share_det,share_da,share_lane,cos_det_da,cosmean_det_da,cos_det_lane,cosmean_det_lane,cos_da_lane,cosmean_da_lane
 r0,r0_z16,8,0.0,0.0052501527925284865,0.006189118286643545,0.0,0.4589586833104833,0.5410413166895168,nan,nan,nan,nan,0.047746357973783016,0.035766412966332234
 r0,r0_z32,8,0.0,0.004901125607159135,0.004005229710716504,0.0,0.5502953152253262,0.4497046847746738,nan,nan,nan,nan,0.04198432551648153,0.029842452244447037
 r0,r0_z128,8,0.0,0.004186068136807051,0.006751388841399737,0.0,0.3827277350802767,0.6172722649197233,nan,nan,nan,nan,0.03727618750036985,0.08132506847740256

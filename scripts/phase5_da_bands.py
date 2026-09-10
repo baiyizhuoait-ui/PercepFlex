@@ -1,4 +1,4 @@
-"""Phase 5 STEP 2 - where does DA actually fail, and is it the labels' fault?
+"""P5-STEP2 - where does DA actually fail, and is it the labels' fault?
 
 Correction that motivates the rewrite
 -------------------------------------
@@ -19,9 +19,9 @@ evaluation does, and then bands the content into thirds. It also reports an
 
 Question
 --------
-H11     The far field is semantically hard: distant road is a few pixels tall,
+H-11     The far field is semantically hard: distant road is a few pixels tall,
         occluded, and needs context rather than local appearance.
-H11-alt It is an evaluation artefact - distant road owns few pixels, so the
+H-11-alt It is an evaluation artefact - distant road owns few pixels, so the
         metric is simply unforgiving there.
 
 Normalising each band against a reference strategy separates them:
@@ -38,7 +38,7 @@ Normalising each band against a reference strategy separates them:
                  non-drivable ground truth. Unresolvable at 1/8.
   boundary share share of band foreground within 1 px of the boundary.
   gt share       share of the image's DA ground truth in this band - also the
-                 band's weight in the loss (H12).
+                 band's weight in the loss (H-12).
 
 Cells include R0 and the probe-C rebalanced models, because if rebalancing the
 gradient recovers the far field, the far-field deficit is a sharing effect; if

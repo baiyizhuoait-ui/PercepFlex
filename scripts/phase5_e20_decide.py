@@ -42,7 +42,7 @@ print("registered rule ->", verdict)
 out = ROOT + "/experiments/phase5/phase5_l14f1_e20_decision.txt"
 with io.open(out, "w", encoding="utf-8") as f:
     f.write(
-        "Phase 5 STEP 7b - 20-epoch confirmation decision (rule fixed in "
+        "P5-STEP7b - 20-epoch confirmation decision (rule fixed in "
         "f775718 before the run)\n"
         "=====================================================================\n"
         "l14f1_z16 e20: lane_fg %.4f  mAP50 %.4f  da_fg %.4f  lane_mIoU %s\n"
@@ -53,7 +53,7 @@ with io.open(out, "w", encoding="utf-8") as f:
         "d_det %+.4f (%.2fx noise, gate 2x) - ok\n"
         "d_da  %+.4f (%.2fx noise, gate 2x) - ok\n"
         "VERDICT: %s\n"
-        "Per the registration: WEAK means H5b stays provisional; do not "
+        "Per the registration: WEAK means H-05b stays provisional; do not "
         "build on it;\nrecord as unresolved. The 4-ep direction survived in "
         "sign and magnitude\n(+2.36x at 4ep, +1.95x at 20ep) but did not "
         "clear the pre-set bar.\n"

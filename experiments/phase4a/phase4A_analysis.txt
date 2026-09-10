@@ -80,18 +80,18 @@ R2 cells found: z16, z32, z128
   lane_fg    R2               1.53           2.25
 
 ----------------------------------------------------------------------------------------------------
-### D. DID DETECTION BECOME Z-SENSITIVE?  (H1 / H2)
+### D. DID DETECTION BECOME Z-SENSITIVE?  (H-01 / H-02)
 ----------------------------------------------------------------------------------------------------
 
   R0  largest detection |z16->z128| = 0.63 x noise
   R2  largest detection |z16->z128| = 2.56 x noise
 
-  ==> H1 SUPPORTED: detection is more Z-sensitive in R2 than in R0.
+  ==> H-01 SUPPORTED: detection is more Z-sensitive in R2 than in R0.
       The earlier 'Z does not matter for detection' was at least partly
       the R0 bypass, not a property of detection itself.
 
 ----------------------------------------------------------------------------------------------------
-### E. PER-TASK Z DEMAND UNDER R2  (H3 DA, H4 lane)
+### E. PER-TASK Z DEMAND UNDER R2  (H-03 DA, H-04 lane)
 ----------------------------------------------------------------------------------------------------
 
   detection
@@ -111,7 +111,7 @@ R2 cells found: z16, z32, z128
 ----------------------------------------------------------------------------------------------------
 
   R2 removes explanation B (bypass) by construction. The others are NOT
-  settled by this table and need the STEP 5 diagnostics:
+  settled by this table and need the P4A-STEP5 diagnostics:
 
     A  task genuinely saturated at z=16
     C  the encoder, not Z, is the binding constraint

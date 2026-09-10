@@ -1,4 +1,4 @@
-Phase 5 STEP 7c - seed replication decision
+P5-STEP7c - seed replication decision
 ==============================================================
 
 Rule fixed before the runs (docs/PHASE5_SEED_REPLICATION_REGISTRATION.md,
@@ -23,7 +23,7 @@ mean vs bar  = -0.84 SEM
 
 VERDICT: WEAK SUPPORT
 
-H5b stays WEAK SUPPORT. The effect is real in direction and clearly
+H-05b stays WEAK SUPPORT. The effect is real in direction and clearly
 non-zero, but its mean sits below the pre-set 2x bar. Treat it as a
 small effect: do not build the final architecture on it alone, and
 do not report it as a confirmed bottleneck finding without the bar

@@ -1,4 +1,4 @@
-"""Phase 5 STEP 0: assemble every prior measurement into one evidence file.
+"""P5-STEP0: assemble every prior measurement into one evidence file.
 
 Nothing here is typed by hand from memory. Every number is read back out of
 the committed CSVs so the hypothesis matrix cannot silently drift from the
@@ -108,7 +108,7 @@ p("")
 
 # ---------------------------------------------------------------- gradient
 p("-" * 78)
-p("C. GRADIENT COMPOSITION ON Z (Phase 4A STEP 5, 8 batches)")
+p("C. GRADIENT COMPOSITION ON Z (P4A-STEP5, 8 batches)")
 p("-" * 78)
 rows = load(os.path.join(E4, "phase4A_gradient_diagnostic.csv"))
 if rows:

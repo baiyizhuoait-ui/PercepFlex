@@ -42,7 +42,7 @@ import torch.nn.functional as F
 # Must match models/heads/det_head.py defaults (R0) and the anchors fed to YOLOLoss.
 #
 # 2026-09-08: switched the code default to the IoU-k-means anchor set that won
-# +0.1543 mAP50 (10.57x noise, zero params, zero FLOPs) in the Phase 4B-3 danc
+# +0.1543 mAP50 (10.57x noise, zero params, zero FLOPs) in the P4B-EXP-03 danc
 # cell. The OLD default (below) was aspect-flipped vs the data (tall h/w 2.5-3.0
 # vs the near-square 0.85 median) and left ~48.5% of GT boxes with zero positive
 # assignment under the project rule; every phase2/3/4 cell that omitted anchors
@@ -109,7 +109,7 @@ class DetFromZ(nn.Module):
         self.nc = nc
         self.no = nc + 5
         self.na = num_anchors
-        # Phase 4B-3: p2 != "none" prepends a stride-4 level.
+        # P4B-EXP-03: p2 != "none" prepends a stride-4 level.
         self.p2 = p2
         self.nl = 4 if p2 != "none" else 3
         self.det_ch = det_ch

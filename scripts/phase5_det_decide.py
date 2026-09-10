@@ -1,4 +1,4 @@
-"""Phase 4B-3: apply the preregistered D1-D5 rules to the detection probe.
+"""P4B-EXP-03: apply the preregistered D1-D5 rules to the detection probe.
 
 The rules are transcribed from docs/PHASE5_DET_ANCHOR_PREREGISTRATION.md, which
 was written BEFORE any detection cell was trained. This script exists so the
@@ -59,7 +59,7 @@ def main():
     for r in rows:
         by_cell.setdefault(r["cell"], []).append(r)
     base = by_cell.get(args.baseline_cell, [None])[0]
-    lines = ["Phase 4B-3 detection probe - preregistered decision",
+    lines = ["P4B-EXP-03 detection probe - preregistered decision",
              f"baseline cell = {args.baseline_cell}", ""]
     if base is None:
         lines.append(f"[FATAL] baseline {args.baseline_cell} not in {args.csv}")
@@ -76,9 +76,9 @@ def main():
                 return f(r, key) - f(base, key), r
         return None, None
 
-    # ---- D1 primary (H19) ----
+    # ---- D1 primary (H-19) ----
     lines.append("")
-    lines.append("D1 (primary, H19): danc mAP50 gain >= 2x noise (0.0292)")
+    lines.append("D1 (primary, H-19): danc mAP50 gain >= 2x noise (0.0292)")
     # Seed-aware: report EVERY danc_z16 row (Plan B+ runs seed1 AND seed2 at 20ep
     # for cross-seed stability; a single-row CSV is the legacy 4-epoch probe case).
     danc_rows = by_cell.get("danc_z16", [])
@@ -160,9 +160,9 @@ def main():
     else:
         lines.append(f"  [PENDING] {args.sizes} not found")
 
-    # ---- D3 sequential (H20) ----
+    # ---- D3 sequential (H-20) ----
     lines.append("")
-    lines.append("D3 (H20): dp2a - danc >= 1x noise (0.0146) -> grid resolution binds")
+    lines.append("D3 (H-20): dp2a - danc >= 1x noise (0.0146) -> grid resolution binds")
     gd, rd = delta("dp2a_z16", "mAP50")
     if gd is None or r1 is None:
         lines.append("  dp2a_z16: NOT RUN")
@@ -172,9 +172,9 @@ def main():
         lines.append(f"  dp2a params={rd['params_M']}M flops={rd['flops_G']}G "
                      f"(baseline {base['params_M']}M / {base['flops_G']}G)")
 
-    # ---- D3b sequential (H21): same comparison with a REAL stride-4 lateral ----
+    # ---- D3b sequential (H-21): same comparison with a REAL stride-4 lateral ----
     lines.append("")
-    lines.append("D3b (H21): dp2b - danc >= 1x noise (0.0146) -> grid resolution "
+    lines.append("D3b (H-21): dp2b - danc >= 1x noise (0.0146) -> grid resolution "
                  "binds once the stride-4 level carries real shallow features")
     gb, rb = delta("dp2b_z16", "mAP50")
     if gb is None or r1 is None:

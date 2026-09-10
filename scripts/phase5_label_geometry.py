@@ -1,13 +1,13 @@
-"""Phase 5 STEP 4 - is the lane number partly the label's fault, not the model's?
+"""P5-STEP4 - is the lane number partly the label's fault, not the model's?
 
 Why this exists
 ---------------
 Lane foreground IoU is the worst number in the whole project (0.176-0.188) and
 it barely moves. Two explanations have been on the table:
 
-  H5   the head operates at 1/8 and cannot place a 3-4 px line - a capacity /
+  H-05   the head operates at 1/8 and cannot place a 3-4 px line - a capacity /
        resolution fact about the model.
-  H8  the label itself is the problem: BDD100K lane masks are drawn with a
+  H-08  the label itself is the problem: BDD100K lane masks are drawn with a
        stroke width, the train and val strokes are reported to differ
        (8 px train vs 2 px test is the figure quoted in the lane-detection
        literature), and a pixel-level IoU between two strokes of different
@@ -276,12 +276,12 @@ def main():
         if bound < 0.9:
             emit(
                 "=> The train/val stroke widths differ. Part of the lane "
-                "deficit is the label, not the model. H8 is live."
+                "deficit is the label, not the model. H-08 is live."
             )
         else:
             emit(
                 "=> Train and val strokes match. The lane deficit is not a "
-                "train/val width mismatch. H8 is not supported on this axis."
+                "train/val width mismatch. H-08 is not supported on this axis."
             )
         emit(
             f"At model input the val stroke is "

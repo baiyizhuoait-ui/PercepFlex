@@ -1,0 +1,132 @@
+﻿# PercepFlex 全量标号统一 —— 路径重命名映射表 (v3, 历史阶段纳入)
+# 生成时间: 2026-09-10
+# 依据: docs/PHASE*_*.md 明文归属 + experiments/README.md + 目录 mtime + 引用关系扫描
+# 列: kind,old_path,new_path,confidence,evidence,action
+#
+# confidence: HIGH = 有文档明文归属; MED = 有间接证据(同期/引用); LOW = 推断
+# action: RENAME = git mv + 引用同步; KEEP = 已合规不动; REGISTER = 仅登记别名
+#
+# 规范语法:
+#   experiments/phase<n><字母>/<slug>/            阶段实验目录(已合规,不动)
+#   experiments/phase1b/<slug>/                   历史 Phase1B 目录归位
+#   experiments/phase2b/<slug>/                   历史 Phase2 目录归位
+#   experiments/phase2c/<slug>/
+#   experiments/_<工具目录>                        非实验(模板/图)
+#   docs/PHASE<n><字母>_<SLUG>.md                 阶段报告(大写)
+#   docs/PHASE<n><字母><字母>_<SLUG>.md           合体报告(如 PHASE4BC_)
+#   configs/phase<n><字母>_<slug>.yaml
+#   scripts/phase<n><字母>_<slug>.{sh,py}
+#   根级报告禁止存在 -> 一律归 docs/
+
+kind,old_path,new_path,confidence,evidence,action
+# ---------- experiments/ 目录归位 ----------
+dir,experiments/expA_equal_budget,experiments/phase2c/expA_equal_budget,HIGH,"docs/PHASE2C_EXPA_RESULTS.md: Experiment A = z16/32/128 3-seed",RENAME
+dir,experiments/expD_compact_z,experiments/phase2b/expD_compact_z,MED,"expD=compact-z sweep; docs/PHASE2B_* + phase2b_zsweep 配置族",RENAME
+dir,experiments/expF_single_teacher,experiments/phase2b/expF_single_teacher,MED,"单 teacher KD; scripts/expF_*.sh 与 phase2 KD 线同期",RENAME
+dir,experiments/expI_kd_dynamic,experiments/phase2b/expI_kd_dynamic,MED,"KD dynamic; 与 expF 同线",RENAME
+dir,experiments/expB_dynamic,experiments/phase1b/expB_dynamic,LOW,"孤儿目录 2026-08-29; 无文本引用; 归 Phase1B 期",RENAME
+dir,experiments/expC_latency,experiments/phase1b/expC_latency,LOW,"孤儿目录; 归 Phase1B 期",RENAME
+dir,experiments/expE_probe,experiments/phase1b/expE_probe,LOW,"孤儿目录; 归 Phase1B 期",RENAME
+dir,experiments/expG_multi_teacher,experiments/phase1b/expG_multi_teacher,LOW,"孤儿目录; multi-teacher 属早期",RENAME
+dir,experiments/exp_smoke,experiments/phase1b/exp_smoke,LOW,"2026-08-28 冒烟",RENAME
+dir,experiments/exp_001,experiments/phase1b/exp_001,HIGH,"docs/TASKBOOK.md 引用 + experiments/README metrics 样例",RENAME
+dir,experiments/exp_static_vs_dynamic,experiments/phase1b/exp_static_vs_dynamic,HIGH,"scripts/exp1_static_vs_dynamic.sh = Phase1 核心对照",RENAME
+dir,experiments/exp_shared_vs_taskwise,experiments/phase1b/exp_shared_vs_taskwise,HIGH,"scripts/exp2_shared_vs_taskwise.sh = Phase1",RENAME
+dir,experiments/exp_train_A,experiments/phase1b/exp_train_a,HIGH,"scripts/phase1b_chain.sh 线; Phase1B checkpoint 训练",RENAME
+dir,experiments/exp_train_A_subset,experiments/phase1b/exp_train_a_subset,HIGH,"同上",RENAME
+dir,experiments/exp_train_A_subset4,experiments/phase1b/exp_train_a_subset4,HIGH,"同上",RENAME
+dir,experiments/exp_train_B,experiments/phase1b/exp_train_b,HIGH,"同上",RENAME
+dir,experiments/exp_train_B_val,experiments/phase1b/exp_train_b_val,HIGH,"validate_stageB.sh 输出",RENAME
+dir,experiments/exp_train_C,experiments/phase1b/exp_train_c,HIGH,"phase1b 线",RENAME
+dir,experiments/exp_train_D,experiments/phase1b/exp_train_d,HIGH,"phase1b 线",RENAME
+dir,experiments/exp_train_shared_B,experiments/phase1b/exp_train_shared_b,HIGH,"train_shared_router.sh",RENAME
+dir,experiments/exp_train_shared_D,experiments/phase1b/exp_train_shared_d,HIGH,"train_shared_router.sh",RENAME
+dir,experiments/revised,experiments/phase1b/revised,HIGH,"scripts/train_revised.sh",RENAME
+dir,experiments/template,experiments/_template,MED,"工具模板,非实验结果",RENAME
+dir,experiments/figures,experiments/_figures,MED,"gen_figures.py 输出目录,非实验",RENAME
+# ---------- 根级报告归位 docs/ ----------
+file,experiments/PHASE1B_REPORT.md,docs/PHASE1B_REPORT.md,HIGH,"根级报告位置分裂",RENAME
+file,experiments/EXP1_REPORT.md,docs/PHASE1_EXP1_REPORT.md,MED,"EXP1 -> Phase1 前缀",RENAME
+file,experiments/COMPREHENSIVE_REPORT.md,docs/PHASE2_COMPREHENSIVE_REPORT.md,LOW,"内容跨阶段,保守归 Phase2 综述",REGISTER
+file,experiments/BASELINE_RESULTS.md,docs/PHASE2_BASELINE_RESULTS.md,LOW,"基线表,Phase2 期",REGISTER
+file,experiments/CORE_FIX_ANALYSIS.md,docs/PHASE1B_CORE_FIX_ANALYSIS.md,LOW,"早期修复分析",REGISTER
+file,experiments/TEMPLATE_report.md,experiments/_template/TEMPLATE_report.md,HIGH,"模板归模板目录",RENAME
+# ---------- scripts/ 无阶段前缀 -> 规范前缀 ----------
+file,scripts/night_master_chain.sh,scripts/phase1b_night_master_chain.sh,MED,"夜间链,Phase1-2 期",RENAME
+file,scripts/chain_after.sh,scripts/phase2_chain_after.sh,MED,"Phase2 链尾",RENAME
+file,scripts/queue_errorgeom.sh,scripts/phase5_queue_errorgeom.sh,HIGH,"errorgeom 属 Phase5 分析线",RENAME
+file,scripts/rerun_presets.sh,scripts/phase1b_rerun_presets.sh,MED,"presets 重跑(exp_001 等)",RENAME
+file,scripts/recover_step2_then_chain.sh,scripts/phase4b_recover_step2_then_chain.sh,HIGH,"STEP2 恢复,Phase4B 主链",RENAME
+file,scripts/train_pipeline.sh,scripts/phase1b_train_pipeline.sh,MED,"训练管线",RENAME
+file,scripts/train_revised.sh,scripts/phase1b_train_revised.sh,HIGH,"revised 目录对应",RENAME
+file,scripts/train_shared_router.sh,scripts/phase1b_train_shared_router.sh,HIGH,"exp_train_shared_* 对应",RENAME
+file,scripts/train_subset_stageA.sh,scripts/phase1b_train_subset_stage_a.sh,HIGH,"exp_train_A_subset 对应",RENAME
+file,scripts/validate_stageB.sh,scripts/phase1b_validate_stage_b.sh,HIGH,"exp_train_B_val 对应",RENAME
+file,scripts/watch_probe.sh,scripts/phase5_watch_probe.sh,MED,"probe 监视,Phase5 期",RENAME
+file,scripts/run_baseline_eval.sh,scripts/phase2_run_baseline_eval.sh,MED,"基线评测",RENAME
+file,scripts/run_exp1_after_train.sh,scripts/phase1b_run_exp1_after_train.sh,HIGH,"exp1 串接",RENAME
+file,scripts/gen_figures.py,scripts/phase2_gen_figures.py,MED,"图表生成,Phase2 期",RENAME
+file,scripts/bench_latency.py,scripts/phase4c_bench_latency.py,MED,"延迟基准,Phase4C 线",RENAME
+file,scripts/load_baseline_weights.py,scripts/phase2_load_baseline_weights.py,MED,"基线权重加载",RENAME
+file,scripts/precompute_teacher.py,scripts/phase2_precompute_teacher.py,MED,"teacher 预计算,KD 线",RENAME
+file,scripts/verify_dataset.py,scripts/phase2_verify_dataset.py,MED,"数据校验",RENAME
+file,scripts/smoke_baselines.py,scripts/phase2_smoke_baselines.py,MED,"基线冒烟",RENAME
+file,scripts/exp1_static_vs_dynamic.sh,scripts/phase1_exp1_static_vs_dynamic.sh,HIGH,"exp1=Phase1 核心",RENAME
+file,scripts/exp2_shared_vs_taskwise.sh,scripts/phase1_exp2_shared_vs_taskwise.sh,HIGH,"exp2=Phase1",RENAME
+file,scripts/exp3_router_ablation.sh,scripts/phase1_exp3_router_ablation.sh,HIGH,"exp3=Phase1 router",RENAME
+file,scripts/exp5_pareto.py,scripts/phase1_exp5_pareto.py,HIGH,"exp5=Phase1 Pareto",RENAME
+file,scripts/expA_analyze.py,scripts/phase2c_expa_analyze.py,HIGH,"expA=Phase2C",RENAME
+file,scripts/expA_eval_and_report.sh,scripts/phase2c_expa_eval_and_report.sh,HIGH,"expA=Phase2C",RENAME
+file,scripts/expA_finish.sh,scripts/phase2c_expa_finish.sh,HIGH,"expA=Phase2C",RENAME
+file,scripts/expA_seeds.sh,scripts/phase2c_expa_seeds.sh,HIGH,"expA=Phase2C",RENAME
+file,scripts/expA_launch.sh,scripts/phase2c_expa_launch.sh,HIGH,"根级脚本",RENAME
+file,scripts/expA_monitor.sh,scripts/phase2c_expa_monitor.sh,HIGH,"根级脚本",RENAME
+file,scripts/expD_analyze.py,scripts/phase2b_expd_analyze.py,MED,"expD=compact-z",RENAME
+file,scripts/expD_compact_z.sh,scripts/phase2b_expd_compact_z.sh,MED,"同上",RENAME
+file,scripts/expFG_analyze.py,scripts/phase2b_expfg_analyze.py,MED,"expF/expG 分析",RENAME
+file,scripts/expFG_wait_and_report.sh,scripts/phase2b_expfg_wait_and_report.sh,MED,"同上",RENAME
+file,scripts/expF_single_teacher.sh,scripts/phase2b_expf_single_teacher.sh,MED,"同上",RENAME
+file,scripts/expF_offline.sh,scripts/phase2b_expf_offline.sh,MED,"同上",RENAME
+file,scripts/expF_offline10.sh,scripts/phase2b_expf_offline10.sh,MED,"同上",RENAME
+file,scripts/expF_remaining.sh,scripts/phase2b_expf_remaining.sh,MED,"同上",RENAME
+file,scripts/expI_fair_D.sh,scripts/phase2b_expi_fair_d.sh,MED,"expI=KD dynamic",RENAME
+file,scripts/expI_kd_dynamic.sh,scripts/phase2b_expi_kd_dynamic.sh,MED,"同上",RENAME
+file,scripts/phase2_step1_budget.sh,scripts/phase2_step1_budget.sh,HIGH,"小写 step->STEP 仅文本层,文件名保留小写",KEEP
+file,scripts/phase2_step2_eval.sh,scripts/phase2_step2_eval.sh,HIGH,"同上",KEEP
+file,scripts/phase2_step2_singleKD.sh,scripts/phase2_step2_singlekd.sh,MED,"驼峰->小写",RENAME
+# ---------- experiments/phase2 报告文件名: STEP -> P2-STEP ----------
+file,experiments/phase2/STEP1_REPORT.md,experiments/phase2/P2-STEP1_REPORT.md,HIGH,"Phase2 Stage-A 等预算基线运行日志",RENAME
+file,experiments/phase2/STEP2_REPORT.md,experiments/phase2/P2-STEP2_REPORT.md,HIGH,"Phase2 单 teacher KD 受控复核",RENAME
+# ---------- configs/ 规范 ----------
+file,configs/ours_0.5M.yaml,configs/phase2_ours_0.5m.yaml,MED,"容量档基线",RENAME
+file,configs/ours_1.0M.yaml,configs/phase2_ours_1.0m.yaml,MED,"同上",RENAME
+file,configs/ours_2.0M.yaml,configs/phase2_ours_2.0m.yaml,MED,"同上",RENAME
+file,configs/ours_static.yaml,configs/phase2_ours_static.yaml,MED,"静态基线",RENAME
+file,configs/train_stageA.yaml,configs/phase1b_train_stage_a.yaml,HIGH,"StageA=Phase1B 训练",RENAME
+file,configs/train_stageA_0.5M.yaml,configs/phase1b_train_stage_a_0.5m.yaml,HIGH,"同上",RENAME
+file,configs/train_stageA_1.0M.yaml,configs/phase1b_train_stage_a_1.0m.yaml,HIGH,"同上",RENAME
+file,configs/train_stageA_2.0M.yaml,configs/phase1b_train_stage_a_2.0m.yaml,HIGH,"同上",RENAME
+file,configs/train_stageA_eb.yaml,configs/phase1b_train_stage_a_eb.yaml,HIGH,"同上",RENAME
+file,configs/train_stageA_kd_YOLOP.yaml,configs/phase1b_train_stage_a_kd_yolop.yaml,HIGH,"同上",RENAME
+file,configs/train_stageA_kd_TriLiteNet.yaml,configs/phase1b_train_stage_a_kd_trlitenet.yaml,HIGH,"同上",RENAME
+file,configs/train_stageA_kd_TwinLiteNetPlus.yaml,configs/phase1b_train_stage_a_kd_twinlitenetplus.yaml,HIGH,"同上",RENAME
+file,configs/train_stageA_offkd_YOLOP.yaml,configs/phase1b_train_stage_a_offkd_yolop.yaml,HIGH,"同上",RENAME
+file,configs/train_stageA_offkd_TriLiteNet.yaml,configs/phase1b_train_stage_a_offkd_trlitenet.yaml,HIGH,"同上",RENAME
+file,configs/train_stageA_offkd_TwinLiteNetPlus.yaml,configs/phase1b_train_stage_a_offkd_twinlitenetplus.yaml,HIGH,"同上",RENAME
+file,configs/train_stageB.yaml,configs/phase1b_train_stage_b.yaml,HIGH,"同上",RENAME
+file,configs/train_stageB_kd.yaml,configs/phase1b_train_stage_b_kd.yaml,HIGH,"同上",RENAME
+file,configs/train_stageB_offkd.yaml,configs/phase1b_train_stage_b_offkd.yaml,HIGH,"同上",RENAME
+file,configs/train_stageB_shared.yaml,configs/phase1b_train_stage_b_shared.yaml,HIGH,"同上",RENAME
+file,configs/train_stageC.yaml,configs/phase1b_train_stage_c.yaml,HIGH,"同上",RENAME
+file,configs/train_stageC_diff.yaml,configs/phase1b_train_stage_c_diff.yaml,HIGH,"同上",RENAME
+file,configs/train_stageC_offkd.yaml,configs/phase1b_train_stage_c_offkd.yaml,HIGH,"同上",RENAME
+file,configs/train_stageC_router.yaml,configs/phase1b_train_stage_c_router.yaml,HIGH,"同上",RENAME
+file,configs/train_stageD.yaml,configs/phase1b_train_stage_d.yaml,HIGH,"同上",RENAME
+file,configs/train_stageD_diff.yaml,configs/phase1b_train_stage_d_diff.yaml,HIGH,"同上",RENAME
+file,configs/train_stageD_offkd.yaml,configs/phase1b_train_stage_d_offkd.yaml,HIGH,"同上",RENAME
+file,configs/train_stageD_shared.yaml,configs/phase1b_train_stage_d_shared.yaml,HIGH,"同上",RENAME
+file,configs/train_stageU.yaml,configs/phase1b_train_stage_u.yaml,HIGH,"同上",RENAME
+file,configs/phase2_stageA_0.235M.yaml,configs/phase2_stage_a_0.235m.yaml,MED,"大小写统一",RENAME
+# ---------- 文本层专用(不改文件名, 仅内容规则化) ----------
+# Phase 6 已完成的: Round->Phase6A/6B, H-A..N->H-22..35, EXP-n->EXP-0n, GPU-n->P6A-STEPn
+# 本轮新增文本规则见 apply_naming_migration.py v3 的 RULES_V3

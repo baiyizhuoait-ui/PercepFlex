@@ -71,7 +71,7 @@ Probe A (per-task width) and probe B (reconstruction) would both be null, which
 means neither of the two obvious levers is the one. The ranked remaining
 possibilities from the literature review, in the order I would spend GPU on them:
 
-1. **H11 - gradient magnitude imbalance (free to test, no new architecture).**
+1. **H-11 - gradient magnitude imbalance (free to test, no new architecture).**
    We already measured `||dL_det/dZ||` at 5-8x the DA and lane values with cosines
    near zero. PCGrad's framing says magnitude imbalance alone - with no conflict at
    all - is enough for one task to own a shared parameter. Test: loss reweighting
@@ -79,7 +79,7 @@ possibilities from the literature review, in the order I would spend GPU on them
    this is the cheapest way to find out.
 2. **Force rank usage.** Z utilisation is 24.9% at z128. A decorrelation or
    orthogonality pressure on Z, rather than more channels.
-3. **Bottleneck placement** (H7b, still untested): move Z off 1/8, or compress
+3. **Bottleneck placement** (H-07b, still untested): move Z off 1/8, or compress
    later in the encoder.
 4. **Budget.** 4 epochs sits at 68% of the 20-epoch mAP50, and Phase 3B already
    showed z-width effects dominated by training budget. Before declaring any

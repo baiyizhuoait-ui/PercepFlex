@@ -1,4 +1,4 @@
-task,split,n_images,fg_share,width_mean_native_px,width_p99_native_px,width_p99_median_native_px,width_p99_modelinput_px,erode_survive_k1,erode_survive_k2,boundary_share,n_lane_classes,top_class_share,top_class_value,class_hist_top8,iou_if_pred_w2,iou_if_pred_w3,iou_if_pred_w4,iou_if_pred_w6,iou_if_pred_w8,iou_if_pred_w12,n_components
+﻿task,split,n_images,fg_share,width_mean_native_px,width_p99_native_px,width_p99_median_native_px,width_p99_modelinput_px,erode_survive_k1,erode_survive_k2,boundary_share,n_lane_classes,top_class_share,top_class_value,class_hist_top8,iou_if_pred_w2,iou_if_pred_w3,iou_if_pred_w4,iou_if_pred_w6,iou_if_pred_w8,iou_if_pred_w12,n_components
 lane,train,289,0.007217,4.657,3.984,4.0,1.992,0.0694,0.0005,0.9306,11,0.2246,22,22:0.225;48:0.207;4:0.199;6:0.183;38:0.065;3:0.060;7:0.038;19:0.009,0.3192,0.3226,0.9726,0.585,0.4184,0.2753,
 lane,val,287,0.006928,4.645,3.974,4.0,1.987,0.065,0.0005,0.935,14,0.2644,22,22:0.264;48:0.193;4:0.192;6:0.161;3:0.072;38:0.052;7:0.040;2:0.007,0.3213,0.3227,0.9716,0.5835,0.4165,0.2727,
 da,train,277,0.17366,156.194,206.372,197.231,103.186,0.9762,0.9526,0.0238,,,,,nan,nan,nan,nan,nan,nan,1.86

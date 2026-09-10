@@ -73,10 +73,10 @@ class StaticMultiTaskModel(nn.Module):
         # Phase 5: optional higher-resolution lane branch. Off by default.
         self.lane_res = int(seg_cfg.get("lane_res", 8))
         self.lane_use_f1 = bool(seg_cfg.get("lane_use_f1", False))
-        # Phase 4B-6: optional higher-resolution DA branch (mirror of lane). Off by default.
+        # P4B-EXP-06: optional higher-resolution DA branch (mirror of lane). Off by default.
         self.da_res = int(seg_cfg.get("da_res", 8))
         self.da_use_f1 = bool(seg_cfg.get("da_use_f1", False))
-        # Phase 4B-3: p2="f1" also needs the encoder's native 1/4 map.
+        # P4B-EXP-03: p2="f1" also needs the encoder's native 1/4 map.
         self.need_highres = (bool(self.lane_res != 8 and self.lane_use_f1)
                              or self.det_p2 == "f1"
                              or bool(self.da_res != 8 and self.da_use_f1))

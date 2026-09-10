@@ -1,4 +1,4 @@
-cell,variant,split,bucket,n_gt,recall_at50,mean_gt_area_px,mean_crowd_iou,mean_gt_per_image,n_pred_total,n_images
+﻿cell,variant,split,bucket,n_gt,recall_at50,mean_gt_area_px,mean_crowd_iou,mean_gt_per_image,n_pred_total,n_images
 r0_z16,r0,size,small,2170,0.6442,269.1,0.0859,14.45,78243,300
 r0_z16,r0,size,medium,752,0.9029,3145.6,0.0963,12.97,78243,300
 r0_z16,r0,size,large,262,0.9504,22356.2,0.0637,10.98,78243,300

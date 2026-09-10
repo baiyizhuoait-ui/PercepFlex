@@ -14,4 +14,4 @@ for cfg in 0.5M 1.0M 2.0M; do
       --outdir "$OUT/$tag" > "$OUT/$tag.log" 2>&1
   if [ -f "$OUT/$tag/checkpoint.pt" ]; then st "DONE $tag"; else st "FAIL $tag"; fi
 done
-st "STEP1_BUDGET_CHAIN_DONE"
+st "P2-STEP1_BUDGET_CHAIN_DONE"

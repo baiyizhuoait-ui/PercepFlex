@@ -32,7 +32,7 @@ r3tp_z32  base=configs/phase4a_r2_z32.yaml
 
 OVERALL: PASS
 
-Note on r2u_z16: its 4ep result already exists from Phase 4A STEP 2 sanity
+Note on r2u_z16: its 4ep result already exists from P4A-STEP2 sanity
 (experiments/phase4a/exp4A_r2_z16_e4, commit 63fa17b). It is REUSED, not
 retrained: the model builds to the identical 201366 parameters (verified by
 scripts/phase4b_compat.py) and task_proj defaults off, so the forward graph is

@@ -1,4 +1,4 @@
-cell,variant,band,da_fg_iou,blockfill_1over8_iou,iou_minus_blockfill,precision,recall,pred_over_gt_area,mixed_block_share,boundary_pixel_share,gt_pixel_share,n_valid_images,n_images
+﻿cell,variant,band,da_fg_iou,blockfill_1over8_iou,iou_minus_blockfill,precision,recall,pred_over_gt_area,mixed_block_share,boundary_pixel_share,gt_pixel_share,n_valid_images,n_images
 r0_z16,r0,far,0.7515,0.8508,-0.0993,0.7676,0.9747,1.361,0.03,0.0548,0.3388,285,300
 r0_z16,r0,mid,0.873,0.9509,-0.078,0.8793,0.9898,1.1547,0.079,0.0183,0.3344,285,300
 r0_z16,r0,near,0.7283,0.8487,-0.1204,0.7359,0.988,1.4438,0.0939,0.0539,0.3268,285,300

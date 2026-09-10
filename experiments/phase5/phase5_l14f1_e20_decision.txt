@@ -1,4 +1,4 @@
-Phase 5 STEP 7b - 20-epoch confirmation decision (rule fixed in f775718 before the run)
+P5-STEP7b - 20-epoch confirmation decision (rule fixed in f775718 before the run)
 =====================================================================
 l14f1_z16 e20: lane_fg 0.2192  mAP50 0.3612  da_fg 0.7678  lane_mIoU 0.5988
 baseline r2_z16 e20 (committed row): lane_fg 0.1943  mAP50 0.3543  da_fg 0.7612
@@ -6,6 +6,6 @@ d_lane +0.0249 = 1.95x noise (CONFIRMED line: +0.0256; missed by +0.0007)
 d_det +0.0069 (0.24x noise, gate 2x) - ok
 d_da  +0.0066 (0.08x noise, gate 2x) - ok
 VERDICT: WEAK SUPPORT
-Per the registration: WEAK means H5b stays provisional; do not build on it;
+Per the registration: WEAK means H-05b stays provisional; do not build on it;
 record as unresolved. The 4-ep direction survived in sign and magnitude
 (+2.36x at 4ep, +1.95x at 20ep) but did not clear the pre-set bar.

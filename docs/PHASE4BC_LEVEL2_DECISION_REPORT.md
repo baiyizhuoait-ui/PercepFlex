@@ -100,7 +100,7 @@ at 20 epochs now; see section 6.
 
 ---
 
-## 4. Probe C (20 epochs) - H11, gradient magnitude imbalance
+## 4. Probe C (20 epochs) - H-11, gradient magnitude imbalance
 
 Motivation was a measurement already in hand: at the R2 20ep checkpoints,
 detection owns 73.2% (z16) and 76.9% (z32) of the gradient on Z, with all
@@ -160,7 +160,7 @@ rw_z32:  gave up  12.86x noise of mAP50
          bought    0.01x noise of da_fg,  -0.12x noise of lane_fg
 ```
 
-**Verdict: H11 rejected as a lever.** Detection's dominance of the Z gradient
+**Verdict: H-11 rejected as a lever.** Detection's dominance of the Z gradient
 is real, but it is not what caps DA and lane. Crushing detection by an order of
 magnitude more than the threshold bought a quarter of one noise unit.
 
@@ -228,7 +228,7 @@ These are hypotheses, not results. Listed in the order I would test them.
 
 ### Still open
 
-- H7b, bottleneck *placement* (never tested)
+- H-07b, bottleneck *placement* (never tested)
 - whether lane can be rescued by features at 1/4 or 1/2 - the one intervention
   the error-geometry result actually motivates, and it exits the shared-Z design
 - whether R2's far-field DA regression versus R0 replicates (exploratory, 6c)

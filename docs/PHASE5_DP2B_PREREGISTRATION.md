@@ -1,4 +1,4 @@
-# H21 / dp2b_z16 — preregistered before running
+# H-21 / dp2b_z16 — preregistered before running
 
 Registered 2026-09-08 22:4x, before `dp2b_z16` was trained. The rules below are
 transcribed into `scripts/phase5_det_decide.py` (section D3b) so that the
@@ -29,8 +29,8 @@ lateral from encoder stage-0 `f1`, which is a real stride-4 feature map.
 
 | id | rule | read as |
 |---|---|---|
-| **D3b** | `dp2b - danc >= +0.0146` (1x noise) | PASS -> H21 supported: stride-4 grid resolution does bind, but only when the level carries real shallow features. Then a 20ep confirmation is required; this is not established at 4ep. |
-| | | FAIL or negative -> H21 rejected. |
+| **D3b** | `dp2b - danc >= +0.0146` (1x noise) | PASS -> H-21 supported: stride-4 grid resolution does bind, but only when the level carries real shallow features. Then a 20ep confirmation is required; this is not established at 4ep. |
+| | | FAIL or negative -> H-21 rejected. |
 | **D3b-2** | report `dp2b - dp2a` | This *is* the confound, measured: how much of dp2a's -0.0447 was feature source rather than grid density. |
 | **D4b** | `|lane_fg|`, `|da_fg|` move < 2x noise (0.0128 / 0.0808) | A detection-only change must stay detection-only. |
 | **D5b** | report params / FLOPs | Cost transparency. |

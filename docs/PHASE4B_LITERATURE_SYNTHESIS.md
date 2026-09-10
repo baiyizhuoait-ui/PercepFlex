@@ -24,7 +24,7 @@ Two consequences, and they cut in opposite directions:
 
 - It was never surprising that forcing detection through Z did not hurt. Phase 4A
   measured R2 detection as *better* than R0 (+0.0331 at z32, +0.0553 at z128).
-  The literature says single-in / multi-out is nearly free, so H6 ("compression
+  The literature says single-in / multi-out is nearly free, so H-06 ("compression
   to Z is lossy") was a weak hypothesis to begin with. We now have both our own
   measurement and an external prior saying the same thing.
 - It also means **the shared Z was never the likely bottleneck for detection.**
@@ -126,7 +126,7 @@ Our own diagnostic already measured the magnitudes at Z:
 ~0.** By PCGrad's framing, that is magnitude imbalance *without* conflict - and
 imbalance alone is enough for one task to dominate the shared parameter update.
 This is a cheap, non-architectural hypothesis we can test without training a new
-model: **H11 - under a summed loss, Z is effectively a detection representation and
+model: **H-11 - under a summed loss, Z is effectively a detection representation and
 DA/lane are passengers.** It would explain at once why DA is z-insensitive (it barely
 pushes on Z) and why widening Z helps detection.
 
@@ -153,7 +153,7 @@ report.
 | 2 | **Attentive / spatial per-task projection** (TSAP-style) instead of 1x1 | probe A tested the weakest form; attention adapts spatial+channel+long range | small; needs a spatial attention block per task | medium-high |
 | 3 | **Loss / gradient rebalancing** (GradNorm, uncertainty weighting) | measured 5-8x magnitude imbalance at Z, cosines ~0 | no new architecture; retrain only | medium-high |
 | 4 | **Force rank usage** (decorrelation / orthogonality pressure on Z) | 25% utilisation at z128 is the bottleneck, not the width | one regularizer term | medium |
-| 5 | **Bottleneck placement** (move Z off 1/8, or compress later) | H7b, still untested | new configs | medium |
+| 5 | **Bottleneck placement** (move Z off 1/8, or compress later) | H-07b, still untested | new configs | medium |
 | 6 | **Encoder depth over width at fixed budget** | Phase 3C already leans this way; Chinchilla supports it | new encoders | medium |
 | 7 | **More training budget before concluding anything** | every effect here is small; 4ep -> 20ep has already moved things | expensive but honest | high as a *check*, not a fix |
 

@@ -1,4 +1,4 @@
-cell,variant,task,fg_iou,precision,recall,pred_over_gt_area,blockfill_1over8_iou,iou_minus_blockfill,erode1_survival,erode2_survival,mean_gt_px,n_images,fg_iou_tol0,recall_tol0,fg_iou_tol1,recall_tol1,fg_iou_tol2,recall_tol2,fg_iou_tol4,recall_tol4,fg_iou_tol8,recall_tol8
+﻿cell,variant,task,fg_iou,precision,recall,pred_over_gt_area,blockfill_1over8_iou,iou_minus_blockfill,erode1_survival,erode2_survival,mean_gt_px,n_images,fg_iou_tol0,recall_tol0,fg_iou_tol1,recall_tol1,fg_iou_tol2,recall_tol2,fg_iou_tol4,recall_tol4,fg_iou_tol8,recall_tol8
 r0_z16,r0,lane,0.1845,0.2049,0.6706,3.5457,0.1854,-0.0009,0.0107,0.0007,2089.3,300,0.1845,0.6706,0.3796,0.7424,0.4529,0.7843,0.4147,0.8291,0.2857,0.8688
 r0_z16,r0,da,0.7699,0.7795,0.9841,1.3191,0.8801,-0.1103,0.9574,0.9156,41464.9,300,0.7699,0.9841,0.7952,0.9872,0.8128,0.9893,0.8228,0.9919,0.7951,0.9949
 r2_z16,r2,lane,0.1843,0.2036,0.6886,3.7341,0.1854,-0.0012,0.0107,0.0007,2089.3,300,0.1843,0.6886,0.3821,0.756,0.4598,0.7956,0.4249,0.8394,0.2952,0.8805

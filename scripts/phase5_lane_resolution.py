@@ -1,4 +1,4 @@
-"""Phase 5 STEP 1 - lane resolution ladder, measured without training.
+"""P5-STEP1 - lane resolution ladder, measured without training.
 
 Why this is the first experiment
 --------------------------------
@@ -36,22 +36,22 @@ Also reported per task:
 
 The prediction this ladder is designed to separate
 --------------------------------------------------
-H5a (head operating resolution) and H5b (absence of 1/4 information) are
+H-05a (head operating resolution) and H-05b (absence of 1/4 information) are
 different claims and only one of them can be decided by training:
 
-  H5a predicts LITTLE gain from running the lane head at 1/4 while still
+  H-05a predicts LITTLE gain from running the lane head at 1/4 while still
   feeding it Z. Z carries one vector per 1/8 cell and no information about
   where inside the cell the line sits, so a learned upsampler can at best
   emit a canonical pattern per cell. The ceiling for that is close to the
   1/8 ceiling. A large gain here would mean the models are leaving
   interpolation quality on the table, not that they lack information.
 
-  H5b predicts a LARGE gain from giving the lane branch the encoder's real
+  H-05b predicts a LARGE gain from giving the lane branch the encoder's real
   1/4 feature, because that feature genuinely contains the sub-cell position
   that Z has discarded.
 
-So the ladder below bounds H5b from above before a single epoch is run. If
-the 1/4 ceiling is not substantially higher than the 1/8 ceiling, H5b is
+So the ladder below bounds H-05b from above before a single epoch is run. If
+the 1/4 ceiling is not substantially higher than the 1/8 ceiling, H-05b is
 already dead and no training is justified.
 """
 import argparse

@@ -18,7 +18,7 @@
 | TwinLiteNet | — | — | — | 0.911 DA | — | 官方权重 |
 | TriLiteNet-tiny | — | — | 0.495 | 0.880 | 0.195 | 官方权重 |
 
-**容量档结论（H2）**：Detection > Lane > DA 对容量敏感；DA/Lane 在 0.5M 即饱和。
+**容量档结论（H-02）**：Detection > Lane > DA 对容量敏感；DA/Lane 在 0.5M 即饱和。
 注意：上述容量档用 4/3/2 非一致 epoch，仅作容量趋势上下文，不参与 Phase-2 等预算表。
 
 ## 1. Fixed Stage-A Protocol（Phase 2 全矩阵统一）
@@ -58,7 +58,7 @@ CUDA-sync、bs=1、全 tri_val。评测脚本 `evaluation/evaluate_baseline.py`�
 - A1 +YOLOP KD
 - A2 +TwinLiteNet+ KD
 - A3 +TriLiteNet KD
-记录 ΔmAP / ΔDA / ΔLane。KD 走离线 cache（`scripts/precompute_teacher.py`）避免每步 teacher 开销。
+记录 ΔmAP / ΔDA / ΔLane。KD 走离线 cache（`scripts/phase2_precompute_teacher.py`）避免每步 teacher 开销。
 
 **状态：待跑。**
 

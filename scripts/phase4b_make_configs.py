@@ -3,7 +3,7 @@
 
 Four cells at 4 epochs, seed 0, E-base:
 
-    r2u_z16   R2, shared Z=16, no per-task projection   (REUSED from STEP 2 sanity)
+    r2u_z16   R2, shared Z=16, no per-task projection   (REUSED from P4B-STEP2 sanity)
     r2u_z32   R2, shared Z=32, no per-task projection
     r3tp_z16  R3, shared Z=16 + per-task projection
     r3tp_z32  R3, shared Z=32 + per-task projection
@@ -97,7 +97,7 @@ for cell, base in BASE.items():
 
 p("OVERALL: %s" % ("PASS" if ok_all else "FAIL"))
 p("")
-p("Note on r2u_z16: its 4ep result already exists from Phase 4A STEP 2 sanity")
+p("Note on r2u_z16: its 4ep result already exists from P4A-STEP2 sanity")
 p("(experiments/phase4a/exp4A_r2_z16_e4, commit 63fa17b). It is REUSED, not")
 p("retrained: the model builds to the identical 201366 parameters (verified by")
 p("scripts/phase4b_compat.py) and task_proj defaults off, so the forward graph is")

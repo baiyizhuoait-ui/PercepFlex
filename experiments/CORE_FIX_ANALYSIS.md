@@ -43,15 +43,15 @@ Exp2：shared (0.2463) ≈ taskwise (0.2424)，计算量相当（0.467 vs 0.460 
 - 当前 Router 实际收益 ≈ 0（与 random 相当）
 
 **Phase 1 成立的部分**：
-- H3（Pareto 覆盖）：dynamic ≈ static 插值，平均 FLOPs -32%（Exp1 全量验证）
+- H-03（Pareto 覆盖）：dynamic ≈ static 插值，平均 FLOPs -32%（Exp1 全量验证）
 - 单一模型多运行档位（Tiny/Medium/Large/Dynamic 一键切换）
-- H2 待 Exp4（等预算对比轻量 baseline）验证
+- H-02 待 Exp4（等预算对比轻量 baseline）验证
 
-**H1（task-wise > 统一宽度）在当前设置下弱支持**——上界小是主因，
+**H-01（task-wise > 统一宽度）在当前设置下弱支持**——上界小是主因，
 非 Router 训练不足（已试 hard-STE / soft / difficulty-supervision 三种）。
 
 ### 建议
-- Phase 1 收尾：以稳定模型（exp_train_D）为准，跑 Exp4（H2 等预算对比），
+- Phase 1 收尾：以稳定模型（exp_train_D）为准，跑 Exp4（H-02 等预算对比），
   完整报告如实呈现上界分析
-- Phase 2 方向：Cross-Architecture KD 增强 Compact Z（H4），使宽度敏感性更高、
-  路由收益上界更大——这可能让 H1 在更强的表示下成立
+- Phase 2 方向：Cross-Architecture KD 增强 Compact Z（H-04），使宽度敏感性更高、
+  路由收益上界更大——这可能让 H-01 在更强的表示下成立
