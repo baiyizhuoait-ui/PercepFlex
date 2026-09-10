@@ -1,0 +1,41 @@
+# Phase 6C / EXP-09 cell C2(seed0):  r2_z16 encoder  x  k-means anchors  (20ep).
+# 2x2 (capacity x anchor) factorial, screening tier.
+# Encoder / representation / heads copied VERBATIM from configs/phase4a_r2_z16.yaml
+# (r2_z16: 0.2014M / 1.0796G).  ONLY change vs that config: the `anchors` block
+# (and the matching train.anchors) is added.  Single-variable by construction.
+# Identical to configs/phase4b_danc_z16.yaml except epochs 4 -> 20
+# (so it seed-matches exp4A_r2_z16_e20 and exp4B_danc_z16_e20_s1/s2).
+model:
+  encoder:
+    stem: 16
+    stages: [32, 64, 96, 128]
+    blocks: [2, 2, 2]
+  representation:
+    z_channels: 16
+  detection:
+    nc: 1
+    from_z: true
+    z_proj: true
+    det_ch: 32
+    anchors: &id001
+      - [[9, 8], [18, 15], [32, 24]]
+      - [[49, 38], [80, 52], [65, 102]]
+      - [[124, 82], [166, 136], [237, 214]]
+  segmentation:
+    hidden: 32
+input_size: [640, 640]
+train:
+  stage: A
+  train_split: tri_train
+  batch_size: 16
+  num_workers: 2
+  epochs: 20
+  lr: 1e-3
+  weight_decay: 5e-4
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lambda_budget: 0.0
+  grad_clip: 10.0
+  anchors: *id001
+data:
+  root: data/bdd100k

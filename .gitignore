@@ -12,24 +12,20 @@ experiments/**/checkpoint.pt
 **/training_log.txt
 experiments/*/*.csv
 
-# ...but the aggregated sweep RESULT TABLES are the deliverable of Phase 2-B:
-# they are small, and they carry params/FLOPs/FPS/per-task metrics/git-commit for
-# every run. Without them the sweep is not reproducible, so un-ignore them.
-!experiments/phase2b/*_results.csv
-
-# Same reasoning for the later phases: the aggregated result tables are the
-# deliverable and the reports are generated from them. Un-ignore them so a
-# phase is never committed with its numbers missing.
-!experiments/phase3a/*.csv
-!experiments/phase3b/*.csv
-!experiments/phase3c/*.csv
-!experiments/phase4a/*.csv
-!experiments/phase5/*.csv
-# Phase 6 was missing from this list, so every Phase-6 result table (registry,
-# hypothesis matrix, round-2 factorial/equal-budget/statistics) fell under
-# `experiments/*/*.csv` and was silently untracked. The tables are the
-# deliverable and the decision reports are generated from them (27 KB total).
-!experiments/phase6/*.csv
+# ...but the aggregated sweep RESULT TABLES are the deliverable: they are small
+# and carry params/FLOPs/per-task metrics/git-commit for every run. Without them
+# a phase is not reproducible, so un-ignore them.
+#
+# The rule is GENERIC on purpose. It used to be a hand-maintained list
+# (`!experiments/phase2b/*_results.csv`, then one `!experiments/phaseX/*.csv`
+# per phase), and that failed exactly twice:
+#   * phase6 was never added -> every Phase-6 table (registry / hypotheses /
+#     round-2 statistics) was silently untracked for days;
+#   * phase2b's `r1r2_paramaudit.csv` does not end in `_results.csv`, so the
+#     narrow whitelist never matched it.
+# Adding a phase directory must not require remembering to edit this file --
+# that IS the failure class. Enforced by check_repo_hygiene.sh assertion A1b.
+!experiments/phase*/**/*.csv
 
 # Baseline repos keep their own .git; ignore their weight files
 baselines/*/pretrained/
@@ -48,14 +44,20 @@ __pycache__/
 .vscode/
 .idea/
 .DS_Store
-experiments/*/kd_cache/
-experiments/expF_single_teacher/kd_cache/
-# The 2026-09-10 Phase-1B/2B/2C directory reorganisation moved this cache to
-# experiments/phase2b/expF_single_teacher/kd_cache/ — which matched NEITHER
-# pattern above, so 21 GB of *.npy would have been staged. Match at any depth.
+# The 2026-09-10 Phase-1B/2B/2C directory reorganisation moved the KD feature
+# cache to experiments/phase2b/expF_single_teacher/kd_cache/. The two literal
+# rules that used to sit here (`experiments/*/kd_cache/` and
+# `experiments/expF_single_teacher/kd_cache/`) matched NEITHER the new path, so
+# 21 GB of *.npy was one `git add -A` away from being committed. Match at ANY
+# depth, and keep NO literal path rules in this file: they rot silently on the
+# next rename (check_repo_hygiene.sh assertion A4 exists to catch that).
 experiments/**/kd_cache/
 
-# Baseline/teacher weights and key trained models (uploaded for the server)
+# Baseline/teacher weights and key trained models (uploaded for the server).
+# NOTE: weights/YOLOP_End-to-end.pth is 95.7 MB -- 4.3 MB below GitHub's 100 MB
+# hard limit, and ~83% of the packed repo. It is REGISTERED as an allowed large
+# blob in scripts/hygiene_exceptions.txt (assertion A3), so the exception is
+# auditable rather than implicit.
 !weights/
 !trained_models/
 !weights/*.pth

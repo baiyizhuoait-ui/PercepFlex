@@ -35,16 +35,59 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-EXCLUDE_FILES = {
-    "scripts/naming_path_map.csv",
-    "scripts/naming_frozen.txt",
-    "scripts/apply_naming_migration.py",
-    "scripts/check_naming.sh",
-    "scripts/rename_paths.py",
-    "scripts/refs_pass2.py",
-    "scripts/verify_naming.py",
-    "scripts/diag_chk11.py",
-}
+# --------------------------------------------------------------------------- #
+# Frozen paths.  Single source of truth = scripts/naming_frozen.txt, the SAME
+# file check_naming.sh reads.  Semantics: glob on repo-relative path,
+# last-match-wins, a leading '!' unfreezes.
+#
+# This replaces a hard-coded EXCLUDE_FILES set, which had already DRIFTED from
+# the freeze list: docs/NAMING_CONVENTION.md and docs/NAMING_ALIASES.csv are
+# frozen there -- they *are* the old->new mapping tables, so they must contain
+# old names by construction -- yet this scanner still walked them, and reported
+# the naming tooling's own mapping tables as "stale references to renamed
+# paths".  check_naming.sh already skips frozen files for CHK1..CHK10; skipping
+# them here is consistency with the declared rule, not a new exemption.
+# --------------------------------------------------------------------------- #
+def _glob_to_re(pat):
+    out, i, n = [], 0, len(pat)
+    while i < n:
+        c = pat[i]
+        if c == "*":
+            if pat[i:i + 3] == "**/":
+                out.append("(?:.*/)?"); i += 3; continue
+            if pat[i:i + 2] == "**":
+                out.append(".*"); i += 2; continue
+            out.append("[^/]*"); i += 1; continue
+        if c == "?":
+            out.append("[^/]"); i += 1; continue
+        out.append(re.escape(c)); i += 1
+    return "^" + "".join(out) + "$"
+
+
+def _load_frozen_patterns():
+    pats = []
+    path = os.path.join(ROOT, "scripts", "naming_frozen.txt")
+    try:
+        with io.open(path, encoding="utf-8") as f:
+            for raw in f:
+                s = raw.strip()
+                if s and not s.startswith("#"):
+                    pats.append(s)
+    except OSError:
+        pass
+    return pats
+
+
+_FROZEN = [(p, re.compile(_glob_to_re(p[1:] if p.startswith("!") else p)))
+           for p in _load_frozen_patterns()]
+
+
+def is_frozen(rel):
+    state = False
+    for pat, rx in _FROZEN:
+        if rx.match(rel):
+            state = not pat.startswith("!")
+    return state
 
 PRUNE_DIRS = {"data", "datasets", "weights", "trained_models", ".git",
               "outputs", "runs", "__pycache__", ".venv", "node_modules"}
@@ -184,7 +227,7 @@ def iter_text_targets():
             continue
         if rel.split("/")[0] in PRUNE_DIRS:
             continue
-        if rel in EXCLUDE_FILES:
+        if is_frozen(rel):
             continue
         if os.path.splitext(rel)[1].lower() not in TEXT_EXT:
             continue

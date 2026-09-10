@@ -1,0 +1,17 @@
+# scripts/hygiene_exceptions.txt
+# ---------------------------------------------------------------------------
+# Blobs >= 50 MB allowed to live in HEAD (assertion A3 of check_repo_hygiene.sh).
+#
+# One bare path per line, NO comments trailing a path, `#` starts a comment.
+# Every entry needs a reason on the line(s) above it -- an unexplained exception
+# is how a repository quietly becomes unclonable.
+# ---------------------------------------------------------------------------
+
+# 95.7 MB. The YOLOP teacher checkpoint, needed by the KD (distillation)
+# pipeline. `.gitignore` un-ignores weights/*.pth deliberately (see the
+# "uploaded for the server" note there). Two facts recorded at registration:
+#   * it is 4.3 MB below GitHub's 100 MB hard limit -- no headroom to grow;
+#   * it is ~83% of the packed repository (115 MiB), so every clone pays it.
+# Revisit options (not urgent): Git LFS, or drop it from git and fetch it
+# server-side via scripts/fetch_weights.sh.
+weights/YOLOP_End-to-end.pth

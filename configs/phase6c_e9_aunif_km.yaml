@@ -1,0 +1,39 @@
+# Phase 6C / EXP-09 cell C4:  A-uniform encoder  x  k-means anchors  (20ep).
+# 2x2 (capacity x anchor) factorial, screening tier.
+# Encoder / representation / heads copied VERBATIM from configs/phase6_e8_uniform_z16.yaml
+# (A-uniform: 0.3339M / 1.6650G).  ONLY change vs that config: the `anchors` block
+# (and the matching train.anchors) is added.  Single-variable by construction.
+model:
+  encoder:
+    stem: 24
+    stages: [48, 88, 136, 176]
+    blocks: [2, 2, 2]
+  representation:
+    z_channels: 16
+  detection:
+    nc: 1
+    from_z: true
+    z_proj: true
+    det_ch: 32
+    anchors: &id001
+      - [[9, 8], [18, 15], [32, 24]]
+      - [[49, 38], [80, 52], [65, 102]]
+      - [[124, 82], [166, 136], [237, 214]]
+  segmentation:
+    hidden: 32
+input_size: [640, 640]
+train:
+  stage: A
+  train_split: tri_train
+  batch_size: 16
+  num_workers: 2
+  epochs: 20
+  lr: 1e-3
+  weight_decay: 5e-4
+  lambda_da: 1.0
+  lambda_lane: 1.0
+  lambda_budget: 0.0
+  grad_clip: 10.0
+  anchors: *id001
+data:
+  root: data/bdd100k

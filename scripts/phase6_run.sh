@@ -8,8 +8,9 @@ ROOT=/home/mycode/ai_study/trac
 cd "$ROOT" || exit 1
 
 TAG="$1"; CFG="$2"; EP="$3"; SEED="$4"; CSV="$5"; VAR="$6"; CELL="$7"; Z="$8"
-OUT=experiments/phase6
-TR="$OUT/exp6_${TAG}"
+OUT="${9:-experiments/phase6}"
+PFX="${10:-exp6_}"
+TR="$OUT/${PFX}${TAG}"
 EVL="${TR}_eval"
 CKPT="$TR/checkpoint.pt"
 MP="$EVL/metrics.json"

@@ -1,3 +1,4 @@
+configs/phase3c_midL_z32.yaml
 docs/PHASE2D_BUDGET_RESULTS.md
 experiments/FINAL_REPORT.md
 experiments/env_setup_summary.json

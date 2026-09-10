@@ -1,0 +1,10 @@
+#!/bin/sh
+# Pre-commit hook (tracked source of truth: scripts/hooks/pre-commit).
+# Install with:  bash scripts/install_hooks.sh
+#
+# Refuses the commit unless every machine-checkable gate is green:
+# naming unification + repository hygiene.
+#
+# Bypass (only with a written reason in the commit message):
+#   git commit --no-verify
+exec bash scripts/check_all.sh
