@@ -382,3 +382,54 @@ RESULT: naming UNIFIED
 - `scripts/check_all.sh`：命名 + 卫生双门禁的唯一入口。
 - `scripts/hooks/pre-commit` + `scripts/install_hooks.sh`：把门禁挂进提交。
 - `--selftest` 会**植入反例并要求门禁 FAIL**（不能失败的门禁不是门禁）。
+
+---
+
+## 12. 判据变更留痕：A1b 收紧为不变量 + 移除 CSV 忽略规则（2026-09-10）
+
+### 12.1 变更内容
+
+| 项 | 变更前 | 变更后 |
+|---|---|---|
+| `.gitignore` | `experiments/*/*.csv` 忽略 + `!experiments/phase*/**/*.csv` 白名单 | **两者都删除**；CSV 在 `experiments/` 下**默认跟踪**，不再有任何忽略规则 |
+| A1b 判据 | 遍历 `experiments/phase*/`，仅在"某目录 CSV **全被**忽略且 **0** 跟踪"时报 FAIL | **不变量**：`experiments/` 下**任何**磁盘上的 `.csv` 被忽略即 FAIL |
+| `--selftest` 反例 | 2 个（2 MB `.npy` → A2；假死规则 → A4） | **3 个**（新增：被忽略的 CSV → A1b），清理后必须回归绿 |
+
+### 12.2 为什么改（变更是被证据推动的，不是为了让检查变绿）
+
+用户问"白名单问题解决了没有"，复核时**发现并复现了一个残留缺口**：
+
+```
+$ mkdir -p experiments/zz_probe_tmp && echo a,b > experiments/zz_probe_tmp/probe.csv
+$ git check-ignore -v experiments/zz_probe_tmp/probe.csv
+.gitignore:13:experiments/*/*.csv      experiments/zz_probe_tmp/probe.csv    <-- 被吞
+```
+
+三个独立事实：
+
+1. **白名单只覆盖 `phase*` 顶层目录**，而 `experiments/_figures/`、`experiments/_template/` **已经存在** ——
+   不是假设性风险。
+2. **A1b 的旧判据抓不到它**：循环写死 `experiments/phase*/`；
+   且判据形如 `ign >= disk && trk == 0`，**部分被吞（5 个里吞 3 个）也判为通过**。
+3. **`experiments/*/*.csv` 当时实际忽略 0 个文件** —— 它不产生任何收益，
+   却是一颗随时复活的哑雷（下一个非 `phase*` 目录 / 改名后的目录就会踩中）。
+
+即：**判据本身太弱，弱到无法证明"不变量成立"。** 收紧判据是根因处置，不是美化结果。
+
+### 12.3 闭合证据
+
+| 检查 | 结果 |
+|---|---|
+| 探针（非 `phase*` 目录下的 csv） | **VISIBLE**（缺口闭合） |
+| `experiments/` 下 csv 三态 | 磁盘 **71** / 忽略 **0** / 跟踪 **71** |
+| A1b | `[OK] A1b no .csv under experiments/ is ignored` |
+| `--selftest` | 植入 3 反例 → `A1b` + `A2` + `A4` 三条同时 FAIL → `SELFTEST: PASS` → 清理后回归绿 |
+| 双门禁 | `RESULT: naming UNIFIED` + `RESULT: repo hygiene OK` + `RESULT: ALL GATES GREEN` |
+| 体积影响 | CSV 总量 **3.8 MB / 71 个**（最大 390 KB）；放大到 `add -A` 的风险由 **A2（≥1 MB）** 独立兜住 |
+
+### 12.4 影响面
+
+- **未新增/移动/删除任何文件**；今日审计本就 `ignored=0`，因此该变更对**当前**仓库内容无影响 ——
+  它的作用是**消除复发路径**。
+- 与 §10.2（CHK11 判据变更）、§11（refs_pass2 与冻结清单对齐）同属一类：
+  **判据的每一次改动都必须在文档里可追溯，禁止静默调整。**

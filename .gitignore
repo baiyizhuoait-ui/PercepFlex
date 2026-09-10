@@ -4,28 +4,31 @@
 data/
 ../trac_data/
 
-# Experiments outputs (checkpoint/metrics kept under experiments/exp_XXX/ are
-# large; keep config.yaml + metrics.json tracked, ignore weights/logs)
-# ignore weights/logs at ANY depth (the old `experiments/*/...` only matched one
-# level and missed experiments/phaseX/expY/training_log.txt -> bloated commits)
+# Experiments outputs. Checkpoints and run logs ARE large, so they stay ignored --
+# at ANY depth: the old `experiments/*/...` form matched one level only and missed
+# experiments/phaseX/expY/training_log.txt -> bloated commits.
 experiments/**/checkpoint.pt
 **/training_log.txt
-experiments/*/*.csv
 
-# ...but the aggregated sweep RESULT TABLES are the deliverable: they are small
-# and carry params/FLOPs/per-task metrics/git-commit for every run. Without them
-# a phase is not reproducible, so un-ignore them.
+# Result tables (.csv) under experiments/ are DELIVERABLES: they are small and
+# carry params/FLOPs/per-task metrics/git-commit for every run. Without them a
+# phase is not reproducible, so they are tracked BY DEFAULT -- there is
+# deliberately NO ignore rule for them.
 #
-# The rule is GENERIC on purpose. It used to be a hand-maintained list
-# (`!experiments/phase2b/*_results.csv`, then one `!experiments/phaseX/*.csv`
-# per phase), and that failed exactly twice:
-#   * phase6 was never added -> every Phase-6 table (registry / hypotheses /
-#     round-2 statistics) was silently untracked for days;
+# History: this used to be `experiments/*/*.csv` (ignore) + a hand-maintained
+# `!whitelist`. That shape failed three separate ways, all silently:
+#   * phase6 was never added to the whitelist -> every Phase-6 table (registry /
+#     hypotheses / round-2 statistics) stayed untracked for days;
 #   * phase2b's `r1r2_paramaudit.csv` does not end in `_results.csv`, so the
-#     narrow whitelist never matched it.
-# Adding a phase directory must not require remembering to edit this file --
-# that IS the failure class. Enforced by check_repo_hygiene.sh assertion A1b.
-!experiments/phase*/**/*.csv
+#     narrow `!experiments/phase2b/*_results.csv` form never matched it;
+#   * widening the ignore's reach reopened the hole for any non-`phase*` top-level
+#     directory -- verified by planting experiments/zz_probe_tmp/probe.csv, which
+#     `experiments/*/*.csv` swallowed even with the `!phase*/**` whitelist present.
+#     `experiments/_figures/` and `experiments/_template/` are exactly such dirs.
+# The lesson is the same one as the kd_cache incident below: adding or renaming a
+# directory must never require remembering to edit this file.
+# Guarded by check_repo_hygiene.sh assertion A1b ("no .csv under experiments/ may
+# be ignored"); oversized adds are separately caught by A2 (>= 1 MB).
 
 # Baseline repos keep their own .git; ignore their weight files
 baselines/*/pretrained/

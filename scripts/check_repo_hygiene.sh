@@ -10,8 +10,8 @@
 #
 # Assertions
 #   A1a  the audit-chain files are actually tracked by git
-#   A1b  no experiments/phase*/ directory has ALL of its on-disk .csv ignored
-#        (i.e. every phase with result tables has its whitelist)   <- incident (b)
+#   A1b  no on-disk .csv under experiments/ is ignored by .gitignore
+#        (a result table must never be invisible to git)          <- incident (b)
 #   A2   nothing that the next `git add -A` would introduce is a cache/weight
 #        file or >= 1 MB                                        <- incident (a)
 #   A3   no blob >= 50 MB sits in HEAD unless registered in hygiene_exceptions.txt
@@ -65,24 +65,25 @@ else
 fi
 
 # ---------------------------------------------------------------- A1b ----- #
-# A phase directory whose every on-disk .csv is ignored is a silent
-# reproducibility bug (this is exactly how the Phase-6 tables went missing).
-ALLIGN=0
-for d in experiments/phase*/; do
-  [ -d "$d" ] || continue
-  disk=$(find "$d" -type f -name '*.csv' 2>/dev/null | wc -l)
-  [ "$disk" -eq 0 ] && continue
-  ign=$(git status --porcelain --ignored -uall "$d" 2>/dev/null | grep '^!!' | grep -c '\.csv$')
-  trk=$(git ls-files "$d" | grep -c '\.csv$')
-  if [ "$ign" -ge "$disk" ] && [ "$trk" -eq 0 ]; then
-    echo "        $d : $disk csv on disk, ALL ignored, 0 tracked"
-    ALLIGN=$((ALLIGN+1))
-  fi
-done
-if [ "$ALLIGN" -gt 0 ]; then
-  bad "A1b phase dir(s) whose result tables are entirely ignored: $ALLIGN"
+# Any on-disk .csv under experiments/ that git silently ignores is a
+# reproducibility bug -- that is how the Phase-6 result tables went missing.
+#
+# The previous form walked `experiments/phase*/` only, and fired only when such a
+# directory's .csv set was ENTIRELY ignored (`ign -ge disk && trk -eq 0`). It
+# therefore missed two real shapes:
+#   (i)  a .csv in a non-`phase*` top-level dir, e.g. experiments/_figures/ --
+#        `experiments/*/*.csv` swallowed it no matter what the whitelist said;
+#   (ii) partial swallowing (3 of 5 ignored, 2 tracked) -- `ign -ge disk` false.
+# The invariant is simply "a result table is never invisible to git", so state
+# exactly that instead of approximating it per directory.
+IGN_CSV=$(git status --porcelain --ignored -uall experiments/ 2>/dev/null \
+          | sed -n 's/^!! //p' | grep '\.csv$')
+IGN_N=$(printf '%s\n' "$IGN_CSV" | grep -c .)
+if [ "$IGN_N" -gt 0 ]; then
+  printf '%s\n' "$IGN_CSV" | head -"$MAXHITS" | sed 's/^/        ignored: /'
+  bad "A1b on-disk .csv under experiments/ ignored by .gitignore: $IGN_N"
 else
-  ok "A1b every phase dir with .csv has a working whitelist"
+  ok "A1b no .csv under experiments/ is ignored"
 fi
 
 # ----------------------------------------------------------------- A2 ----- #
@@ -152,13 +153,16 @@ if [ "$SELFTEST" -eq 1 ]; then
   echo "--------------------------------------------------------------"
   echo " SELFTEST: planting counterexamples - the gate MUST report FAIL"
   T=experiments/_hygienetest
-  mkdir -p "$T"
-  head -c 2097152 /dev/zero > "$T/planted.npy"          # un-ignored 2 MB .npy
+  TC=experiments/_hygienetest_csv
+  mkdir -p "$T" "$TC"
+  head -c 2097152 /dev/zero > "$T/planted.npy"          # un-ignored 2 MB .npy -> A2
+  printf 'a,b\n1,2\n' > "$TC/planted.csv"               # ignored result table -> A1b
   cp .gitignore /tmp/.gi.bak.$$
-  printf 'experiments/dead_rule_dir_planted_xyz/\n' >> .gitignore
+  printf 'experiments/dead_rule_dir_planted_xyz/\n' >> .gitignore      # -> A4
+  printf 'experiments/*/*.csv\n' >> .gitignore                         # -> A1b
   OUT=$(bash "$0" 2>&1); RC=$?
   mv /tmp/.gi.bak.$$ .gitignore
-  rm -rf "$T"
+  rm -rf "$T" "$TC"
   echo "$OUT" | grep -E '^\[FAIL\]|^RESULT'
   if [ "$RC" -ne 0 ]; then
     echo " SELFTEST: PASS (gate failed as expected, rc=$RC)"
