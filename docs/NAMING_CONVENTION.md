@@ -326,3 +326,59 @@ RESULT: naming UNIFIED
 | `experiments/phase6/phase6_round2_statistics.csv` | 上述统计的 tidy 输出 |
 | `experiments/phase6/phase6_round2_decision.md` | Phase 6B 决策报告（EXP-07 / EXP-08 判定） |
 | `scripts/naming_historical_refs.txt` | CHK11w 历史引用清单（18 条，生成物） |
+
+---
+
+## 11. 续：refs_pass2 与冻结清单对齐（判据变更留痕 · 2026-09-10）
+
+同轮新增 L3 仓库卫生门禁后，`bash scripts/check_all.sh` 首次稳定运行，把 CHK11 报出的
+**5 条 "stale reference"** 暴露出来（此前一直被别的问题遮住）。逐条核查后判定为**工具 bug，
+不是新缺陷**，处置与留痕如下。
+
+### 11.1 根因：同一份规则存在两份真相
+
+- `scripts/refs_pass2.py` 自带一份**硬编码**的 `EXCLUDE_FILES` 表，用于跳过被扫描文件；
+- 权威冻结清单是 `scripts/naming_frozen.txt`（`check_naming.sh::is_frozen` 一直在读它）；
+- 两者**已经漂移**：`docs/NAMING_CONVENTION.md` 与 `docs/NAMING_ALIASES.csv` 在冻结清单 §4
+  「命名工具自指」里，却**不在** `EXCLUDE_FILES` 里。
+- 后果：引用扫描器把**命名工具自身的映射表**当成了"陈旧引用"。
+
+这四份文件**按构造必须包含旧名**，因为它们就是 old→new 映射的定义本身：
+
+| 文件 | 为什么必须含旧名 |
+|---|---|
+| `scripts/naming_path_map.csv` | 迁移的 old→new 对照表本体 |
+| `docs/NAMING_ALIASES.csv` | 别名表（legacy → canonical） |
+| `docs/NAMING_CONVENTION.md` | §2 冲突全量清单，逐条列出旧形态 |
+| `scripts/apply_naming_migration.py` | 迁移规则字面量 |
+
+### 11.2 处置
+
+`refs_pass2.iter_text_targets()` 改为读 **`scripts/naming_frozen.txt`**，与 `check_naming.sh`
+同一份文件、同一语义（glob 匹配仓库相对路径 / last-match-wins / 前导 `!` 解冻）；
+硬编码表删除，消除双份真相。
+
+### 11.3 ★ 变更性质声明（不得略去）
+
+**这不是新增豁免，而是让引用扫描器与既有规则一致。**
+
+1. 上述 4 个文件**早在 v3 就已冻结**（`naming_frozen.txt` 第 47–57 行，类别「命名工具自指」）。
+   `check_naming.sh` 对 CHK1–CHK10 一直在跳过它们 —— CHK11 的路径扫描是唯一的例外。
+2. 被撤回的 5 条"FIX"全部指向这 4 份冻结文件；其"目标"文件
+   （`configs/phase2_ours_0.5m.yaml`、`scripts/phase2_chain_after.sh`、
+   `scripts/phase1b_night_master_chain.sh`、`scripts/phase5_queue_errorgeom.sh`、
+   `scripts/phase4b_recover_step2_then_chain.sh`）**本身健康存在于磁盘**。
+   它们不是"改名遗留的陈旧引用"，而是"映射表里本来就该写着旧名"。
+3. 影响面：CHK11 FIXABLE **5 → 0**；CHK11w 历史引用 **22 → 19**。
+4. 反向守卫：若将来真有"改名后仍能解析到真实文件的陈旧引用"，来源**不是**这 4 份文件时，
+   CHK11 仍会 FAIL —— 判据的判别力没有被削弱，只是不再对映射表自指误报。
+
+### 11.4 同轮新增的机器门禁（非命名层，但同一入口）
+
+- `scripts/check_repo_hygiene.sh`：断言 A1a / A1b / A2 / A3 / A4
+  （审计链表被跟踪 / 任一 phase 目录不得全部 csv 被忽略 / 不得引入缓存与 >1MB 文件 /
+  HEAD 不得有未登记 >50MB blob / 不得有失效的字面路径规则）。
+  其中 **A1b** 正是本轮 `!experiments/phase*/**/*.csv` 泛化的守卫。
+- `scripts/check_all.sh`：命名 + 卫生双门禁的唯一入口。
+- `scripts/hooks/pre-commit` + `scripts/install_hooks.sh`：把门禁挂进提交。
+- `--selftest` 会**植入反例并要求门禁 FAIL**（不能失败的门禁不是门禁）。
