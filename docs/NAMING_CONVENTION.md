@@ -433,3 +433,18 @@ $ git check-ignore -v experiments/zz_probe_tmp/probe.csv
   它的作用是**消除复发路径**。
 - 与 §10.2（CHK11 判据变更）、§11（refs_pass2 与冻结清单对齐）同属一类：
   **判据的每一次改动都必须在文档里可追溯，禁止静默调整。**
+
+### 12.5 本轮的记录缺陷（如实留痕，不改写历史）
+
+- **提交 `2888915` 的提交信息被削弱。** 原因：我把信息写进 `bash -lc "…"` 的双引号串里，
+  而信息中含反引号 —— shell 将其当作**命令替换**执行，反引号包裹的短语被替换为空。
+  例：`non-`phase*` top-level directory` → `non- top-level directory`；`form (`ign >= disk && trk == 0`)` → `form ()`。
+  同时 `ign >= disk` 中的 `>` 触发了**重定向**，在仓库根生成了一个 0 字节杂散文件 `=`。
+- **文件内容未受影响。** `git show --stat 2888915` 恰好是 3 个目标文件
+  （`.gitignore` / `docs/NAMING_CONVENTION.md` / `scripts/check_repo_hygiene.sh`）；
+  杂散文件 `=` 仅为未跟踪状态，**未进入任何提交**，已删除，工作树现已干净。
+  被替换执行的命令均为只读探测（`git check-ignore`、glob 展开），无破坏性动作。
+- **处置：不 force-push。** 按本项目"已推送历史不改写"的既定规则，`--amend` + force-push 修信息被否决；
+  改为在此处如实留痕，保证审计链**可追溯**（宁可信息有缺，不可历史无声变动）。
+- **流程规则（本条为强制）**：提交信息一律通过 `git commit -F <file>` 传入，
+  **禁止在 shell 双引号串里内联反引号、`$`、引号**。
