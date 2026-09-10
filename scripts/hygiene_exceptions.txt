@@ -13,5 +13,7 @@
 #   * it is 4.3 MB below GitHub's 100 MB hard limit -- no headroom to grow;
 #   * it is ~83% of the packed repository (115 MiB), so every clone pays it.
 # Revisit options (not urgent): Git LFS, or drop it from git and fetch it
-# server-side via scripts/fetch_weights.sh.
+# server-side with a small download script -- note that no such script exists
+# yet, so this line deliberately names none (any path named here would be a
+# dangling reference for check_naming.sh CHK11w).
 weights/YOLOP_End-to-end.pth
