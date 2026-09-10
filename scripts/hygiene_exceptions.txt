@@ -12,8 +12,24 @@
 # "uploaded for the server" note there). Two facts recorded at registration:
 #   * it is 4.3 MB below GitHub's 100 MB hard limit -- no headroom to grow;
 #   * it is ~83% of the packed repository (115 MiB), so every clone pays it.
-# Revisit options (not urgent): Git LFS, or drop it from git and fetch it
-# server-side with a small download script -- note that no such script exists
-# yet, so this line deliberately names none (any path named here would be a
-# dangling reference for check_naming.sh CHK11w).
+#
+# DECISION 2026-09-10 (reviewed on request): KEEP. Evidence, all re-checked:
+#   * it is a real dependency, not a stray artifact -- evaluation/evaluate_baseline.py
+#     loads it as the B1 baseline (fallback path is a SIBLING clone that exists
+#     only on this workstation, so a fresh clone needs the in-repo copy), and
+#     8+ configs under configs/ name `teacher: YOLOP` for the offline-KD stages;
+#   * it is ALREADY on the remote: blob e2756fae sits in HEAD and origin/main
+#     resolves to the same commit we pushed, so "must upload" is satisfied;
+#   * no fetch path exists to replace it -- the only published download links in
+#     README.md are Google Drive ones for TriLiteNet / TwinLiteNetPlus, and Drive
+#     being unreachable is exactly why this file was committed in the first place
+#     (see commit 5057286);
+#   * DELETING WOULD NOT SHRINK A CLONE. The blob stays reachable from the commit
+#     that introduced it, so `git rm` only unhooks it from future trees; clone
+#     size drops only via a history rewrite + force-push, which is destructive
+#     and was ruled out for this repo.
+# Revisit options (not urgent): Git LFS (needs a history rewrite too), or drop it
+# from git once a real server-side fetch path exists -- no such path exists yet,
+# so this line deliberately names none (any path named here would be a dangling
+# reference for check_naming.sh CHK11w).
 weights/YOLOP_End-to-end.pth
