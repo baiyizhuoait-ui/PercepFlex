@@ -96,7 +96,10 @@ architecture work before closing H18 is unjustified.
 
 ## 4. Next actions (ordered)
 
-1. **combo 3-seed** (s1/s2 20ep, ~5h GPU) → promote composition to strong claim.
+0. ~~combo 3-seed~~ **DONE (10:03)**: det {0.5047, 0.4931, 0.4964} mean 0.4981;
+   lane {0.5962, 0.5938, 0.5952} mean 0.5951; DA mean 0.8550. det mean equals
+   danc-only range (0.4982/0.4960); lane mean within 0.29x noise of l14f1's
+   single-seed 0.5988. **Composition confirmed at the 3-seed tier (L2 strong).**
 2. Anchor×capacity factorial (z16 vs z32 with/without k-means, 4ep×4) → H-M
    tier test (zero-training pre-analysis already done).
 3. Lane: EXP-2 second variant only if a strictly cheaper 1/4 path exists
